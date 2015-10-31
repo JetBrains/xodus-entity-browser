@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="xodus">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Xodus entity browser</title>
+
+    <link href="https://netdna.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+</head>
+<body ng-controller="MainCtrl as main">
+<div id="wrapper">
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">Xodus entity browser</a>
+        </div>
+        <!-- Top Menu Items -->
+        <ul class="nav navbar-right top-nav">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-database"></i> Settings <b
+                        class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="#"><i class="fa fa-fw fa-database"></i>Database</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav side-nav">
+                <li ng-repeat="type in types" ng-class="{'active' : type.id == selectedType.id}">
+                    <a href ng-click="main.onTypeSelect(type)">{{type.name}}</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div id="page-wrapper" ng-controller="DataViewCtrl as dataView">
+        <div class="container">
+            <div class="row">
+                <form class="form form-horizontal" ng-submit="dataView.onSearch()">
+                    <div class="form-group">
+                        <label class="control-label">Search for {{selectedType.name}}:</label>
+
+                        <div class="row">
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    <input type="text" ng-model="dataView.searchQuery" class="form-control">
+
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-default" type="submit" ng-click="dataView.onSearch()"><i
+                                                class="fa fa-fw fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <a class="btn btn-primary">Create new</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="row" ng-show="dataView.isListView">
+                <div ng-show="!dataView.isSearchExecuted">
+                    <h3 class="text-center">Press search button to found something.</h3>
+                </div>
+                <div ng-show="dataView.isSearchExecuted">
+                    <h3 class="text-center" ng-show="!dataView.hasResults()">Nothing founded.</h3>
+                    <div ng-show="dataView.hasResults()">
+                        <div class="row">
+                            <ul>
+                                <li ng-repeat="item in dataView.results">
+                                    <h3>{{item.label}}</h3>
+                                    <span>{{item.details}}</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-route.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.14.3/ui-bootstrap-tpls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.14.3/ui-bootstrap.min.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
