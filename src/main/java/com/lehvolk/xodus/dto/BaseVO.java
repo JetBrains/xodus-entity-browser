@@ -1,10 +1,10 @@
 package com.lehvolk.xodus.dto;
 
+import java.io.Serializable;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
 
 /**
  * @author Alexey Volkov
@@ -13,17 +13,10 @@ import java.io.Serializable;
 @Getter
 @Setter
 @XmlRootElement
-public class BaseVO implements Serializable, Cloneable {
+public class BaseVO implements Serializable {
+
+	private static final long serialVersionUID = 2406560538582931684L;
 
 	private long id;
 
-	//todo remove this trash
-	@Override
-	public Object clone() {
-		try {
-			return super.clone();
-		} catch (CloneNotSupportedException e) {
-			return null;
-		}
-	}
 }

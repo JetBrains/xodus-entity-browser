@@ -11,6 +11,7 @@ import lombok.Setter;
 @Setter
 public class EntityPresentationVO extends BaseVO {
 
+	private static final long serialVersionUID = 8816524086938064511L;
 	private String label;
 	private String details;
 }

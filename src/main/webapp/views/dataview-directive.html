@@ -1,0 +1,63 @@
+<div id="page-wrapper">
+    <div class="container" ng-controller="DataViewController as dataView">
+        <div class="row" ng-show="dataView.isListView">
+            <div class="row">
+                <form class="form form-horizontal" data-ng-submit="dataView.onSearch()">
+                    <div class="form-group">
+                        <label for="searchQuery" class="control-label">Search for {{type.name}}:</label>
+
+                        <div class="row">
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    <input id="searchQuery" type="text" data-ng-model="dataView.searchQuery"
+                                           class="form-control" placeholder="search query">
+
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-default" type="submit"
+                                                data-ng-click="dataView.onSearch()"><i class="fa fa-fw fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <a class="btn btn-primary pull-right" data-ng-click="dataView.newEntity()">Create
+                                    new</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div data-ng-show="!dataView.isSearchExecuted">
+                <h3 class="text-center">Press search button to found something.</h3>
+            </div>
+            <div data-ng-show="dataView.isSearchExecuted">
+                <h3 class="text-center" data-ng-show="!dataView.hasResults()">Nothing founded.</h3>
+
+                <div data-ng-show="dataView.hasResults()">
+                    <div class="row">
+                        <div class="panel panel-default" data-ng-repeat="item in dataView.results">
+                            <div class="panel-heading clearfix">
+                                <h4 class="panel-title pull-left" style="padding-top: 7.5px;">{{item.label}}</h4>
+
+                                <div class="btn-group pull-right">
+                                    <button class="btn btn-primary fa fa-pencil edit-button"
+                                            data-ng-click="dataView.edit(item)"></button>
+                                    <button class="btn btn-danger fa fa-trash edit-button"
+                                            data-ng-click="dataView.deleteItem(item)"></button>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                {{item.details}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" data-ng-hide="dataView.isListView">
+            <button class="btn btn-info" data-ng-click="dataView.toggleView()">Back to list</button>
+        </div>
+    </div>
+</div>

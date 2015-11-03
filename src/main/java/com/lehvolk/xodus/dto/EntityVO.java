@@ -1,10 +1,10 @@
 package com.lehvolk.xodus.dto;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.List;
 import java.util.Map;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author Alexey Volkov
@@ -14,6 +14,7 @@ import java.util.Map;
 @Setter
 public class EntityVO extends BaseVO {
 
+	private static final long serialVersionUID = -6471237580582518615L;
 	private List<EntityPropertyVO> values;
 	private Map<String, Object> links;
 	private Map<String, Object> blobs;

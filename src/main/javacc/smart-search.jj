@@ -1,0 +1,108 @@
+options {
+  STATIC = false;
+  IGNORE_CASE = true;
+}
+
+PARSER_BEGIN(SmartSearchQueryParser)
+
+package com.lehvolk.xodus.repo;
+
+import java.util.Map;
+import java.util.HashMap;
+
+public class SmartSearchQueryParser {
+
+    static Map<String, String> check(Map<String, String> map, String query) throws ParseException {
+         if(map == null || map.isEmpty()){
+            throw new ParseException("can't parse query '"  + query + "'");
+         }
+         return map;
+    }
+
+     private static String prepare(String value) {
+            if (value == null || value.length() <= 1) {
+                return value;
+            }
+            int first = value.charAt(0);
+            int last = value.charAt(value.length() - 1);
+            boolean trim = (first == '\'' && last == '\'') || (first == '"' && last == '"');
+            if (trim) {
+                return removeDoubleQuotes(value.substring(1, value.length() - 1));
+            }
+            return removeDoubleQuotes(value);
+     }
+
+     private static String removeDoubleQuotes(String value) {
+            if (value == null || value.length() <= 1) {
+                return value;
+            }
+            return value.replaceAll("''", "'");
+     }
+
+
+}
+PARSER_END(SmartSearchQueryParser)
+
+SKIP:
+{
+  " "
+  | "\n"
+  | "\r"
+  | "\t"
+}
+
+TOKEN:
+{
+ <SIMPLEVALUE : (["a"-"z", "A"-"Z", "0"-"9", "_", "[", "]", "."])+ >
+| <QUOTED_STRING : "'" (~["'"])* "'" ("'" (~["'"])* "'")* >
+| <RANGE_STRING : "[" (~["[","]"])* "]" ("[" (~["[", "]"])* "]")* >
+}
+
+public Map<String,String> parse():
+{
+    Map<String,String> map = new HashMap<String,String>();
+}
+{
+    (keyValue(map) (" and " keyValue(map))*)?
+    {
+        return check(map, token.image);
+    }
+}
+
+public void keyValue(Map<String,String> map):
+{
+    String k;
+    String v;
+}
+{
+    (k=value() "=" v=value())
+        {
+            map.put(k, v);
+        }
+}
+
+public String key():
+{
+    Token token;
+}
+{
+    ( token = <SIMPLEVALUE>
+    | token = <QUOTED_STRING>
+    | token = <RANGE_STRING>)
+    {
+        return prepare(token.image);
+    }
+}
+
+public String value():
+{
+    Token token;
+}
+{
+    ( token = <SIMPLEVALUE>
+    | token = <QUOTED_STRING>
+    | token = <RANGE_STRING>)
+    {
+        return prepare(token.image);
+    }
+}

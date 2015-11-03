@@ -1,0 +1,16 @@
+<div>
+    <div class="modal-header without-bottom-border">
+        <h3 class="modal-title">Delete {{item.label}}?</h3>
+    </div>
+    <div class="modal-body">
+        <span class="co-text">Are you sure you want to delete {{item.label}}</span>
+    </div>
+    <div class="modal-footer without-top-border">
+        <button class="btn btn-primary mdm-ui-component-confirm-button" data-ng-click="deleteItem()">
+            Delete
+        </button>
+        <button class="btn btn-default mdm-ui-component-confirm-button" data-ng-click="cancel()">
+            Cancel
+        </button>
+    </div>
+</div>

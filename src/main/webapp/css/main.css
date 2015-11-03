@@ -11,7 +11,7 @@ body {
     background-color: #222;
 }
 
-@media(min-width:768px) {
+@media (min-width: 768px) {
     body {
         margin-top: 50px;
     }
@@ -32,7 +32,7 @@ body {
     line-height: normal;
 }
 
-@media(min-width:768px) {
+@media (min-width: 768px) {
     #wrapper {
         padding-left: 225px;
     }
@@ -48,40 +48,40 @@ body {
     padding: 0 15px;
 }
 
-.top-nav>li {
+.top-nav > li {
     display: inline-block;
     float: left;
 }
 
-.top-nav>li>a {
+.top-nav > li > a {
     padding-top: 15px;
     padding-bottom: 15px;
     line-height: 20px;
     color: #999;
 }
 
-.top-nav>li>a:hover,
-.top-nav>li>a:focus,
-.top-nav>.open>a,
-.top-nav>.open>a:hover,
-.top-nav>.open>a:focus {
+.top-nav > li > a:hover,
+.top-nav > li > a:focus,
+.top-nav > .open > a,
+.top-nav > .open > a:hover,
+.top-nav > .open > a:focus {
     color: #fff;
     background-color: #000;
 }
 
-.top-nav>.open>.dropdown-menu {
+.top-nav > .open > .dropdown-menu {
     float: left;
     position: absolute;
     margin-top: 0;
-    border: 1px solid rgba(0,0,0,.15);
+    border: 1px solid rgba(0, 0, 0, .15);
     border-top-left-radius: 0;
     border-top-right-radius: 0;
     background-color: #fff;
-    -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
-    box-shadow: 0 6px 12px rgba(0,0,0,.175);
+    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
 }
 
-.top-nav>.open>.dropdown-menu>li>a {
+.top-nav > .open > .dropdown-menu > li > a {
     white-space: normal;
 }
 
@@ -94,10 +94,10 @@ ul.message-dropdown {
 
 li.message-preview {
     width: 275px;
-    border-bottom: 1px solid rgba(0,0,0,.15);
+    border-bottom: 1px solid rgba(0, 0, 0, .15);
 }
 
-li.message-preview>a {
+li.message-preview > a {
     padding-top: 15px;
     padding-bottom: 15px;
 }
@@ -112,7 +112,7 @@ ul.alert-dropdown {
 
 /* Side Navigation */
 
-@media(min-width:768px) {
+@media (min-width: 768px) {
     .side-nav {
         position: fixed;
         top: 51px;
@@ -128,7 +128,7 @@ ul.alert-dropdown {
         padding-bottom: 40px;
     }
 
-    .side-nav>li>a {
+    .side-nav > li > a {
         width: 225px;
     }
 
@@ -139,18 +139,18 @@ ul.alert-dropdown {
     }
 }
 
-.side-nav>li>ul {
+.side-nav > li > ul {
     padding: 0;
 }
 
-.side-nav>li>ul>li>a {
+.side-nav > li > ul > li > a {
     display: block;
     padding: 10px 15px 10px 38px;
     text-decoration: none;
     color: #999;
 }
 
-.side-nav>li>ul>li>a:hover {
+.side-nav > li > ul > li > a:hover {
     color: #fff;
 }
 
@@ -224,4 +224,8 @@ ul.alert-dropdown {
 
 .panel-yellow > a:hover {
     color: #df8a13;
+}
+
+.edit-button {
+    width: 35px;
 }

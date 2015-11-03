@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.lehvolk</groupId>
-    <artifactId>zodus-entity-browser</artifactId>
+    <artifactId>xodus-entity-browser</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
@@ -31,6 +31,57 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>yuicompressor-maven-plugin</artifactId>
+                <version>1.3.2</version>
+                <configuration>
+                    <preProcessAggregates>true</preProcessAggregates>
+                    <aggregations>
+                        <aggregation>
+                            <insertNewLine>true</insertNewLine>
+                            <output>${project.build.directory}/${project.build.finalName}/js/all.js</output>
+                            <inputDir>${basedir}/src/main/webapp/js</inputDir>
+                            <includes>
+                                <include>xodus-app.js</include>
+                                <include>services/entity-type-service.js</include>
+                                <include>controllers/menu-controller.js</include>
+                                <include>controllers/dataview-controller.js</include>
+                                <include>controllers/confirmation-controller.js</include>
+                                <include>directives/dataview-directive.js</include>
+                            </includes>
+                        </aggregation>
+                    </aggregations>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>compress</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>compress</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>javacc-maven-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>javacc-smartsearch-query</id>
+                        <goals>
+                            <goal>javacc</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <include>smart-search.jj</include>
+                            </includes>
+                            <unicodeInput>true</unicodeInput>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
 
         <pluginManagement>
@@ -47,8 +98,21 @@
         </pluginManagement>
     </build>
 
-
     <dependencies>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>1.10.19</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+            <version>4.11</version>
+        </dependency>
+
+
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
@@ -57,7 +121,7 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
+            <version>3.0.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -87,14 +151,14 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>com.google.inject</groupId>-->
-            <!--<artifactId>guice</artifactId>-->
-            <!--<version>4.0</version>-->
+        <!--<groupId>com.google.inject</groupId>-->
+        <!--<artifactId>guice</artifactId>-->
+        <!--<version>4.0</version>-->
         <!--</dependency>-->
         <!--<dependency>-->
-            <!--<groupId>com.google.inject.extensions</groupId>-->
-            <!--<artifactId>guice-servlet</artifactId>-->
-            <!--<version>4.0</version>-->
+        <!--<groupId>com.google.inject.extensions</groupId>-->
+        <!--<artifactId>guice-servlet</artifactId>-->
+        <!--<version>4.0</version>-->
         <!--</dependency>-->
         <dependency>
             <groupId>com.squarespace.jersey2-guice</groupId>
