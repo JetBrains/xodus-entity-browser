@@ -1,21 +1,33 @@
-angular.module('xodus').controller('DataViewController', ['EntityTypeService', '$http', '$scope', '$uibModal',
-    function(types, $http, $scope, $uibModal) {
+angular.module('xodus').controller('DataViewController', ['EntityTypeService', 'EntitiesService', '$scope', '$uibModal',
+    function(types, entities, $scope, $uibModal) {
         var dataView = this;
-        $scope.$watch('selectedType()', reset);
-        reset();
+        dataView.isSearchExecuted = false;
+        dataView.isListView = true;
+
+        dataView.searchQuery = null;
+        dataView.pageSize = 50;
+        $scope.type = $scope.selectedType();
+        dataView.pager = newPager(null);
+        dataView.newInstance = entities.newEntity($scope.type.id, $scope.type.name);
+        dataView.currentEntity = angular.copy(dataView.newInstance);
+
+        //uncomment this if you want to load data on view show
+        //dataView.pager.pageChanged(1);
+
         dataView.onSearch = function() {
             dataView.pager = newPager(dataView.searchQuery);
             dataView.pager.pageChanged(1);
         };
-        dataView.toggleView = function() {
-            dataView.isListView = !dataView.isListView;
-        };
+
+        dataView.toggleView = toggleView;
         dataView.newEntity = function() {
-            dataView.toggleView();
+            toggleView();
+            dataView.currentEntity = angular.copy(dataView.newInstance);
         };
 
         dataView.edit = function(item) {
-            dataView.toggleView();
+            toggleView();
+            dataView.currentEntity = angular.copy(item);
         };
 
         dataView.deleteItem = function(item) {
@@ -30,22 +42,11 @@ angular.module('xodus').controller('DataViewController', ['EntityTypeService', '
                 }
             }).result.then(function(result) {
                     if (result) {
-                        //console.log('item deleted');
+                        types.remove(item.typeId, item.id).success(dataView.onSearch).fail(function() {
+                        });
                     }
                 });
         };
-
-        function reset() {
-            dataView.isSearchExecuted = false;
-            dataView.isListView = true;
-            dataView.searchQuery = null;
-            dataView.pageSize = 50;
-            $scope.type = $scope.selectedType();
-            dataView.pager = newPager(null);
-
-            //uncomment this if you want to load data on view show
-            //dataView.pager.pageChanged(1);
-        }
 
         function newPager(searchTerm) {
             return {
@@ -70,6 +71,10 @@ angular.module('xodus').controller('DataViewController', ['EntityTypeService', '
                     return this.items.length > 0;
                 }
             };
+        }
+
+        function toggleView() {
+            dataView.isListView = !dataView.isListView;
         }
     }]);
 

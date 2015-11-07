@@ -3,6 +3,7 @@ angular.module('xodus').service('EntityTypeService', ['$http', '$q', function($h
     this.all = all;
     this.byId = byId;
     this.search = search;
+    this.remove = remove;
 
     function all() {
         if (types) {
@@ -39,4 +40,9 @@ angular.module('xodus').service('EntityTypeService', ['$http', '$q', function($h
         });
     }
 
+    function remove(typeId, entityId) {
+        return $http['delete']('api/type/' + typeId + '/entity/' + entityId).then(function(response) {
+            return response.data;
+        });
+    }
 }]);

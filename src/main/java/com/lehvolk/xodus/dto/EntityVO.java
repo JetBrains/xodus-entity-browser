@@ -57,14 +57,14 @@ public class EntityVO extends BaseVO {
 		private static final long serialVersionUID = -4446983251527745550L;
 		private int typeId;
 		private long entityId;
-
 	}
 
 	private static final long serialVersionUID = -6471237580582518615L;
 
+	private String label;
 	private String type;
 	private int typeId;
-	private List<EntityPropertyVO> values;
+	private List<EntityPropertyVO> properties;
 	private List<LinkPropertyVO> links;
 	private List<BlobPropertyVO> blobs;
 

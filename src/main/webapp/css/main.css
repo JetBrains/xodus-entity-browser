@@ -225,3 +225,7 @@ ul.alert-dropdown {
     padding: 5px 5px 5px 5px;
     margin-bottom: 0;
 }
+
+.action-button {
+    width: 100px;
+}

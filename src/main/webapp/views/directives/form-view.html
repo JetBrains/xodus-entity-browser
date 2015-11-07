@@ -1,0 +1,111 @@
+<div>
+    <div class="row" ng-controller="FormViewController as formView">
+        <div class="row">
+            <h2 class="pull-left">{{formView.label}}</h2>
+
+            <div class="pull-right" ng-show="editMode">
+                <button class="btn btn-primary action-button" ng-click="formView.save()">Save</button>
+                <button class="btn btn-danger action-button" ng-click="formView.cancel()">Cancel</button>
+                <button class="btn btn-primary action-button" ng-click="formView.revert()">Revert</button>
+            </div>
+            <div class="pull-right" ng-hide="editMode">
+                <button class="btn btn-default action-button" ng-click="formView.toggleView()">Edit</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                    <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Properties</h4>
+
+                    <div class="btn-group pull-right">
+                        <button class="btn btn-primary pull-right" ng-click="formView.newProperty()"><i
+                                class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal">
+                        <div class="row" data-ng-repeat="property in properties">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="col-md-3">
+                                        <label class="control-label">Name:</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input name="{{$index + 'name'}}" data-ng-type="text" class="form-control"
+                                               ng-required="true" data-ng-model="property.name"
+                                               data-ng-disabled="!editMode">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <ui-select data-ng-model="property.type"
+                                               data-theme="bootstrap"
+                                               data-ng-disabled="!editMode">
+                                        <ui-select-match placeholder="Select type">
+                                            {{$select.selected}}
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="type in formView.allTypes">
+                                            <small data-ng-bind="type.displayName"></small>
+                                        </ui-select-choices>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <div>
+                                        <input name="{{$index + 'value'}}" data-ng-type="text" class="form-control"
+                                               ng-model="property.value"
+                                               placeholder="Enter value" data-ng-disabled="!editMode">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="btn-group" ng-show="editMode">
+                                    <button class="btn btn-danger" ng-click="formView.removeProperty(property)">
+                                        <i class="fa fa-minus"></i>
+                                    </button>
+                                    <button class="btn btn-primary" ng-click="formView.newProperty()"
+                                            ng-show="$index + 1 == properties.length">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                    <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Links</h4>
+
+                    <div class="btn-group pull-right">
+                        <button class="btn btn-primary pull-right" ng-click="formView.newLink()"><i
+                                class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="panel-body">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                    <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Blobs</h4>
+
+                    <div class="btn-group pull-right">
+                        <button class="btn btn-primary pull-right" ng-click="formView.newBlob()"><i
+                                class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="panel-body">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

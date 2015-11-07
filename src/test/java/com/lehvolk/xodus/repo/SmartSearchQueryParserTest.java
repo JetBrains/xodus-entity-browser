@@ -11,27 +11,30 @@ import static org.junit.Assert.assertEquals;
 
 public class SmartSearchQueryParserTest {
 
+    private static final String FIRST_NAME = "firstName";
+    private static final String LAST_NAME = "lastName";
+
     @Test
     public void testSimple() {
         List<SearchTerm<?>> result = parse("firstName='John' and lastName='McCain'");
         assertEquals(2, result.size());
-        checkTerm(result.get(0), "firstName", "John", SearchTermType.VALUE);
-        checkTerm(result.get(1), "lastName", "McCain", SearchTermType.VALUE);
+        checkTerm(result.get(0), FIRST_NAME, "John", SearchTermType.VALUE);
+        checkTerm(result.get(1), LAST_NAME, "McCain", SearchTermType.VALUE);
     }
 
     @Test
     public void testSingleParam() {
         List<SearchTerm<?>> result = parse("firstName='John'");
         assertEquals(1, result.size());
-        checkTerm(result.get(0), "firstName", "John", SearchTermType.VALUE);
+        checkTerm(result.get(0), FIRST_NAME, "John", SearchTermType.VALUE);
     }
 
     @Test
     public void testWithoutQuotes() {
         List<SearchTerm<?>> result = parse("firstName=John and lastName=McCain and age=43");
         assertEquals(3, result.size());
-        checkTerm(result.get(0), "firstName", "John", SearchTermType.VALUE);
-        checkTerm(result.get(1), "lastName", "McCain", SearchTermType.VALUE);
+        checkTerm(result.get(0), FIRST_NAME, "John", SearchTermType.VALUE);
+        checkTerm(result.get(1), LAST_NAME, "McCain", SearchTermType.VALUE);
         checkTerm(result.get(2), "age", "43", SearchTermType.VALUE);
     }
 
@@ -39,47 +42,47 @@ public class SmartSearchQueryParserTest {
     public void testLike() {
         List<SearchTerm<?>> result = parse("firstName=John and lastName~McCain");
         assertEquals(2, result.size());
-        checkTerm(result.get(0), "firstName", "John", SearchTermType.VALUE);
-        checkTerm(result.get(1), "lastName", "McCain", SearchTermType.LIKE);
+        checkTerm(result.get(0), FIRST_NAME, "John", SearchTermType.VALUE);
+        checkTerm(result.get(1), LAST_NAME, "McCain", SearchTermType.LIKE);
     }
 
     @Test
     public void testSingleParamsWithoutQuotes() {
         List<SearchTerm<?>> result = parse("firstName=John");
         assertEquals(1, result.size());
-        checkTerm(result.get(0), "firstName", "John", SearchTermType.VALUE);
+        checkTerm(result.get(0), FIRST_NAME, "John", SearchTermType.VALUE);
     }
 
     @Test
     public void testEscapingQuotes() {
         List<SearchTerm<?>> result = parse("firstName=John and lastName='Mc''Cain'");
         assertEquals(2, result.size());
-        checkTerm(result.get(0), "firstName", "John", SearchTermType.VALUE);
-        checkTerm(result.get(1), "lastName", "Mc'Cain", SearchTermType.VALUE);
+        checkTerm(result.get(0), FIRST_NAME, "John", SearchTermType.VALUE);
+        checkTerm(result.get(1), LAST_NAME, "Mc'Cain", SearchTermType.VALUE);
     }
 
     @Test
     public void testOmitAndIntoQuotes() {
         List<SearchTerm<?>> result = parse("firstName='John and Mike' and lastName='McCain'");
         assertEquals(2, result.size());
-        checkTerm(result.get(0), "firstName", "John and Mike", SearchTermType.VALUE);
-        checkTerm(result.get(1), "lastName", "McCain", SearchTermType.VALUE);
+        checkTerm(result.get(0), FIRST_NAME, "John and Mike", SearchTermType.VALUE);
+        checkTerm(result.get(1), LAST_NAME, "McCain", SearchTermType.VALUE);
     }
 
     @Test
     public void testEqualsIntoQuotes() {
         List<SearchTerm<?>> result = parse("firstName='John=Mike' and lastName='McCain'");
         assertEquals(2, result.size());
-        checkTerm(result.get(0), "firstName", "John=Mike", SearchTermType.VALUE);
-        checkTerm(result.get(1), "lastName", "McCain", SearchTermType.VALUE);
+        checkTerm(result.get(0), FIRST_NAME, "John=Mike", SearchTermType.VALUE);
+        checkTerm(result.get(1), LAST_NAME, "McCain", SearchTermType.VALUE);
     }
 
     @Test
     public void testSpacesIntoQuotes() {
         List<SearchTerm<?>> result = parse("firstName='John Mike' and lastName='McCain'");
         assertEquals(2, result.size());
-        checkTerm(result.get(0), "firstName", "John Mike", SearchTermType.VALUE);
-        checkTerm(result.get(1), "lastName", "McCain", SearchTermType.VALUE);
+        checkTerm(result.get(0), FIRST_NAME, "John Mike", SearchTermType.VALUE);
+        checkTerm(result.get(1), LAST_NAME, "McCain", SearchTermType.VALUE);
     }
 
     @Test
@@ -94,7 +97,7 @@ public class SmartSearchQueryParserTest {
     public void testRange() {
         List<SearchTerm<?>> result = parse("firstName='John Mike' and age=[30,40]");
         assertEquals(2, result.size());
-        checkTerm(result.get(0), "firstName", "John Mike", SearchTermType.VALUE);
+        checkTerm(result.get(0), FIRST_NAME, "John Mike", SearchTermType.VALUE);
         checkRangeTerm(result.get(1), "age", 30, 40);
     }
 
@@ -121,8 +124,8 @@ public class SmartSearchQueryParserTest {
     public void testCaseInsensitive() {
         List<SearchTerm<?>> result = parse("firstName='John Mike' AND lastName='McCain'");
         assertEquals(2, result.size());
-        checkTerm(result.get(0), "firstName", "John Mike", SearchTermType.VALUE);
-        checkTerm(result.get(1), "lastName", "McCain", SearchTermType.VALUE);
+        checkTerm(result.get(0), FIRST_NAME, "John Mike", SearchTermType.VALUE);
+        checkTerm(result.get(1), LAST_NAME, "McCain", SearchTermType.VALUE);
     }
 
     private void checkTerm(SearchTerm<?> term, String property, String value, SearchTermType type) {

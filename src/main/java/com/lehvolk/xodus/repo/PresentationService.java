@@ -5,8 +5,8 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.lehvolk.xodus.dto.EntityPresentationVO;
-import jetbrains.exodus.entitystore.Entity;
+import com.lehvolk.xodus.dto.EntityVO;
+import com.lehvolk.xodus.dto.EntityVO.EntityPropertyVO;
 
 /**
  * @author Alexey Volkov
@@ -20,22 +20,17 @@ public class PresentationService {
     @Inject
     private ConfigurationService service;
 
-    public Function<Entity, EntityPresentationVO> presentation(final long typeId, final String type) {
+    public Function<EntityVO, EntityVO> presentation(final long typeId, final String type) {
         return entity -> {
-            EntityPresentationVO presentationVO = new EntityPresentationVO();
-            presentationVO.setId(entity.getId().getLocalId());
-            presentationVO.setLabel(type + ": " + format(service.getLabelFormat(typeId), entity));
-            presentationVO.setDetails(format(service.getDetailsFormat(typeId), entity));
-            return presentationVO;
+            entity.setLabel(type + ": " + format(service.getLabelFormat(typeId), entity));
+            return entity;
         };
     }
 
-    private String format(String format, Entity entity) {
-        String formatted = ID_PATTERN.matcher(format).replaceAll(String.valueOf(entity.getId().getLocalId()));
-        for (String property : entity.getPropertyNames()) {
-            Comparable<?> rawValue = entity.getProperty(property);
-            String value = rawValue == null ? "" : rawValue.toString();
-            formatted = formatted.replaceAll("\\{\\{" + property + "\\}\\}", value);
+    private String format(String format, EntityVO entityVO) {
+        String formatted = ID_PATTERN.matcher(format).replaceAll(String.valueOf(entityVO.getId()));
+        for (EntityPropertyVO property : entityVO.getProperties()) {
+            formatted = formatted.replaceAll("\\{\\{" + property + "\\}\\}", String.valueOf(property.getValue()));
         }
         return formatted;
     }

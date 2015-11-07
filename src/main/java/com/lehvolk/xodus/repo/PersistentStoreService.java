@@ -9,7 +9,8 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.lehvolk.xodus.dto.EntityPresentationVO;
+import org.jetbrains.annotations.NotNull;
+
 import com.lehvolk.xodus.dto.EntityTypeVO;
 import com.lehvolk.xodus.dto.EntityVO;
 import com.lehvolk.xodus.dto.EntityVO.BasePropertyVO;
@@ -97,9 +98,8 @@ public class PersistentStoreService {
                         }
                     }
                     long totalCount = result.size();
-                    EntityPresentationVO[] items = stream(result.skip(offset).take(pageSize).spliterator(), false)
-                            .map(presentations.presentation(typeId, type))
-                            .toArray(EntityPresentationVO[]::new);
+                    EntityVO[] items = stream(result.skip(offset).take(pageSize).spliterator(), false)
+                            .map(asEntityVO(t)).toArray(EntityVO[]::new);
                     return new SearchPagerVO(items, totalCount);
                 }
 
@@ -118,45 +118,55 @@ public class PersistentStoreService {
     public EntityVO getEntity(int typeId, long entityId) {
         return callStore(
                 t -> {
-                    Entity entity = t.getEntity(new PersistentEntityId(typeId, entityId));
-                    List<EntityPropertyVO> properties = entity.getPropertyNames().stream().map(name -> {
-                        EntityPropertyVO vo = newProperty(new EntityPropertyVO(), name);
-                        Comparable<?> value = entity.getProperty(name);
-                        vo.setValue((Serializable) value);
-                        if (value != null) {
-                            PropertyType propertyType = store.getPropertyTypes().getPropertyType(value.getClass());
-                            vo.setClazz(propertyType.getClazz().getName());
-                            vo.setType(InputType.STRING);
-                        }
-                        return vo;
-                    }).collect(toList());
-                    List<BlobPropertyVO> blobs = entity.getBlobNames().stream().map(name -> {
-                        BlobPropertyVO vo = newProperty(new BlobPropertyVO(), name);
-                        vo.setBlobSize(entity.getBlobSize(name));
-                        return vo;
-                    }).collect(toList());
-
-                    List<LinkPropertyVO> links = entity.getLinkNames().stream().map(name -> {
-                        LinkPropertyVO vo = newProperty(new LinkPropertyVO(), name);
-                        Entity link = entity.getLink(name);
-                        if (link != null) {
-                            EntityId linkId = link.getId();
-                            vo.setTypeId(linkId.getTypeId());
-                            vo.setEntityId(linkId.getLocalId());
-                        }
-                        return vo;
-                    }).collect(toList());
-
-                    EntityVO vo = new EntityVO();
-                    vo.setId(entity.getId().getLocalId());
-                    vo.setTypeId(typeId);
-                    vo.setType(store.getEntityType(t, typeId));
-                    vo.setValues(properties);
-                    vo.setBlobs(blobs);
-                    vo.setLinks(links);
-                    return vo;
+                    Entity e = t.getEntity(new PersistentEntityId(typeId, entityId));
+                    return asEntityVO(t).apply(e);
                 }
         );
+    }
+
+    @NotNull
+    private Function<Entity, EntityVO> asEntityVO(PersistentStoreTransaction t) {
+        return entity -> {
+            List<EntityPropertyVO> properties = entity.getPropertyNames().stream().map(name -> {
+                EntityPropertyVO vo = newProperty(new EntityPropertyVO(), name);
+                Comparable<?> value = entity.getProperty(name);
+                vo.setValue((Serializable) value);
+                if (value != null) {
+                    PropertyType propertyType = store.getPropertyTypes().getPropertyType(value.getClass());
+                    vo.setClazz(propertyType.getClazz().getName());
+                    vo.setType(InputType.STRING);
+                }
+                return vo;
+            }).collect(toList());
+            List<BlobPropertyVO> blobs = entity.getBlobNames().stream().map(name -> {
+                BlobPropertyVO vo = newProperty(new BlobPropertyVO(), name);
+                vo.setBlobSize(entity.getBlobSize(name));
+                return vo;
+            }).collect(toList());
+
+            List<LinkPropertyVO> links = entity.getLinkNames().stream().map(name -> {
+                LinkPropertyVO vo = newProperty(new LinkPropertyVO(), name);
+                Entity link = entity.getLink(name);
+                if (link != null) {
+                    EntityId linkId = link.getId();
+                    vo.setTypeId(linkId.getTypeId());
+                    vo.setEntityId(linkId.getLocalId());
+                }
+                return vo;
+            }).collect(toList());
+
+            EntityVO vo = new EntityVO();
+            vo.setId(entity.getId().getLocalId());
+            vo.setProperties(properties);
+            vo.setBlobs(blobs);
+            vo.setLinks(links);
+            int typeId = entity.getId().getTypeId();
+            String entityType = store.getEntityType(t, typeId);
+            presentations.presentation(typeId, entityType).apply(vo);
+            vo.setTypeId(typeId);
+            vo.setType(entityType);
+            return vo;
+        };
     }
 
     private <T extends BasePropertyVO> T newProperty(T t, String name) {

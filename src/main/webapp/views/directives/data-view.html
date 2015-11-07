@@ -1,0 +1,92 @@
+<div id="page-wrapper">
+    <div ng-if="selectedType() != null">
+        <div class="container" ng-controller="DataViewController as dataView">
+            <div class="row" ng-show="dataView.isListView">
+                <div class="row">
+                    <form class="form form-horizontal" data-ng-submit="dataView.onSearch()">
+                        <div class="form-group">
+                            <label for="searchQuery" class="control-label">Search for {{type.name}}:</label>
+
+                            <div class="row">
+                                <div class="col-md-10">
+                                    <div class="input-group">
+                                        <input id="searchQuery" type="text" data-ng-model="dataView.searchQuery"
+                                               class="form-control" placeholder="search query">
+
+                                        <div class="input-group-btn">
+                                            <button class="btn btn-default" type="submit"><i
+                                                    class="fa fa-fw fa-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <a class="btn btn-primary pull-right" data-ng-click="dataView.newEntity()">Create
+                                        new</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div data-ng-show="!dataView.isSearchExecuted">
+                    <h3 class="text-center">Press search button to found something.</h3>
+                </div>
+                <div data-ng-show="dataView.isSearchExecuted">
+                    <h3 class="text-center" data-ng-show="!dataView.pager.hasResults()">Nothing founded.</h3>
+
+                    <div data-ng-show="dataView.pager.hasResults()">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div data-ng-show="dataView.pager.hasPagination()">
+                                    <uib-pagination data-total-items="dataView.pager.totalCount"
+                                                    data-ng-model="dataView.pager.currentPage"
+                                                    data-ng-change="dataView.pager.pageChanged()"
+                                                    max-size="5">
+                                    </uib-pagination>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h3 class="pull-right">
+                                    Total records: {{dataView.pager.totalCount}}
+                                </h3>
+
+                            </div>
+                        </div>
+                        <div class="row">
+
+                            <div class="panel panel-default" data-ng-repeat="item in dataView.pager.items">
+                                <div class="panel-heading clearfix">
+                                    <h4 class="panel-title pull-left" style="padding-top: 7.5px;">{{item.label}}</h4>
+
+                                    <div class="btn-group pull-right">
+                                        <button class="btn btn-primary fa fa-pencil edit-button"
+                                                data-ng-click="dataView.edit(item)"></button>
+                                        <button class="btn btn-danger fa fa-trash edit-button"
+                                                data-ng-click="dataView.deleteItem(item)"></button>
+                                    </div>
+                                </div>
+                                <div class="panel-body">
+                                    {{item.details}}
+                                </div>
+                            </div>
+
+                            <div data-ng-show="dataView.pager.hasPagination()">
+                                <uib-pagination data-total-items="dataView.pager.totalCount"
+                                                data-ng-model="dataView.pager.currentPage"
+                                                data-ng-change="dataView.pager.pageChanged()"
+                                                max-size="5">
+                                </uib-pagination>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" ng-if="!dataView.isListView">
+                <button class="btn btn-info" data-ng-click="dataView.toggleView()">Back to list</button>
+                <form-view data-entity="dataView.currentEntity" data-back-to-search="dataView.toggleView()"></form-view>
+            </div>
+        </div>
+    </div>
+</div>
