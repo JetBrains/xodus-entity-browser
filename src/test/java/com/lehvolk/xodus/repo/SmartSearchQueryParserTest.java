@@ -1,101 +1,107 @@
 package com.lehvolk.xodus.repo;
 
 import java.util.Collections;
-import java.util.Map;
+import java.util.List;
 
 import org.junit.Test;
 
+import com.lehvolk.xodus.repo.SearchTerm.Range;
+import com.lehvolk.xodus.repo.SearchTerm.SearchTermType;
 import static org.junit.Assert.assertEquals;
 
 public class SmartSearchQueryParserTest {
 
     @Test
     public void testSimple() {
-        Map<String, String> result = parse("firstName='John' and lastName='McCain'");
+        List<SearchTerm<?>> result = parse("firstName='John' and lastName='McCain'");
         assertEquals(2, result.size());
-        assertEquals("John", result.get("firstName"));
-        assertEquals("McCain", result.get("lastName"));
+        checkTerm(result.get(0), "firstName", "John", SearchTermType.VALUE);
+        checkTerm(result.get(1), "lastName", "McCain", SearchTermType.VALUE);
     }
 
     @Test
     public void testSingleParam() {
-        Map<String, String> result = parse("firstName='John'");
+        List<SearchTerm<?>> result = parse("firstName='John'");
         assertEquals(1, result.size());
-        assertEquals("John", result.get("firstName"));
+        checkTerm(result.get(0), "firstName", "John", SearchTermType.VALUE);
     }
 
     @Test
     public void testWithoutQuotes() {
-        Map<String, String> result = parse("firstName=John and lastName=McCain and age=43");
+        List<SearchTerm<?>> result = parse("firstName=John and lastName=McCain and age=43");
         assertEquals(3, result.size());
-        assertEquals("John", result.get("firstName"));
-        assertEquals("McCain", result.get("lastName"));
-        assertEquals("43", result.get("age"));
+        checkTerm(result.get(0), "firstName", "John", SearchTermType.VALUE);
+        checkTerm(result.get(1), "lastName", "McCain", SearchTermType.VALUE);
+        checkTerm(result.get(2), "age", "43", SearchTermType.VALUE);
+    }
+
+    @Test
+    public void testLike() {
+        List<SearchTerm<?>> result = parse("firstName=John and lastName~McCain");
+        assertEquals(2, result.size());
+        checkTerm(result.get(0), "firstName", "John", SearchTermType.VALUE);
+        checkTerm(result.get(1), "lastName", "McCain", SearchTermType.LIKE);
     }
 
     @Test
     public void testSingleParamsWithoutQuotes() {
-        Map<String, String> result = parse("firstName=John");
+        List<SearchTerm<?>> result = parse("firstName=John");
         assertEquals(1, result.size());
-        assertEquals("John", result.get("firstName"));
+        checkTerm(result.get(0), "firstName", "John", SearchTermType.VALUE);
     }
 
     @Test
     public void testEscapingQuotes() {
-        Map<String, String> result = parse("firstName=John and lastName='Mc''Cain'");
+        List<SearchTerm<?>> result = parse("firstName=John and lastName='Mc''Cain'");
         assertEquals(2, result.size());
-        assertEquals("John", result.get("firstName"));
-        assertEquals("Mc'Cain", result.get("lastName"));
+        checkTerm(result.get(0), "firstName", "John", SearchTermType.VALUE);
+        checkTerm(result.get(1), "lastName", "Mc'Cain", SearchTermType.VALUE);
     }
 
     @Test
     public void testOmitAndIntoQuotes() {
-        Map<String, String> result = parse("firstName='John and Mike' and lastName='McCain'");
+        List<SearchTerm<?>> result = parse("firstName='John and Mike' and lastName='McCain'");
         assertEquals(2, result.size());
-        assertEquals("John and Mike", result.get("firstName"));
-        assertEquals("McCain", result.get("lastName"));
+        checkTerm(result.get(0), "firstName", "John and Mike", SearchTermType.VALUE);
+        checkTerm(result.get(1), "lastName", "McCain", SearchTermType.VALUE);
     }
 
     @Test
     public void testEqualsIntoQuotes() {
-        Map<String, String> result = parse("firstName='John=Mike' and lastName='McCain'");
+        List<SearchTerm<?>> result = parse("firstName='John=Mike' and lastName='McCain'");
         assertEquals(2, result.size());
-        assertEquals("John=Mike", result.get("firstName"));
-        assertEquals("McCain", result.get("lastName"));
+        checkTerm(result.get(0), "firstName", "John=Mike", SearchTermType.VALUE);
+        checkTerm(result.get(1), "lastName", "McCain", SearchTermType.VALUE);
     }
 
     @Test
     public void testSpacesIntoQuotes() {
-        Map<String, String> result = parse("firstName='John Mike' and lastName='McCain'");
+        List<SearchTerm<?>> result = parse("firstName='John Mike' and lastName='McCain'");
         assertEquals(2, result.size());
-        assertEquals("John Mike", result.get("firstName"));
-        assertEquals("McCain", result.get("lastName"));
+        checkTerm(result.get(0), "firstName", "John Mike", SearchTermType.VALUE);
+        checkTerm(result.get(1), "lastName", "McCain", SearchTermType.VALUE);
     }
 
     @Test
     public void testSpecialSymbols() {
-        Map<String, String> result = parse("'_!@firstName'='John Mike' and '_!@lastName'='McCain'");
+        List<SearchTerm<?>> result = parse("'_!@firstName'='John Mike' and '_!@lastName'='McCain'");
         assertEquals(2, result.size());
-        assertEquals("John Mike", result.get("_!@firstName"));
-        assertEquals("McCain", result.get("_!@lastName"));
+        checkTerm(result.get(0), "_!@firstName", "John Mike", SearchTermType.VALUE);
+        checkTerm(result.get(1), "_!@lastName", "McCain", SearchTermType.VALUE);
     }
 
     @Test
     public void testRange() {
-        Map<String, String> result =
-                parse("firstName='John Mike' and lastName='McCain' and age=[30,40] and "
-                        + "birthDate=[2009-10-10T00:00:00Z,2010-10-10T00:00:00Z]");
-        assertEquals(4, result.size());
-        assertEquals("John Mike", result.get("firstName"));
-        assertEquals("McCain", result.get("lastName"));
-        assertEquals("[30,40]", result.get("age"));
-        assertEquals("[2009-10-10T00:00:00Z,2010-10-10T00:00:00Z]", result.get("birthDate"));
+        List<SearchTerm<?>> result = parse("firstName='John Mike' and age=[30,40]");
+        assertEquals(2, result.size());
+        checkTerm(result.get(0), "firstName", "John Mike", SearchTermType.VALUE);
+        checkRangeTerm(result.get(1), "age", 30, 40);
     }
 
 
     @Test(expected = ParseException.class)
     public void testCheckThrowsExceptionOnEmptyMap() throws ParseException {
-        SmartSearchQueryParser.check(Collections.<String, String>emptyMap(), "");
+        SmartSearchQueryParser.check(Collections.emptyList(), "");
     }
 
     @Test(expected = IllegalStateException.class)
@@ -103,7 +109,7 @@ public class SmartSearchQueryParserTest {
         SmartSearchQueryToolkit.newParser(null);
     }
 
-    private static Map<String, String> parse(String query) {
+    private static List<SearchTerm<?>> parse(String query) {
         try {
             return SmartSearchQueryToolkit.newParser(query).parse();
         } catch (Exception e) {
@@ -113,9 +119,25 @@ public class SmartSearchQueryParserTest {
 
     @Test
     public void testCaseInsensitive() {
-        Map<String, String> result = parse("firstName='John Mike' AND lastName='McCain'");
+        List<SearchTerm<?>> result = parse("firstName='John Mike' AND lastName='McCain'");
         assertEquals(2, result.size());
-        assertEquals("John Mike", result.get("firstName"));
-        assertEquals("McCain", result.get("lastName"));
+        checkTerm(result.get(0), "firstName", "John Mike", SearchTermType.VALUE);
+        checkTerm(result.get(1), "lastName", "McCain", SearchTermType.VALUE);
     }
+
+    private void checkTerm(SearchTerm<?> term, String property, String value, SearchTermType type) {
+        assertEquals(property, term.getProperty());
+        assertEquals(value, term.getValue());
+        assertEquals(type, term.getType());
+    }
+
+    @SuppressWarnings("unchecked")
+    private void checkRangeTerm(SearchTerm<?> term, String property, long start, long end) {
+        assertEquals(SearchTermType.RANGE, term.getType());
+        SearchTerm<Range> rangedTerm = (SearchTerm<Range>) term;
+        assertEquals(property, term.getProperty());
+        assertEquals(start, rangedTerm.getValue().getStart());
+        assertEquals(end, rangedTerm.getValue().getEnd());
+    }
+
 }

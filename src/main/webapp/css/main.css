@@ -8,7 +8,6 @@
 
 body {
     margin-top: 100px;
-    background-color: #222;
 }
 
 @media (min-width: 768px) {
@@ -43,7 +42,6 @@ body {
 }
 
 /* Top Navigation */
-
 .top-nav {
     padding: 0 15px;
 }
@@ -130,6 +128,11 @@ ul.alert-dropdown {
 
     .side-nav > li > a {
         width: 225px;
+        color: white;
+    }
+
+    .side-nav > li.active > a {
+        background-color: #000 !important;
     }
 
     .side-nav li a:hover,
@@ -152,18 +155,6 @@ ul.alert-dropdown {
 
 .side-nav > li > ul > li > a:hover {
     color: #fff;
-}
-
-/* Flot Chart Containers */
-
-.flot-chart {
-    display: block;
-    height: 400px;
-}
-
-.flot-chart-content {
-    width: 100%;
-    height: 100%;
 }
 
 /* Custom Colored Panels */
@@ -228,4 +219,9 @@ ul.alert-dropdown {
 
 .edit-button {
     width: 35px;
+}
+
+.nav-search {
+    padding: 5px 5px 5px 5px;
+    margin-bottom: 0;
 }

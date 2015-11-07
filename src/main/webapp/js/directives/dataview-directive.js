@@ -5,6 +5,6 @@ angular.module('xodus').directive('entityTypeView', function() {
             selectedType: '&'
         },
         replace: true,
-        templateUrl: 'views/dataview-directive.html'
+        templateUrl: 'views/directives/dataview-directive.html'
     };
 });

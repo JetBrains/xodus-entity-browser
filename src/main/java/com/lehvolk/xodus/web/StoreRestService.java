@@ -9,8 +9,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import com.lehvolk.xodus.dto.EntityPresentationVO;
 import com.lehvolk.xodus.dto.EntityTypeVO;
+import com.lehvolk.xodus.dto.EntityVO;
+import com.lehvolk.xodus.dto.SearchPagerVO;
 import com.lehvolk.xodus.repo.PersistentStoreService;
 
 /**
@@ -27,15 +28,15 @@ public class StoreRestService {
     @GET
     @Path("/types")
     @Produces(MediaType.APPLICATION_JSON)
-    public EntityTypeVO[] getTypes() {
+    public EntityTypeVO[] getAllTypes() {
         return persistentStoreService.getTypes();
     }
 
     @GET
     @Path("/type/{id}/entities")
     @Produces(MediaType.APPLICATION_JSON)
-    public EntityPresentationVO[] searchEntities(
-            @PathParam("id") long id,
+    public SearchPagerVO searchEntities(
+            @PathParam("id") int id,
             @QueryParam("q") String term,
             @QueryParam("offset") int offset,
             @QueryParam("pageSize") int pageSize) {
@@ -45,4 +46,12 @@ public class StoreRestService {
         return persistentStoreService.searchType(id, term, offset, (pageSize == 0) ? 50 : pageSize);
     }
 
+    @GET
+    @Path("/type/{id}/entity/{entityId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public EntityVO getEntity(
+            @PathParam("id") int id,
+            @PathParam("entityId") long entityId) {
+        return persistentStoreService.getEntity(id, entityId);
+    }
 }

@@ -1,20 +1,11 @@
-angular.module('xodus').controller('DataViewController', ['EntityTypesService', '$http', '$scope', '$uibModal',
+angular.module('xodus').controller('DataViewController', ['EntityTypeService', '$http', '$scope', '$uibModal',
     function(types, $http, $scope, $uibModal) {
         var dataView = this;
         $scope.$watch('selectedType()', reset);
         reset();
-        dataView.hasResults = function() {
-            return dataView.results.length > 0;
-        };
         dataView.onSearch = function() {
-            $http.get('api/type/' + $scope.selectedType().id + '/entities', {
-                params: {
-                    q: dataView.searchQuery
-                }
-            }).then(function(response) {
-                dataView.isSearchExecuted = true;
-                dataView.results = response.data;
-            });
+            dataView.pager = newPager(dataView.searchQuery);
+            dataView.pager.pageChanged(1);
         };
         dataView.toggleView = function() {
             dataView.isListView = !dataView.isListView;
@@ -30,7 +21,7 @@ angular.module('xodus').controller('DataViewController', ['EntityTypesService', 
         dataView.deleteItem = function(item) {
             $uibModal.open({
                 animation: true,
-                templateUrl: 'views/delete-confirmation.html',
+                templateUrl: 'views/directives/delete-confirmation.html',
                 controller: 'ConfirmationController',
                 resolve: {
                     item: function() {
@@ -39,7 +30,7 @@ angular.module('xodus').controller('DataViewController', ['EntityTypesService', 
                 }
             }).result.then(function(result) {
                     if (result) {
-                        console.log('item deleted');
+                        //console.log('item deleted');
                     }
                 });
         };
@@ -47,10 +38,38 @@ angular.module('xodus').controller('DataViewController', ['EntityTypesService', 
         function reset() {
             dataView.isSearchExecuted = false;
             dataView.isListView = true;
-            dataView.item = true;
             dataView.searchQuery = null;
-            dataView.results = [];
+            dataView.pageSize = 50;
             $scope.type = $scope.selectedType();
+            dataView.pager = newPager(null);
+
+            //uncomment this if you want to load data on view show
+            //dataView.pager.pageChanged(1);
+        }
+
+        function newPager(searchTerm) {
+            return {
+                totalCount: 0,
+                items: [],
+                currentPage: 1,
+                pageChanged: function() {
+                    var pageNo = this.currentPage;
+                    var offset = (pageNo - 1) * dataView.pageSize;
+                    var self = this;
+                    self.currentPage = pageNo;
+                    types.search($scope.selectedType().id, searchTerm, offset).then(function(data) {
+                        self.items = data.items;
+                        self.totalCount = data.totalCount;
+                        dataView.isSearchExecuted = true;
+                    });
+                },
+                hasPagination: function() {
+                    return this.totalCount > dataView.pageSize;
+                },
+                hasResults: function() {
+                    return this.items.length > 0;
+                }
+            };
         }
     }]);
 

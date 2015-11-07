@@ -2,11 +2,6 @@ package com.lehvolk.xodus.repo;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 
 /**
@@ -15,19 +10,6 @@ import lombok.Getter;
  * @since 02.11.15
  */
 public class SmartSearchQueryToolkit {
-
-    @Getter
-    @AllArgsConstructor
-    public static class SearchItem {
-
-        private static final Pattern RANGE_PATTERN = Pattern.compile("\\[\\d*,\\d*\\]");
-        private final String property;
-        private final String value;
-
-        public boolean isRange() {
-            return RANGE_PATTERN.matcher(value).matches();
-        }
-    }
 
     private SmartSearchQueryToolkit() {
     }
@@ -44,10 +26,9 @@ public class SmartSearchQueryToolkit {
         }
     }
 
-    public static List<SearchItem> parse(String query) {
+    public static List<SearchTerm<?>> parse(String query) {
         try {
-            return newParser(query).parse().entrySet().stream().map(x -> new SearchItem(x.getKey(), x.getValue()))
-                    .collect(Collectors.toList());
+            return newParser(query).parse();
         } catch (ParseException e) {
             throw new IllegalStateException(e);
         }

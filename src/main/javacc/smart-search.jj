@@ -7,16 +7,16 @@ PARSER_BEGIN(SmartSearchQueryParser)
 
 package com.lehvolk.xodus.repo;
 
-import java.util.Map;
-import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 public class SmartSearchQueryParser {
 
-    static Map<String, String> check(Map<String, String> map, String query) throws ParseException {
-         if(map == null || map.isEmpty()){
+    static List<SearchTerm<?>> check(List<SearchTerm<?>> terms, String query) throws ParseException {
+         if(terms == null || terms.isEmpty()){
             throw new ParseException("can't parse query '"  + query + "'");
          }
-         return map;
+         return terms;
     }
 
      private static String prepare(String value) {
@@ -38,8 +38,6 @@ public class SmartSearchQueryParser {
             }
             return value.replaceAll("''", "'");
      }
-
-
 }
 PARSER_END(SmartSearchQueryParser)
 
@@ -56,29 +54,32 @@ TOKEN:
  <SIMPLEVALUE : (["a"-"z", "A"-"Z", "0"-"9", "_", "[", "]", "."])+ >
 | <QUOTED_STRING : "'" (~["'"])* "'" ("'" (~["'"])* "'")* >
 | <RANGE_STRING : "[" (~["[","]"])* "]" ("[" (~["[", "]"])* "]")* >
+| <EQUALS : "=">
+| <LIKE : "~">
 }
 
-public Map<String,String> parse():
+public List<SearchTerm<?>> parse():
 {
-    Map<String,String> map = new HashMap<String,String>();
+    List<SearchTerm<?>> terms = new ArrayList<SearchTerm<?>>();
 }
 {
-    (keyValue(map) (" and " keyValue(map))*)?
+    (keyValue(terms) (" and " keyValue(terms))*)?
     {
-        return check(map, token.image);
+        return check(terms, token.image);
     }
 }
 
-public void keyValue(Map<String,String> map):
+public void keyValue(List<SearchTerm<?>> terms):
 {
     String k;
     String v;
+    String operand;
 }
 {
-    (k=value() "=" v=value())
-        {
-            map.put(k, v);
-        }
+    (k=key()) (operand = operand()) (v=value())
+    {
+        terms.add(SearchTerm.from(k, operand, v));
+    }
 }
 
 public String key():
@@ -87,8 +88,19 @@ public String key():
 }
 {
     ( token = <SIMPLEVALUE>
-    | token = <QUOTED_STRING>
-    | token = <RANGE_STRING>)
+    | token = <QUOTED_STRING>)
+    {
+        return prepare(token.image);
+    }
+}
+
+public String operand():
+{
+    Token token;
+}
+{
+    ( token = <EQUALS>
+    | token = <LIKE>)
     {
         return prepare(token.image);
     }
