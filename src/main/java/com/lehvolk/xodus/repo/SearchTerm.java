@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
+ * Searching term item
  * @author Alexey Volkov
  * @since 07.11.2015
  */
@@ -14,7 +15,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class SearchTerm<T> {
 
-    private static final Pattern RANGE_PATTERN = Pattern.compile("\\[(\\d*),\\s*(\\d*)\\]");
+    private static final Pattern RANGE_PATTERN = Pattern.compile("\\[\\s*(\\d*)\\s*,\\s*(\\d*)\\s*\\]");
 
     public enum SearchTermType {
         VALUE,

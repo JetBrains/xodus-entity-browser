@@ -3,16 +3,12 @@ package com.lehvolk.xodus.web;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.inject.Singleton;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.inject.Module;
 import com.google.inject.servlet.ServletModule;
-import com.lehvolk.xodus.repo.ConfigurationService;
-import com.lehvolk.xodus.repo.PersistentStoreService;
-import com.lehvolk.xodus.repo.PresentationService;
 import com.squarespace.jersey2.guice.JerseyGuiceServletContextListener;
 import ru.vyarus.guice.ext.core.method.AnnotatedMethodTypeListener;
 import ru.vyarus.guice.ext.managed.PostConstructAnnotationProcessor;
@@ -30,9 +26,11 @@ public class GuiceServletContextListener extends JerseyGuiceServletContextListen
 
             @Override
             protected void configureServlets() {
-                bind(PersistentStoreService.class).in(Singleton.class);
-                bind(PresentationService.class).in(Singleton.class);
-                bind(ConfigurationService.class).in(Singleton.class);
+                //                bind(PersistentStoreService.class);
+                //                bind(PresentationService.class);
+                //                bind(ConfigurationService.class);
+                //                bind(Transformations.class);
+
                 bindListener(any(),
                         new AnnotatedMethodTypeListener<>(PostConstruct.class, new PostConstructAnnotationProcessor()));
                 bindListener(any(), new AnnotatedMethodTypeListener<>(PreDestroy.class,

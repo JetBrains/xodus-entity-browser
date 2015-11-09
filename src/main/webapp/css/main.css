@@ -229,3 +229,7 @@ ul.alert-dropdown {
 .action-button {
     width: 100px;
 }
+
+.entity-actions {
+    padding: 15px 0 15px 0;
+}

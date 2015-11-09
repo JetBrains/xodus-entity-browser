@@ -24,6 +24,9 @@ angular.module('xodus').controller('FormViewController', ['$scope', 'EntitiesSer
         formView.cancel = function() {
             $scope.backToSearch();
         };
+        formView.removeValue = function(property) {
+            property.value = null;
+        };
 
         function initialize() {
             var entity = angular.copy($scope.entity());

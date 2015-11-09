@@ -1,4 +1,4 @@
-package com.lehvolk.xodus.dto;
+package com.lehvolk.xodus.vo;
 
 import java.io.Serializable;
 import java.util.List;
@@ -14,11 +14,6 @@ import lombok.Setter;
 @Setter
 public class EntityVO extends BaseVO {
 
-	public enum InputType {
-		STRING,
-		NUMERIC;
-	}
-
 	@Getter
 	@Setter
 	public static class BasePropertyVO implements Serializable {
@@ -33,9 +28,17 @@ public class EntityVO extends BaseVO {
 	public static class EntityPropertyVO extends BasePropertyVO {
 
 		private static final long serialVersionUID = -4446983251527745550L;
-		private InputType type;
+		private String value;
+		private EntityPropertyTypeVO type;
+	}
+
+	@Getter
+	@Setter
+	public static class EntityPropertyTypeVO implements Serializable {
+
+		private static final long serialVersionUID = -4446983251527745550L;
 		private String clazz;
-		private Serializable value;
+		private String displayName;
 		private String maxLength;
 		private Long maxValue;
 		private Long minValue;

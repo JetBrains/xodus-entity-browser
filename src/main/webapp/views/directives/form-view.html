@@ -2,6 +2,9 @@
     <div class="row" ng-controller="FormViewController as formView">
         <div class="row">
             <h2 class="pull-left">{{formView.label}}</h2>
+        </div>
+        <div class="row entity-actions">
+            <button class="btn btn-info pull-left" data-ng-click="formView.cancel()">Back to list</button>
 
             <div class="pull-right" ng-show="editMode">
                 <button class="btn btn-primary action-button" ng-click="formView.save()">Save</button>
@@ -9,7 +12,7 @@
                 <button class="btn btn-primary action-button" ng-click="formView.revert()">Revert</button>
             </div>
             <div class="pull-right" ng-hide="editMode">
-                <button class="btn btn-default action-button" ng-click="formView.toggleView()">Edit</button>
+                <button class="btn btn-primary action-button" ng-click="formView.toggleView()">Edit</button>
             </div>
         </div>
         <div class="row">
@@ -34,7 +37,7 @@
                                     <div class="col-md-9">
                                         <input name="{{$index + 'name'}}" data-ng-type="text" class="form-control"
                                                ng-required="true" data-ng-model="property.name"
-                                               data-ng-disabled="!editMode">
+                                               data-ng-disabled="true">
                                     </div>
                                 </div>
                             </div>
@@ -42,9 +45,10 @@
                                 <div class="form-group">
                                     <ui-select data-ng-model="property.type"
                                                data-theme="bootstrap"
-                                               data-ng-disabled="!editMode">
+                                               data-ng-disabled="!editMode"
+                                               data-ng-change="formView.removeValue(property)">
                                         <ui-select-match placeholder="Select type">
-                                            {{$select.selected}}
+                                            {{$select.selected.displayName}}
                                         </ui-select-match>
                                         <ui-select-choices repeat="type in formView.allTypes">
                                             <small data-ng-bind="type.displayName"></small>
@@ -52,17 +56,15 @@
                                     </ui-select>
                                 </div>
                             </div>
-                            <div class="col-md-5">
-                                <div class="form-group">
+                            <div class="col-md-7">
+                                <div class="form-group col-md-10">
                                     <div>
                                         <input name="{{$index + 'value'}}" data-ng-type="text" class="form-control"
                                                ng-model="property.value"
                                                placeholder="Enter value" data-ng-disabled="!editMode">
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="btn-group" ng-show="editMode">
+                                <div class="btn-group col-md-2" ng-show="editMode">
                                     <button class="btn btn-danger" ng-click="formView.removeProperty(property)">
                                         <i class="fa fa-minus"></i>
                                     </button>

@@ -58,9 +58,9 @@ angular.module('xodus').service('EntitiesService', [function() {
         return angular.copy(property);
     }
 
-    function newEntity(typeId, typeName) {
+    function newEntity(typeId) {
         return {
-            type: typeName,
+            type: propertyTypes[0],
             typeId: typeId,
             properties: [],
             blobs: [],
