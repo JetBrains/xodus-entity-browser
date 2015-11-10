@@ -16,7 +16,7 @@ angular.module('xodus').controller('DataViewController', ['EntityTypeService', '
 
         dataView.onSearch = function() {
             dataView.pager = newPager(dataView.searchQuery);
-            dataView.pager.pageChanged(1);
+            dataView.pager.pageChanged();
         };
 
         dataView.toggleView = toggleView;
@@ -46,6 +46,11 @@ angular.module('xodus').controller('DataViewController', ['EntityTypeService', '
                         });
                     }
                 });
+        };
+
+        dataView.refresh = function() {
+            dataView.toggleView();
+            dataView.pager.pageChanged();
         };
 
         function newPager(searchTerm) {

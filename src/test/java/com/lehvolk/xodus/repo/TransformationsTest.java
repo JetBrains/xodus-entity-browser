@@ -1,5 +1,6 @@
 package com.lehvolk.xodus.repo;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.lehvolk.xodus.vo.EntityVO.EntityPropertyTypeVO;
@@ -18,7 +19,13 @@ public class TransformationsTest {
 
     private static final String VALUE = "123";
 
-    private Transformations transformations = new Transformations();
+    private Transformations transformations;
+
+    @Before
+    public void before() {
+        transformations = new Transformations();
+        transformations.construct();
+    }
 
     @Test
     public void testString2valueForShort() throws Exception {
@@ -63,6 +70,15 @@ public class TransformationsTest {
         assertNotNull(x);
         assertSame(x.getClass(), Double.class);
         assertEquals((Double) x, 123, 0.0E-9d);
+    }
+
+    @Test
+    public void testString2valueForString() throws Exception {
+        EntityPropertyVO propertyVO = ofType(VALUE, String.class);
+        Comparable<?> x = transformations.string2value(propertyVO);
+        assertNotNull(x);
+        assertSame(x.getClass(), String.class);
+        assertEquals(x, VALUE);
     }
 
     @Test(expected = InvalidFieldException.class)

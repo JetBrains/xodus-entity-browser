@@ -78,17 +78,18 @@ public class PersistentStoreService {
         return modifyStore(t -> {
             String type = store.getEntityType(t, typeId);
             PersistentEntity entity = t.newEntity(type);
-            vo.getProperties().getAdded().stream().forEach(
-                    property -> {
+            vo.getProperties().getAdded().stream()
+                    .forEach(property -> {
                         property.setValue(safeTrim(property.getValue()));
                         Comparable<?> value = transformations.string2value(property);
                         if (value != null) {
                             entity.setProperty(property.getName(), value);
                         }
                     });
-            vo.getLinks().getAdded().stream().forEach(
-                    property -> {
-                        Entity link = t.getEntity(new PersistentEntityId(property.getTypeId(), property.getEntityId()));
+            vo.getLinks().getAdded().stream()
+                    .forEach(property -> {
+                        Entity link = t.getEntity(
+                                new PersistentEntityId(property.getTypeId(), property.getEntityId()));
                         entity.addLink(property.getName(), link);
                     });
             return new EntityVO();

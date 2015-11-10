@@ -85,6 +85,36 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>com.github.searls</groupId>
+                <artifactId>jasmine-maven-plugin</artifactId>
+                <version>2.0</version>
+                <configuration>
+                    <preloadSources>
+                        <source>webjars/jquery/jquery.js</source>
+                        <source>webjars/angularjs/angular.js</source>
+                        <source>webjars/angularjs/angular-route.js</source>
+                        <source>webjars/angularjs/angular-mocks.js</source>
+                        <source>webjars/angular-ui-bootstrap/ui-bootstrap-tpls.js</source>
+                        <source>webjars/angular-ui-select/select.min.js</source>
+                    </preloadSources>
+                    <keepServerAlive>true</keepServerAlive>
+                    <specRunnerTemplate>DEFAULT</specRunnerTemplate>
+                    <jsSrcDir>${project.basedir}/src/main/webapp/js/</jsSrcDir>
+                    <sourceIncludes>
+                        <include>xodus-app.js</include>
+                        <include>services/entity-type-service.js</include>
+                        <include>services/entity-service.js</include>
+                        <include>controllers/menu-controller.js</include>
+                        <include>controllers/dataview-controller.js</include>
+                        <include>controllers/confirmation-controller.js</include>
+                        <include>controllers/formview-controller.js</include>
+                        <include>directives/dataview-directive.js</include>
+                        <include>directives/formview-directive.js</include>
+                    </sourceIncludes>
+                    <jsTestSrcDir>${project.basedir}/src/test/js</jsTestSrcDir>
+                </configuration>
+            </plugin>
         </plugins>
 
         <pluginManagement>
@@ -153,16 +183,6 @@
             <artifactId>xodus-openAPI</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>com.google.inject</groupId>-->
-        <!--<artifactId>guice</artifactId>-->
-        <!--<version>4.0</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--<groupId>com.google.inject.extensions</groupId>-->
-        <!--<artifactId>guice-servlet</artifactId>-->
-        <!--<version>4.0</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>com.squarespace.jersey2-guice</groupId>
             <artifactId>jersey2-guice</artifactId>
@@ -188,6 +208,38 @@
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>
             <version>2.22.1</version>
+        </dependency>
+
+        <!-- webjars -->
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>angularjs</artifactId>
+            <version>1.4.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>jquery</artifactId>
+            <version>2.1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>angular-ui-bootstrap</artifactId>
+            <version>0.14.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>bootstrap</artifactId>
+            <version>3.3.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>angular-ui-select</artifactId>
+            <version>0.13.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>font-awesome</artifactId>
+            <version>4.4.0</version>
         </dependency>
     </dependencies>
 

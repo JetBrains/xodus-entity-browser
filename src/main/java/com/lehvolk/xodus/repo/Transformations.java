@@ -3,6 +3,7 @@ package com.lehvolk.xodus.repo;
 import java.io.IOException;
 import java.util.List;
 import java.util.function.Function;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -10,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -42,6 +44,11 @@ public class Transformations {
 
     // avoiding leak. using cache for Class.forName
     private Cache<String, Class<?>> classCache = CacheBuilder.newBuilder().maximumSize(100).build();
+
+    @PostConstruct
+    public void construct() {
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
 
     @NotNull
     public Function<Entity, EntityVO> entity(final PersistentEntityStoreImpl store,
