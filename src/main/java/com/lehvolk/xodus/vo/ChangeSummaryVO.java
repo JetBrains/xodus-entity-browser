@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lehvolk.xodus.vo.EntityVO.EntityPropertyVO;
 import com.lehvolk.xodus.vo.EntityVO.LinkPropertyVO;
+import com.lehvolk.xodus.vo.LightEntityVO.EntityPropertyVO;
 import lombok.Getter;
 import lombok.Setter;
 

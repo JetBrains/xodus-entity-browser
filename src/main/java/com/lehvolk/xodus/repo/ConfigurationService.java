@@ -12,11 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 @Singleton
 public class ConfigurationService {
 
-    public String getLabelFormat(long entityTypeId) {
+    public String getLabelFormat(int entityTypeId) {
         return "{{id}}";
     }
 
-    public String getDetailsFormat(long entityTypeId) {
-        return "some information";
-    }
 }

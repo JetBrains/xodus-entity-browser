@@ -1,17 +1,21 @@
 package com.lehvolk.xodus.repo;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.lehvolk.xodus.vo.ChangeSummaryVO;
 import com.lehvolk.xodus.vo.EntityTypeVO;
 import com.lehvolk.xodus.vo.EntityVO;
+import com.lehvolk.xodus.vo.LightEntityVO.BasePropertyVO;
+import com.lehvolk.xodus.vo.LightEntityVO.EntityPropertyVO;
 import com.lehvolk.xodus.vo.SearchPagerVO;
 import jetbrains.exodus.entitystore.Entity;
 import jetbrains.exodus.entitystore.EntityIterable;
@@ -53,10 +57,18 @@ public class PersistentStoreService {
 
     @PreDestroy
     public void destroy() {
-        try {
-            store.close();
-        } catch (RuntimeException e) {
-            log.error("error closing persistent store", e);
+        boolean proceed = true;
+        int count = 0;
+        while (proceed && count < 10) {
+            try {
+                log.info("trying to close persistent store. attempt {}", count);
+                store.close();
+                proceed = false;
+                log.info("persistent store closed");
+            } catch (RuntimeException e) {
+                log.error("error closing persistent store", e);
+                count++;
+            }
         }
     }
 
@@ -75,60 +87,55 @@ public class PersistentStoreService {
     }
 
     public EntityVO newEntity(int typeId, ChangeSummaryVO vo) {
-        return modifyStore(t -> {
+        long entityId = modifyStore(t -> {
             String type = store.getEntityType(t, typeId);
             PersistentEntity entity = t.newEntity(type);
             vo.getProperties().getAdded().stream()
-                    .forEach(property -> {
-                        property.setValue(safeTrim(property.getValue()));
-                        Comparable<?> value = transformations.string2value(property);
-                        if (value != null) {
-                            entity.setProperty(property.getName(), value);
-                        }
-                    });
+                    .forEach(applyValues(entity));
             vo.getLinks().getAdded().stream()
                     .forEach(property -> {
                         Entity link = t.getEntity(
                                 new PersistentEntityId(property.getTypeId(), property.getEntityId()));
                         entity.addLink(property.getName(), link);
                     });
-            return new EntityVO();
+            return entity.getId().getLocalId();
         });
+        return getEntity(typeId, entityId);
+    }
+
+    @NotNull
+    private Consumer<EntityPropertyVO> applyValues(PersistentEntity entity) {
+        return property -> {
+            property.setValue(safeTrim(property.getValue()));
+            Comparable<?> value = transformations.string2value(property);
+            if (value != null) {
+                entity.setProperty(property.getName(), value);
+            }
+        };
     }
 
     public EntityVO updateEntity(int typeId, long entityId, ChangeSummaryVO vo) {
-        return modifyStore(t -> {
+        long localId = modifyStore(t -> {
             PersistentEntity entity = t.getEntity(new PersistentEntityId(typeId, entityId));
             List<String> properties = entity.getPropertyNames();
             vo.getProperties().getDeleted().stream()
-                    .filter(propertyVO -> properties.contains(propertyVO.getName()))
-                    .forEach(property -> entity.deleteProperty(property.getName()));
+                    .map(BasePropertyVO::getName)
+                    .filter(properties::contains)
+                    .forEach(entity::deleteProperty);
+
             vo.getProperties().getAdded().stream()
                     .filter(propertyVO -> !properties.contains(propertyVO.getName()))
-                    .forEach(
-                            property -> {
-                                property.setValue(safeTrim(property.getValue()));
-                                Comparable<?> value = transformations.string2value(property);
-                                if (value != null) {
-                                    entity.setProperty(property.getName(), value);
-                                }
-                            });
+                    .forEach(applyValues(entity));
+
             vo.getProperties().getModified().stream()
                     .filter(propertyVO -> properties.contains(propertyVO.getName()))
-                    .forEach(
-                            property -> {
-                                property.setValue(safeTrim(property.getValue()));
-                                Comparable<?> value = transformations.string2value(property);
-                                if (value != null) {
-                                    entity.setProperty(property.getName(), value);
-                                }
-                            });
+                    .forEach(applyValues(entity));
+
             List<String> links = entity.getLinkNames();
             vo.getLinks().getDeleted().stream()
-                    .filter(linkVO -> links.contains(linkVO.getName()))
-                    .forEach(
-                            link -> entity.deleteProperty(link.getName())
-                    );
+                    .map(BasePropertyVO::getName)
+                    .filter(links::contains)
+                    .forEach(entity::deleteProperty);
             vo.getLinks().getAdded().stream()
                     .filter(linkVO -> !links.contains(linkVO.getName()))
                     .forEach(
@@ -137,8 +144,18 @@ public class PersistentStoreService {
                                 Entity link = t.getEntity(id);
                                 entity.addLink(value.getName(), link);
                             });
-            return new EntityVO();
+            return entityId;
         });
+        return getEntity(typeId, localId);
+    }
+
+    public EntityVO getEntity(int typeId, long entityId) {
+        return callStore(
+                t -> {
+                    Entity entity = t.getEntity(new PersistentEntityId(typeId, entityId));
+                    return transformations.entity(store, t).apply(entity);
+                }
+        );
     }
 
 
@@ -155,18 +172,12 @@ public class PersistentStoreService {
         PersistentStoreTransaction tx = store.beginTransaction();
         try {
             return call.apply(tx);
+        } catch (RuntimeException e) {
+            tx.revert();
+            throw e;
         } finally {
             tx.commit();
         }
-    }
-
-    public EntityVO getEntity(int typeId, long entityId) {
-        return callStore(
-                t -> {
-                    Entity entity = t.getEntity(new PersistentEntityId(typeId, entityId));
-                    return transformations.entity(store, t).apply(entity);
-                }
-        );
     }
 
     @Nullable

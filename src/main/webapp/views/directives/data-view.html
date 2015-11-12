@@ -67,7 +67,27 @@
                                     </div>
                                 </div>
                                 <div class="panel-body">
-                                    {{item.details}}
+                                    <div ng-hide="item.properties.length">
+                                        No properties
+                                    </div>
+                                    <div ng-show="item.properties.length">
+                                        <table class="table table-striped table-condensed">
+                                            <thead>
+                                            <tr style="font-weight: bold">
+                                                <td>Name</td>
+                                                <td>Type</td>
+                                                <td>Value</td>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr ng-repeat="p in item.properties">
+                                                <td width="20%">{{p.name}}</td>
+                                                <td width="10%">{{p.type.displayName}}</td>
+                                                <td width="70%">{{p.value}}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
 
@@ -84,7 +104,8 @@
             </div>
 
             <div class="row" ng-if="!dataView.isListView">
-                <form-view data-entity="dataView.currentEntity" data-back-to-search="dataView.refresh()"></form-view>
+                <form-view data-entity-id="dataView.currentEntityId" data-entity-type-id="type.id"
+                           data-back-to-search="dataView.refresh()"></form-view>
             </div>
         </div>
     </div>

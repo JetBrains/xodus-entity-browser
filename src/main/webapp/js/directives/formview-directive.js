@@ -2,7 +2,8 @@ angular.module('xodus').directive('formView', function() {
     return {
         restrict: 'E',
         scope: {
-            entity: '&',
+            entityId: '=',
+            entityTypeId: '=',
             backToSearch: '&'
         },
         replace: true,

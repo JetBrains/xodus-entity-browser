@@ -5,8 +5,8 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.lehvolk.xodus.vo.EntityVO;
-import com.lehvolk.xodus.vo.EntityVO.EntityPropertyVO;
+import com.lehvolk.xodus.vo.LightEntityVO;
+import com.lehvolk.xodus.vo.LightEntityVO.EntityPropertyVO;
 
 /**
  * @author Alexey Volkov
@@ -20,14 +20,15 @@ public class PresentationService {
     @Inject
     private ConfigurationService service;
 
-    public Function<EntityVO, EntityVO> presentation(final long typeId, final String type) {
-        return entity -> {
+    public <T extends LightEntityVO> Function<T, T> presentation(final int typeId, final String
+            type) {
+        return (T entity) -> {
             entity.setLabel(type + "[" + format(service.getLabelFormat(typeId), entity) + "]");
             return entity;
         };
     }
 
-    private String format(String format, EntityVO entityVO) {
+    private String format(String format, LightEntityVO entityVO) {
         String formatted = ID_PATTERN.matcher(format).replaceAll(String.valueOf(entityVO.getId()));
         for (EntityPropertyVO property : entityVO.getProperties()) {
             formatted = formatted.replaceAll("\\{\\{" + property + "\\}\\}", String.valueOf(property.getValue()));

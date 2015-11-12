@@ -26,11 +26,6 @@ public class GuiceServletContextListener extends JerseyGuiceServletContextListen
 
             @Override
             protected void configureServlets() {
-                //                bind(PersistentStoreService.class);
-                //                bind(PresentationService.class);
-                //                bind(ConfigurationService.class);
-                //                bind(Transformations.class);
-
                 bindListener(any(),
                         new AnnotatedMethodTypeListener<>(PostConstruct.class, new PostConstructAnnotationProcessor()));
                 bindListener(any(), new AnnotatedMethodTypeListener<>(PreDestroy.class,

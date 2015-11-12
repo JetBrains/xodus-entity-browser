@@ -17,6 +17,6 @@ public class SearchPagerVO implements Serializable {
 
     private static final long serialVersionUID = -4270545504789259512L;
 
-    private EntityVO[] items;
+    private LightEntityVO[] items;
     private long totalCount;
 }

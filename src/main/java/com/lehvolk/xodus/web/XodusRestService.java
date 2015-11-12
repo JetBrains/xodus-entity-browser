@@ -29,7 +29,7 @@ import static java.lang.Math.min;
  */
 @Slf4j
 @Path("/")
-public class StoreRestService {
+public class XodusRestService {
 
     @Inject
     private PersistentStoreService persistentStoreService;
@@ -105,5 +105,22 @@ public class StoreRestService {
             ChangeSummaryVO vo) {
         return persistentStoreService.newEntity(id, vo);
     }
+
+    //    @POST
+    //    @Path("/validate")
+    //    @Consumes(MediaType.APPLICATION_JSON)
+    //    @Produces(MediaType.APPLICATION_JSON)
+    //    public List<EntityPropertyVO> validate(List<EntityPropertyVO> vo) {
+    //        if (vo == null || vo.isEmpty()) {
+    //            return emptyList();
+    //        }
+    //        return vo.stream()
+    //                .filter(p -> isSupported(p.getType().getClazz()))
+    //                .map(p -> {
+    //                    UIPropertyType<?> type = uiTypeOf(p.getType().getClazz());
+    //                    p.setValid(type.isValid(p.getValue()));
+    //                    return p;
+    //                }).collect(toList());
+    //    }
 
 }

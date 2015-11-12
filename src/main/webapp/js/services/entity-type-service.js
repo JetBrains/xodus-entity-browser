@@ -28,12 +28,12 @@ angular.module('xodus').service('EntityTypeService', ['$http', '$q', function($h
         });
     }
 
-    function search(typeId, term, offset) {
+    function search(typeId, term, offset, pageSize) {
         return $http.get('api/type/' + typeId + '/entities', {
             params: {
                 q: term,
                 offset: offset,
-                pageSize: 50
+                pageSize: (pageSize ? pageSize : 50)
             }
         }).then(function(response) {
             return response.data;

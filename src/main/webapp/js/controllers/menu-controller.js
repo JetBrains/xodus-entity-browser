@@ -10,9 +10,9 @@ angular.module('xodus').controller('MainController', ['EntityTypeService', '$loc
             $scope.types = data;
             $scope.filteredTypes = data;
             var selectedType = null;
-            if ($routeParams.entityId) {
+            if ($routeParams.typeId) {
                 angular.forEach($scope.types, function(type) {
-                    if (type.id == $routeParams.entityId) {
+                    if (type.id === $routeParams.typeId) {
                         selectedType = type;
                     }
                 });

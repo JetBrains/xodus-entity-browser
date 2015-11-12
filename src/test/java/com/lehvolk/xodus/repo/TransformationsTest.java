@@ -1,10 +1,10 @@
 package com.lehvolk.xodus.repo;
 
-import org.junit.Before;
 import org.junit.Test;
 
-import com.lehvolk.xodus.vo.EntityVO.EntityPropertyTypeVO;
-import com.lehvolk.xodus.vo.EntityVO.EntityPropertyVO;
+import com.lehvolk.xodus.exceptions.InvalidFieldException;
+import com.lehvolk.xodus.vo.LightEntityVO.EntityPropertyTypeVO;
+import com.lehvolk.xodus.vo.LightEntityVO.EntityPropertyVO;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -19,13 +19,7 @@ public class TransformationsTest {
 
     private static final String VALUE = "123";
 
-    private Transformations transformations;
-
-    @Before
-    public void before() {
-        transformations = new Transformations();
-        transformations.construct();
-    }
+    private Transformations transformations = new Transformations();
 
     @Test
     public void testString2valueForShort() throws Exception {

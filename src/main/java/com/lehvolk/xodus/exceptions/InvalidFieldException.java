@@ -1,4 +1,4 @@
-package com.lehvolk.xodus.repo;
+package com.lehvolk.xodus.exceptions;
 
 import lombok.Getter;
 

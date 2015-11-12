@@ -1,32 +1,30 @@
 package com.lehvolk.xodus.repo;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.function.Function;
-import javax.annotation.PostConstruct;
+import java.util.function.Supplier;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import com.lehvolk.xodus.exceptions.InvalidFieldException;
+import com.lehvolk.xodus.repo.UIPropertyTypes.UIPropertyType;
 import com.lehvolk.xodus.vo.EntityTypeVO;
 import com.lehvolk.xodus.vo.EntityVO;
-import com.lehvolk.xodus.vo.EntityVO.BasePropertyVO;
 import com.lehvolk.xodus.vo.EntityVO.BlobPropertyVO;
-import com.lehvolk.xodus.vo.EntityVO.EntityPropertyTypeVO;
-import com.lehvolk.xodus.vo.EntityVO.EntityPropertyVO;
 import com.lehvolk.xodus.vo.EntityVO.LinkPropertyVO;
+import com.lehvolk.xodus.vo.LightEntityVO;
+import com.lehvolk.xodus.vo.LightEntityVO.BasePropertyVO;
+import com.lehvolk.xodus.vo.LightEntityVO.EntityPropertyTypeVO;
+import com.lehvolk.xodus.vo.LightEntityVO.EntityPropertyVO;
 import jetbrains.exodus.entitystore.Entity;
 import jetbrains.exodus.entitystore.EntityId;
 import jetbrains.exodus.entitystore.PersistentEntityStoreImpl;
 import jetbrains.exodus.entitystore.PersistentStoreTransaction;
 import jetbrains.exodus.entitystore.tables.PropertyType;
+import static com.lehvolk.xodus.repo.UIPropertyTypes.uiTypeOf;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -40,62 +38,112 @@ public class Transformations {
     @Inject
     private PresentationService presentations;
 
-    private final ObjectMapper mapper = new ObjectMapper();
-
-    // avoiding leak. using cache for Class.forName
-    private Cache<String, Class<?>> classCache = CacheBuilder.newBuilder().maximumSize(100).build();
-
-    @PostConstruct
-    public void construct() {
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
-
     @NotNull
     public Function<Entity, EntityVO> entity(final PersistentEntityStoreImpl store,
             PersistentStoreTransaction t) {
         return entity -> {
-            List<EntityPropertyVO> properties = entity.getPropertyNames().stream().map(name -> {
-                EntityPropertyVO vo = newProperty(new EntityPropertyVO(), name);
-                Comparable<?> value = entity.getProperty(name);
-                EntityPropertyTypeVO typeVO = new EntityPropertyTypeVO();
-                Class<?> clazz = String.class;
-                if (value != null) {
-                    PropertyType propertyType = store.getPropertyTypes().getPropertyType(value.getClass());
-                    clazz = propertyType.getClazz();
-                    vo.setValue(value2string(value));
-                }
-                typeVO.setClazz(clazz.getName());
-                typeVO.setDisplayName(clazz.getSimpleName());
-                vo.setType(typeVO);
-                return vo;
-            }).collect(toList());
-            List<BlobPropertyVO> blobs = entity.getBlobNames().stream().map(name -> {
-                BlobPropertyVO vo = newProperty(new BlobPropertyVO(), name);
-                vo.setBlobSize(entity.getBlobSize(name));
-                return vo;
-            }).collect(toList());
-
-            List<LinkPropertyVO> links = entity.getLinkNames().stream().map(name -> {
-                LinkPropertyVO vo = newProperty(new LinkPropertyVO(), name);
-                Entity link = entity.getLink(name);
-                if (link != null) {
-                    EntityId linkId = link.getId();
-                    vo.setTypeId(linkId.getTypeId());
-                    vo.setEntityId(linkId.getLocalId());
-                }
-                return vo;
-            }).collect(toList());
-
-            EntityVO vo = new EntityVO();
-            vo.setId(entity.getId().getLocalId());
-            vo.setProperties(properties);
+            EntityVO vo = getEntityVO(EntityVO::new, store, t, entity);
+            List<BlobPropertyVO> blobs = entity.getBlobNames().stream()
+                    .map(blob(entity))
+                    .collect(toList());
+            List<LinkPropertyVO> links = entity.getLinkNames().stream()
+                    .map(link(store, t, entity))
+                    .collect(toList());
             vo.setBlobs(blobs);
             vo.setLinks(links);
+            return vo;
+        };
+    }
+
+    @NotNull
+    public Function<Entity, LightEntityVO> lightEntity(final PersistentEntityStoreImpl store,
+            PersistentStoreTransaction t) {
+        return entity -> getEntityVO(LightEntityVO::new, store, t, entity);
+
+    }
+
+    @NotNull
+    private <T extends LightEntityVO> T getEntityVO(Supplier<T> supplier, PersistentEntityStoreImpl store,
+            PersistentStoreTransaction
+                    t, Entity
+            entity) {
+        List<EntityPropertyVO> properties = entity.getPropertyNames().stream()
+                .map(property(store, entity))
+                .collect(toList());
+        T vo = supplier.get();
+        vo.setId(String.valueOf(entity.getId().getLocalId()));
+        vo.setProperties(properties);
+        int typeId = entity.getId().getTypeId();
+        String entityType = store.getEntityType(t, typeId);
+        presentations.presentation(typeId, entityType).apply(vo);
+        vo.setTypeId(String.valueOf(typeId));
+        vo.setType(entityType);
+        return vo;
+    }
+
+    @NotNull
+    public <T extends LightEntityVO> Function<Entity, T> entity(final PersistentEntityStoreImpl store,
+            PersistentStoreTransaction t, Supplier<T> supplier) {
+        return entity -> {
+            List<EntityPropertyVO> properties = entity.getPropertyNames().stream()
+                    .map(property(store, entity))
+                    .collect(toList());
+
+            T vo = supplier.get();
+            vo.setId(String.valueOf(entity.getId().getLocalId()));
+            vo.setProperties(properties);
             int typeId = entity.getId().getTypeId();
             String entityType = store.getEntityType(t, typeId);
             presentations.presentation(typeId, entityType).apply(vo);
-            vo.setTypeId(typeId);
+            vo.setTypeId(String.valueOf(typeId));
             vo.setType(entityType);
+            return vo;
+        };
+    }
+
+    @NotNull
+    private Function<String, LinkPropertyVO> link(PersistentEntityStoreImpl store, PersistentStoreTransaction t, Entity
+            entity) {
+        return name -> {
+            LinkPropertyVO vo = newProperty(new LinkPropertyVO(), name);
+            Entity link = entity.getLink(name);
+            if (link != null) {
+                LightEntityVO lightVO = lightEntity(store, t).apply(link);
+                EntityId linkId = link.getId();
+                vo.setTypeId(linkId.getTypeId());
+                vo.setEntityId(linkId.getLocalId());
+                vo.setLabel(lightVO.getLabel());
+                vo.setType(lightVO.getType());
+            }
+            return vo;
+        };
+    }
+
+    @NotNull
+    private Function<String, BlobPropertyVO> blob(Entity entity) {
+        return name -> {
+            BlobPropertyVO vo = newProperty(new BlobPropertyVO(), name);
+            vo.setBlobSize(entity.getBlobSize(name));
+            return vo;
+        };
+    }
+
+    @NotNull
+    private Function<String, EntityPropertyVO> property(PersistentEntityStoreImpl store, Entity entity) {
+        return name -> {
+            EntityPropertyVO vo = newProperty(new EntityPropertyVO(), name);
+            Comparable<?> value = entity.getProperty(name);
+            EntityPropertyTypeVO typeVO = new EntityPropertyTypeVO();
+            Class<?> clazz = String.class;
+            if (value != null) {
+                PropertyType propertyType = store.getPropertyTypes().getPropertyType(value.getClass());
+                clazz = propertyType.getClazz();
+                vo.setValue(value2string(value));
+            }
+            typeVO.setReadonly(!UIPropertyTypes.isSupported(clazz));
+            typeVO.setClazz(clazz.getName());
+            typeVO.setDisplayName(clazz.getSimpleName());
+            vo.setType(typeVO);
             return vo;
         };
     }
@@ -106,7 +154,7 @@ public class Transformations {
             EntityTypeVO vo = new EntityTypeVO();
             int typeId = store.getEntityTypeId(tx, entityType, false);
             vo.setName(entityType);
-            vo.setId(typeId);
+            vo.setId(String.valueOf(typeId));
             return vo;
         };
     }
@@ -118,25 +166,23 @@ public class Transformations {
         }
         try {
             String clazz = propertyVO.getType().getClazz();
-            Class<?> type = classCache.getIfPresent(clazz);
-            if (type == null) {
-                type = Class.forName(clazz);
-                classCache.put(clazz, type);
-            }
-            return (Comparable<?>) mapper.readValue(propertyVO.getValue(), type);
-        } catch (ClassNotFoundException | IOException e) {
+            UIPropertyType<Comparable<?>> type = uiTypeOf(clazz);
+            return type == null ? null : type.toValue(propertyVO.getValue());
+        } catch (RuntimeException e) {
             throw new InvalidFieldException(e, propertyVO.getName(), propertyVO.getValue());
         }
     }
 
     @Nullable
-    public String value2string(Comparable<?> value) {
+    public <T extends Comparable<?>> String value2string(T value) {
         if (value == null) {
             return null;
         }
         try {
-            return mapper.writeValueAsString(value);
-        } catch (JsonProcessingException e) {
+            Class<?> clazz = value.getClass();
+            UIPropertyType<T> type = uiTypeOf(clazz);
+            return type == null ? null : type.toString(value);
+        } catch (RuntimeException e) {
             throw new IllegalStateException(e);
         }
     }

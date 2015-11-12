@@ -9,7 +9,7 @@ angular.module('xodus').controller('DataViewController', ['EntityTypeService', '
         $scope.type = $scope.selectedType();
         dataView.pager = newPager(null);
         dataView.newInstance = entities.newEntity($scope.type.id, $scope.type.name);
-        dataView.currentEntity = angular.copy(dataView.newInstance);
+        dataView.currentEntityId = null;
 
         //uncomment this if you want to load data on view show
         //dataView.pager.pageChanged(1);
@@ -22,31 +22,32 @@ angular.module('xodus').controller('DataViewController', ['EntityTypeService', '
         dataView.toggleView = toggleView;
         dataView.newEntity = function() {
             toggleView();
-            dataView.currentEntity = angular.copy(dataView.newInstance);
+            dataView.currentEntityId = null;
         };
 
         dataView.edit = function(item) {
             toggleView();
-            dataView.currentEntity = angular.copy(item);
+            dataView.currentEntityId = item.id;
         };
 
-        dataView.deleteItem = function(item) {
-            $uibModal.open({
-                animation: true,
-                templateUrl: 'views/directives/delete-confirmation.html',
-                controller: 'ConfirmationController',
-                resolve: {
-                    item: function() {
-                        return item;
-                    }
-                }
-            }).result.then(function(result) {
-                    if (result) {
-                        types.remove(item.typeId, item.id).success(dataView.onSearch).fail(function() {
-                        });
-                    }
-                });
-        };
+        //deleting yet not implemented into xodus database
+        //dataView.deleteItem = function(item) {
+        //    $uibModal.open({
+        //        animation: true,
+        //        templateUrl: 'views/directives/delete-confirmation.html',
+        //        controller: 'ConfirmationController',
+        //        resolve: {
+        //            item: function() {
+        //                return item;
+        //            }
+        //        }
+        //    }).result.then(function(result) {
+        //            if (result) {
+        //                types.remove(item.typeId, item.id).success(dataView.onSearch).fail(function() {
+        //                });
+        //            }
+        //        });
+        //};
 
         dataView.refresh = function() {
             dataView.toggleView();

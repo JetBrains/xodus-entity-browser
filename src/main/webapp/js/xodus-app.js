@@ -1,10 +1,9 @@
-//angular.module('xodus', ['ngRoute', 'xodus.services', 'xodus.controllers', 'xodus.directives']);
 angular.module('xodus', ['ngRoute', 'ui.bootstrap', 'ui.bootstrap.tpls', 'ui.select']);
 
 angular.module('xodus').config(['$routeProvider',
     function($routeProvider) {
         $routeProvider.
-            when('/type/:entityId', {
+            when('/type/:typeId', {
                 templateUrl: 'views/main.html'
             }).when('/error', {
                 templateUrl: 'views/error.html'
