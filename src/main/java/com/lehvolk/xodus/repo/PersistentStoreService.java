@@ -1,5 +1,8 @@
 package com.lehvolk.xodus.repo;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -8,6 +11,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -103,6 +107,20 @@ public class PersistentStoreService {
         return getEntity(typeId, entityId);
     }
 
+    public void getBlob(int typeId, long entityId, String blobName, OutputStream out) throws IOException {
+        PersistentStoreTransaction tx = store.beginReadonlyTransaction();
+        try {
+            Entity entity = tx.getEntity(new PersistentEntityId(typeId, entityId));
+            InputStream blob = entity.getBlob(blobName);
+            if (blob != null) {
+                IOUtils.copy(blob, out);
+            }
+        } finally {
+            tx.commit();
+        }
+
+    }
+
     @NotNull
     private Consumer<EntityPropertyVO> applyValues(PersistentEntity entity) {
         return property -> {
@@ -133,9 +151,11 @@ public class PersistentStoreService {
 
             List<String> links = entity.getLinkNames();
             vo.getLinks().getDeleted().stream()
-                    .map(BasePropertyVO::getName)
-                    .filter(links::contains)
-                    .forEach(entity::deleteProperty);
+                    .filter(link -> links.contains(link.getName()))
+                    .forEach(link -> {
+                        Entity linked = t.getEntity(new PersistentEntityId(link.getTypeId(), link.getEntityId()));
+                        entity.deleteLink(link.getName(), linked);
+                    });
             vo.getLinks().getAdded().stream()
                     .filter(linkVO -> !links.contains(linkVO.getName()))
                     .forEach(
@@ -188,4 +208,17 @@ public class PersistentStoreService {
         String trimmed = value.trim();
         return trimmed.isEmpty() ? null : trimmed;
     }
+    //
+    //    public static void main(String[] args) {
+    //        PersistentStoreService service = new PersistentStoreService();
+    //        service.construct();
+    //
+    //        service.modifyStore(t -> {
+    //            PersistentEntity entity = t.getEntity(new PersistentEntityId(0, 1));
+    //            entity.setBlob("file", new File("d:\\informatica_inspections.xml"));
+    //            return null;
+    //        });
+    //        service.destroy();
+    //    }
+
 }

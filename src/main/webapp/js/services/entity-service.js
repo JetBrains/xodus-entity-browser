@@ -1,48 +1,47 @@
 angular.module('xodus').service('EntitiesService', ['$http', '$q', '$location', function($http, $q, $location) {
+    var integerPattern = '^[-+]{0,1}[0-9]*$';
+    var decimalPattern = '^[-+]?[0-9]+[.]{0,1}([0-9]+)?([eE][-+]?[0-9]+)?$';
+
     var propertyTypes = [
-        {
+        newType({
             displayName: 'String',
             clazz: 'java.lang.String',
-            maxValue: null,
-            minValue: null,
-            readonly: false
-        }, {
-            displayName: 'Short',
-            clazz: 'java.lang.Short',
-            maxValue: -32768,
-            minValue: 32767,
-            readonly: false
-        }, {
-            displayName: 'Integer',
-            clazz: 'java.lang.Integer',
-            maxValue: -2147483648,
-            minValue: 2147483647,
-            readonly: false
-        }, {
-            displayName: 'Long',
-            clazz: 'java.lang.Long',
-            maxValue: null,
-            minValue: null,
-            readonly: false
-        }, {
-            displayName: 'Double',
-            clazz: 'java.lang.Double',
-            maxValue: null,
-            minValue: null,
-            readonly: false
-        }, {
-            displayName: 'Float',
-            clazz: 'java.lang.Float',
-            maxValue: null,
-            minValue: null,
-            readonly: false
-        }, {
+            inputType: 'text',
+            pattern: null
+        }), newType({
+            displayName: 'Boolean',
+            clazz: 'java.lang.Boolean',
+            inputType: 'checkbox',
+            pattern: null
+        }), newType({
             displayName: 'Byte',
             clazz: 'java.lang.Byte',
-            maxValue: -128,
-            minValue: 127,
+            minValue: -128,
+            maxValue: 127
+        }), newType({
+            displayName: 'Short',
+            clazz: 'java.lang.Short',
+            minValue: -32768,
+            maxValue: 32767,
             readonly: false
-        }
+        }), newType({
+            displayName: 'Integer',
+            clazz: 'java.lang.Integer',
+            minValue: -2147483648,
+            maxValue: 2147483647,
+            readonly: false
+        }), newType({
+            displayName: 'Long',
+            clazz: 'java.lang.Long'
+        }), newType({
+            displayName: 'Double',
+            clazz: 'java.lang.Double',
+            pattern: decimalPattern
+        }), newType({
+            displayName: 'Float',
+            clazz: 'java.lang.Float',
+            pattern: decimalPattern
+        })
     ];
 
     this.allTypes = allTypes;
@@ -179,4 +178,16 @@ angular.module('xodus').service('EntitiesService', ['$http', '$q', '$location', 
         });
     }
 
+
+    function newType(object) {
+        return angular.extend({}, {
+            displayName: null,
+            clazz: null,
+            maxValue: null,
+            minValue: null,
+            readonly: false,
+            inputType: 'number',
+            pattern: integerPattern
+        }, object);
+    }
 }]);

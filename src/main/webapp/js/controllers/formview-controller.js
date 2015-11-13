@@ -1,57 +1,32 @@
-angular.module('xodus').controller('FormViewController', ['$scope', 'EntitiesService', 'EntityTypeService',
-    function($scope, entities, types) {
+angular.module('xodus').controller('FormViewController', ['$scope', 'EntitiesService', 'EntityTypeService', '$timeout',
+    function($scope, entities, types, $timeout) {
         var formView = this;
-        var state = null;
-        formView.allLinksTypes = [];
-        formView.entities = [];
-        types.all().then(function(data) {
-            formView.allLinksTypes = data;
-            formView.newLink = newLink();
-        });
-        entities.byId($scope.entityTypeId, $scope.entityId).then(function(entity) {
-            state = {
-                initial: angular.copy(entity),
-                current: angular.copy(entity),
-                revert: function() {
-                    this.current = angular.copy(entity);
-                },
-                update: function(newOne) {
-                    this.initial = this.current;
-                    this.current = newOne;
+
+        $scope.foundByName = function(items, name) {
+            var found = null;
+            angular.forEach(items, function(item) {
+                if (name === item.name) {
+                    found = item;
                 }
-            };
-            initialize();
-        });
-
-
-        formView.newProperty = function() {
-            $scope.properties.push(entities.newProperty());
+            });
+            return found;
         };
-        formView.toggleView = function() {
-            $scope.editMode = !$scope.editMode;
-        };
-
-        formView.removeProperty = function(property) {
-            var index = $scope.properties.indexOf(property);
-            $scope.properties.splice(index, 1);
-        };
+        initialize();
 
         formView.save = function() {
-            var propsForm = $scope['propsForm'];
-            var linksForm = $scope['linksForm'];
-            makeDirty(propsForm);
+            var state = $scope.state;
+            var propsForm = $scope.getForm('propsForm');
+            $scope.makeDirty(propsForm);
             if (propsForm.$invalid) {
                 return;
             }
-            formView.editMode = false;
-            state.current.links = $.map($scope.links, toBackendLink);
+            $scope.toggleView();
             var changeSummary = entities.getChangeSummary(state.initial, state.current);
             entities.save(state.initial, changeSummary).then(function(response) {
                 state.update(response.data);
-                initialize();
             }, function(response) {
                 formView.error = response.data.msg;
-                formView.editMode = true;
+                $scope.toggleView();
             });
         };
 
@@ -60,123 +35,79 @@ angular.module('xodus').controller('FormViewController', ['$scope', 'EntitiesSer
         };
 
         formView.revert = function() {
-            state.revert();
-            initialize();
+            $scope.state.revert();
         };
 
-        formView.cancel = function() {
-            $scope.backToSearch();
-        };
-        formView.removeValue = function(property) {
-            property.value = null;
-        };
-        formView.getMessage = getMessage;
-
-        formView.hasError = function(formName, inputName) {
-            var field = $scope[formName][inputName];
-            return field && field.$invalid && field.$dirty;
-        };
-        formView.searchEntities = function(searchTerm) {
-            types.search(formView.newLink.type.id, searchTerm, 0, 10).then(function(data) {
-                formView.entities = data.items;
-            });
-        };
 
         function initialize() {
-            formView.error = null;
-            formView.isNew = !angular.isDefined(state.initial.id);
-            $scope.properties = state.current.properties;
-            $scope.blobs = state.current.blobs;
-            $scope.links = $.map(state.current.links, toUILink);
-
-            $scope.editMode = formView.isNew;
-            formView.label = (formView.isNew ? 'New ' + state.initial.type : state.initial.label);
-            formView.allTypes = entities.allTypes();
+            $scope.state = null;
+            if ($scope.entityId) {
+                entities.byId($scope.entityTypeId, $scope.entityId).then(function(entity) {
+                    $scope.state = newState(entity);
+                    formView.error = null;
+                    updateContext();
+                    formView.allTypes = entities.allTypes();
+                });
+            } else {
+                types.byId($scope.entityTypeId).then(function(type) {
+                    $scope.state = newState({
+                        typeId: $scope.entityTypeId,
+                        type: type.name,
+                        links: [],
+                        properties: [],
+                        blobs: []
+                    });
+                    updateContext();
+                });
+            }
         }
 
-        function makeDirty(form) {
-            angular.forEach(Object.keys(form), function(key) {
-                var value = form[key];
-                if (value && angular.isFunction(value.$setDirty)) {
-                    value.$setDirty(true);
+        function newState(entity) {
+            return {
+                initial: angular.copy(entity),
+                current: angular.copy(entity),
+                revert: function() {
+                    this.current = angular.copy(this.initial);
+                    forceReload();
+                },
+                update: function(newOne) {
+                    this.initial = this.current;
+                    this.current = newOne;
+                    forceReload();
                 }
+            }
+        }
+
+        function forceReload() {
+            var state = $scope.state;
+            $scope.state = null;
+            $timeout(function() {
+                $scope.state = state;
+                updateContext();
+            }, 0);
+        }
+
+        function updateContext() {
+            var initial = $scope.state.initial;
+            formView.isNew = !angular.isDefined(initial.id);
+            formView.label = (formView.isNew ? 'New ' + initial.type : initial.label);
+        }
+
+
+    }])
+    .controller('BlobsController', ['$scope', '$http', function($scope, $http) {
+        $scope.uiBlobs = $scope.state.current.blobs;
+
+        $scope.download = function(blob) {
+            var path = 'api/type/' + $scope.entityTypeId + '/entity/' + $scope.entityId + "/blob/" + blob.name;
+            $http.get(path).success(function(data) {
+                var anchor = angular.element('<a/>');
+                anchor.attr({
+                    href: 'data:attachment/text;charset=utf-8,' + encodeURI(data),
+                    target: '_blank',
+                    download: 'blob.txt'
+                })[0].click();
             });
         }
 
-        function getMessage(form, name) {
-            var field = $scope[form][name];
-            if (('undefined' === typeof(field)) || field.$valid) {
-                return undefined;
-            }
-
-            var message = '';
-            if (field.$error['number']) {
-                message += ' - not a number';
-            }
-            if (field.$error['min']) {
-                message += ' - too small';
-            }
-            if (field.$error['max']) {
-                message += ' - too large';
-            }
-            if (field.$error['pattern']) {
-                message += ' - not match pattern';
-            }
-            if (field.$error['required'] && !message) {
-                message += ' - required field';
-            }
-            return '\u2718' + message;
-        }
-
-        formView.removeLink = function() {
-            return {
-                type: formView.allLinksTypes[0],
-                value: null
-            }
-        };
-        formView.addNewLink = function() {
-            var linksForm = $scope['linksForm'];
-            makeDirty(linksForm);
-            if (linksForm.$valid) {
-                $scope.links.push(formView.newLink);
-                formView.newLink = newLink();
-                linksForm.$setPristine(true);
-            }
-        };
-
-        function newLink() {
-            return {
-                name: null,
-                type: formView.allLinksTypes[0],
-                value: null
-            }
-        }
-
-        function toBackendLink(link) {
-            return {
-                name: link.name,
-                typeId: link.type.id,
-                type: link.type.name,
-                entityId: link.value.id
-            }
-        }
-
-        function toUILink(link) {
-            return {
-                name: link.name,
-                type: findType(link.typeId),
-                id: link.typeId,
-                label: link.label
-            }
-        }
-
-        function findType(id) {
-            var founded = null;
-            angular.forEach(formView.allLinksTypes, function(type) {
-                if (type.id == id) {
-                    founded = type;
-                }
-            });
-            return founded;
-        }
     }]);

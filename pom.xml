@@ -50,6 +50,8 @@
                                 <include>controllers/dataview-controller.js</include>
                                 <include>controllers/confirmation-controller.js</include>
                                 <include>controllers/formview-controller.js</include>
+                                <include>controllers/properties-controller.js</include>
+                                <include>controllers/links-controller.js</include>
                                 <include>directives/dataview-directive.js</include>
                                 <include>directives/formview-directive.js</include>
                             </includes>
@@ -215,6 +217,11 @@
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>
             <version>2.22.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
         </dependency>
 
         <!-- webjars -->

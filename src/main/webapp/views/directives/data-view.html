@@ -10,8 +10,10 @@
                             <div class="row">
                                 <div class="col-md-10">
                                     <div class="input-group">
-                                        <input id="searchQuery" type="text" data-ng-model="dataView.searchQuery"
-                                               class="form-control" placeholder="search query">
+                                        <input id="searchQuery" autofocus type="text"
+                                               data-ng-model="dataView.searchQuery"
+                                               class="form-control"
+                                               placeholder="try '12' or 'name=John' or 'name~Sam and age=[35,40]'">
 
                                         <div class="input-group-btn">
                                             <button class="btn btn-default" type="submit"><i
@@ -30,7 +32,7 @@
                 </div>
 
                 <div data-ng-show="!dataView.isSearchExecuted">
-                    <h3 class="text-center">Press search button to found something.</h3>
+                    <h3 class="text-center">Press search button to find something.</h3>
                 </div>
                 <div data-ng-show="dataView.isSearchExecuted">
                     <h3 class="text-center" data-ng-show="!dataView.pager.hasResults()">Nothing founded.</h3>
