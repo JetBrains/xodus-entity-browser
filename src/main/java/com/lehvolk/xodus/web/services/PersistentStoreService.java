@@ -1,4 +1,4 @@
-package com.lehvolk.xodus.repo;
+package com.lehvolk.xodus.web.services;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,12 +15,12 @@ import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.lehvolk.xodus.vo.ChangeSummaryVO;
-import com.lehvolk.xodus.vo.EntityTypeVO;
-import com.lehvolk.xodus.vo.EntityVO;
-import com.lehvolk.xodus.vo.LightEntityVO.BasePropertyVO;
-import com.lehvolk.xodus.vo.LightEntityVO.EntityPropertyVO;
-import com.lehvolk.xodus.vo.SearchPagerVO;
+import com.lehvolk.xodus.web.vo.ChangeSummaryVO;
+import com.lehvolk.xodus.web.vo.EntityTypeVO;
+import com.lehvolk.xodus.web.vo.EntityVO;
+import com.lehvolk.xodus.web.vo.LightEntityVO.BasePropertyVO;
+import com.lehvolk.xodus.web.vo.LightEntityVO.EntityPropertyVO;
+import com.lehvolk.xodus.web.vo.SearchPagerVO;
 import jetbrains.exodus.entitystore.Entity;
 import jetbrains.exodus.entitystore.EntityIterable;
 import jetbrains.exodus.entitystore.PersistentEntity;
@@ -47,8 +47,15 @@ public class PersistentStoreService {
 
     @PostConstruct
     public void construct() {
-        store = PersistentEntityStores.newInstance(Environments.newInstance("d:\\data\\big-data\\"),
-                "jetPassServerDb");
+        try {
+            XodusStoreRequisites requisites = XodusStoreRequisites.get();
+            store = PersistentEntityStores.newInstance(
+                    Environments.newInstance(requisites.getLocation()), requisites.getKey());
+        } catch (RuntimeException e) {
+            String msg = "Can't get valid Xodus entity store location and store key. Check the configuration";
+            log.error(msg, e);
+            throw new IllegalStateException(msg, e);
+        }
     }
 
     public EntityTypeVO[] getTypes() {
@@ -208,17 +215,12 @@ public class PersistentStoreService {
         String trimmed = value.trim();
         return trimmed.isEmpty() ? null : trimmed;
     }
-    //
-    //    public static void main(String[] args) {
-    //        PersistentStoreService service = new PersistentStoreService();
-    //        service.construct();
-    //
-    //        service.modifyStore(t -> {
-    //            PersistentEntity entity = t.getEntity(new PersistentEntityId(0, 1));
-    //            entity.setBlob("file", new File("d:\\informatica_inspections.xml"));
-    //            return null;
-    //        });
-    //        service.destroy();
-    //    }
 
+    public void deleteEntity(int id, long entityId) {
+        modifyStore(t -> {
+            Entity entity = t.getEntity(new PersistentEntityId(id, entityId));
+            entity.delete();
+            return null;
+        });
+    }
 }

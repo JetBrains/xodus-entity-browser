@@ -16,7 +16,7 @@ angular.module('xodus').controller('PropertiesController', ['$scope', 'EntitiesS
             property.value = null;
         };
 
-        props.checkName = function(property) {
+        props.checkDuplicates = function(property) {
             var inputName = $scope.properties.indexOf(property) + 'name';
             var propsForm = $scope.propsForm;
             var sameProperties = $scope.properties.filter(function(item) {
@@ -29,13 +29,27 @@ angular.module('xodus').controller('PropertiesController', ['$scope', 'EntitiesS
             }
         };
 
-        function findSame(name) {
-            var founded = null;
-            angular.forEach($scope.properties, function(link) {
-                if (link.name == name) {
-                    founded = link;
+        //stock angular min/max validation works bad with dynamic types
+        props.validateType = function(property) {
+            var maxValue = property.type.maxValue;
+            var minValue = property.type.minValue;
+            if (maxValue || minValue) {
+                var value = parseInt(property.value);
+                if (value) {
+                    var inputName = $scope.properties.indexOf(property) + 'value';
+                    var input = $scope.propsForm[inputName];
+                    if (maxValue && value > maxValue) {
+                        input.$setValidity("max", false);
+                    } else {
+                        input.$setValidity("max", true);
+                    }
+                    if (minValue && value < minValue) {
+                        input.$setValidity("min", false);
+                    } else {
+                        input.$setValidity("min", true);
+                    }
                 }
-            });
-            return founded;
+            }
         }
+
     }]);

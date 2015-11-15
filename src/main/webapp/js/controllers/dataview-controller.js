@@ -30,24 +30,29 @@ angular.module('xodus').controller('DataViewController', ['EntityTypeService', '
             dataView.currentEntityId = item.id;
         };
 
-        //deleting yet not implemented into xodus database
-        //dataView.deleteItem = function(item) {
-        //    $uibModal.open({
-        //        animation: true,
-        //        templateUrl: 'views/directives/delete-confirmation.html',
-        //        controller: 'ConfirmationController',
-        //        resolve: {
-        //            item: function() {
-        //                return item;
-        //            }
-        //        }
-        //    }).result.then(function(result) {
-        //            if (result) {
-        //                types.remove(item.typeId, item.id).success(dataView.onSearch).fail(function() {
-        //                });
-        //            }
-        //        });
-        //};
+        dataView.deleteItem = function(item) {
+            $uibModal.open({
+                animation: true,
+                templateUrl: 'views/directives/confirmation-dialog.html',
+                controller: 'ConfirmationController',
+                resolve: {
+                    item: function() {
+                        return {
+                            label: 'Deleting ' + item.label,
+                            message: 'Are you sure you want to delete ' + item.label + '?',
+                            action: 'Delete',
+                            customAction: function() {
+                                return entities.deleteEntity(item.typeId, item.id);
+                            }
+                        };
+                    }
+                }
+            }).result.then(function(result) {
+                    if (result) {
+                        dataView.onSearch();
+                    }
+                });
+        };
 
         dataView.refresh = function() {
             dataView.toggleView();

@@ -1,10 +1,12 @@
-package com.lehvolk.xodus.repo;
+package com.lehvolk.xodus.web.services;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
+
+import static java.util.function.Function.identity;
 
 /**
  * Supported UI property types. All other types will be shown in readonly mode.
@@ -15,8 +17,8 @@ public final class UIPropertyTypes {
     private static final Map<Class<? extends Comparable<?>>, UIPropertyType<?>> BY_CLASS = new ConcurrentHashMap<>();
     private static final Map<String, UIPropertyType<?>> BY_NAME = new ConcurrentHashMap<>();
 
-    private static final UIPropertyType<String> STRING =
-            newType(String.class, x -> x);
+    private static final UIPropertyType<String> STRING = newType(String.class, identity());
+    private static final UIPropertyType<Boolean> BOOLEAN = newType(Boolean.class, Boolean::valueOf);
     private static final UIPropertyType<Byte> BYTE = newType(Byte.class, Byte::valueOf);
     private static final UIPropertyType<Short> SHORT = newType(Short.class, Short::valueOf);
     private static final UIPropertyType<Integer> INT = newType(Integer.class, Integer::valueOf);

@@ -5,7 +5,8 @@ angular.module('xodus').config(['$routeProvider',
         $routeProvider.
             when('/type/:typeId', {
                 templateUrl: 'views/main.html'
-            }).when('/error', {
+            }).
+            when('/error', {
                 templateUrl: 'views/error.html'
             }).
             otherwise({

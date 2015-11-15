@@ -1,11 +1,11 @@
-package com.lehvolk.xodus.vo;
+package com.lehvolk.xodus.web.vo;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lehvolk.xodus.vo.EntityVO.LinkPropertyVO;
-import com.lehvolk.xodus.vo.LightEntityVO.EntityPropertyVO;
+import com.lehvolk.xodus.web.vo.EntityVO.LinkPropertyVO;
+import com.lehvolk.xodus.web.vo.LightEntityVO.EntityPropertyVO;
 import lombok.Getter;
 import lombok.Setter;
 

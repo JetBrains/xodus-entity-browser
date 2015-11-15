@@ -1,4 +1,4 @@
-package com.lehvolk.xodus.exceptions;
+package com.lehvolk.xodus.web.exceptions;
 
 import lombok.Getter;
 

@@ -1,10 +1,10 @@
-package com.lehvolk.xodus.repo;
+package com.lehvolk.xodus.web.services;
 
 import org.junit.Test;
 
-import com.lehvolk.xodus.exceptions.InvalidFieldException;
-import com.lehvolk.xodus.vo.LightEntityVO.EntityPropertyTypeVO;
-import com.lehvolk.xodus.vo.LightEntityVO.EntityPropertyVO;
+import com.lehvolk.xodus.web.exceptions.InvalidFieldException;
+import com.lehvolk.xodus.web.vo.LightEntityVO.EntityPropertyTypeVO;
+import com.lehvolk.xodus.web.vo.LightEntityVO.EntityPropertyVO;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;

@@ -1,4 +1,4 @@
-package com.lehvolk.xodus.repo;
+package com.lehvolk.xodus.web.services;
 
 import java.util.List;
 import java.util.function.Function;
@@ -9,22 +9,22 @@ import javax.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.lehvolk.xodus.exceptions.InvalidFieldException;
-import com.lehvolk.xodus.repo.UIPropertyTypes.UIPropertyType;
-import com.lehvolk.xodus.vo.EntityTypeVO;
-import com.lehvolk.xodus.vo.EntityVO;
-import com.lehvolk.xodus.vo.EntityVO.BlobPropertyVO;
-import com.lehvolk.xodus.vo.EntityVO.LinkPropertyVO;
-import com.lehvolk.xodus.vo.LightEntityVO;
-import com.lehvolk.xodus.vo.LightEntityVO.BasePropertyVO;
-import com.lehvolk.xodus.vo.LightEntityVO.EntityPropertyTypeVO;
-import com.lehvolk.xodus.vo.LightEntityVO.EntityPropertyVO;
+import com.lehvolk.xodus.web.exceptions.InvalidFieldException;
+import com.lehvolk.xodus.web.services.UIPropertyTypes.UIPropertyType;
+import com.lehvolk.xodus.web.vo.EntityTypeVO;
+import com.lehvolk.xodus.web.vo.EntityVO;
+import com.lehvolk.xodus.web.vo.EntityVO.BlobPropertyVO;
+import com.lehvolk.xodus.web.vo.EntityVO.LinkPropertyVO;
+import com.lehvolk.xodus.web.vo.LightEntityVO;
+import com.lehvolk.xodus.web.vo.LightEntityVO.BasePropertyVO;
+import com.lehvolk.xodus.web.vo.LightEntityVO.EntityPropertyTypeVO;
+import com.lehvolk.xodus.web.vo.LightEntityVO.EntityPropertyVO;
 import jetbrains.exodus.entitystore.Entity;
 import jetbrains.exodus.entitystore.EntityId;
 import jetbrains.exodus.entitystore.PersistentEntityStoreImpl;
 import jetbrains.exodus.entitystore.PersistentStoreTransaction;
 import jetbrains.exodus.entitystore.tables.PropertyType;
-import static com.lehvolk.xodus.repo.UIPropertyTypes.uiTypeOf;
+import static com.lehvolk.xodus.web.services.UIPropertyTypes.uiTypeOf;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -64,9 +64,7 @@ public class Transformations {
 
     @NotNull
     private <T extends LightEntityVO> T getEntityVO(Supplier<T> supplier, PersistentEntityStoreImpl store,
-            PersistentStoreTransaction
-                    t, Entity
-            entity) {
+            PersistentStoreTransaction t, Entity entity) {
         List<EntityPropertyVO> properties = entity.getPropertyNames().stream()
                 .map(property(store, entity))
                 .collect(toList());
@@ -82,28 +80,8 @@ public class Transformations {
     }
 
     @NotNull
-    public <T extends LightEntityVO> Function<Entity, T> entity(final PersistentEntityStoreImpl store,
-            PersistentStoreTransaction t, Supplier<T> supplier) {
-        return entity -> {
-            List<EntityPropertyVO> properties = entity.getPropertyNames().stream()
-                    .map(property(store, entity))
-                    .collect(toList());
-
-            T vo = supplier.get();
-            vo.setId(String.valueOf(entity.getId().getLocalId()));
-            vo.setProperties(properties);
-            int typeId = entity.getId().getTypeId();
-            String entityType = store.getEntityType(t, typeId);
-            presentations.presentation(typeId, entityType).apply(vo);
-            vo.setTypeId(String.valueOf(typeId));
-            vo.setType(entityType);
-            return vo;
-        };
-    }
-
-    @NotNull
-    private Function<String, LinkPropertyVO> link(PersistentEntityStoreImpl store, PersistentStoreTransaction t, Entity
-            entity) {
+    private Function<String, LinkPropertyVO> link(PersistentEntityStoreImpl store, PersistentStoreTransaction t,
+            Entity entity) {
         return name -> {
             LinkPropertyVO vo = newProperty(new LinkPropertyVO(), name);
             Entity link = entity.getLink(name);

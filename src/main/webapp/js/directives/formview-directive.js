@@ -1,4 +1,4 @@
-angular.module('xodus').directive('formView', function() {
+angular.module('xodus').directive('formView', ['$uibModal', '$location', function($uibModal, $location) {
     return {
         restrict: 'E',
         scope: {
@@ -31,6 +31,41 @@ angular.module('xodus').directive('formView', function() {
                 });
             };
             scope.getForm = getForm;
+            //window.onbeforeunload = function(){
+            //    if (scope.editMode) {
+            //        return "The form is dirty, do you want to stay on the page?";
+            //    }
+            //};
+            scope.$on('$locationChangeStart', function(event, next, current) {
+                    if (scope.editMode) {
+                        //event.preventDefault();
+                        $uibModal.open({
+                            animation: true,
+                            templateUrl: 'views/directives/confirmation-dialog.html',
+                            controller: 'ConfirmationController',
+                            resolve: {
+                                item: function() {
+                                    return {
+                                        label: 'You can loose unsaved data',
+                                        message: 'Are you sure to proceed?',
+                                        action: 'Proceed'
+                                    };
+                                }
+                            }
+                        }).result.then(function(result) {
+                                if (result) {
+                                    scope.editMode = false;
+                                    // due to https://github.com/angular/angular.js/issues/8617
+                                    var path = next.substring($location.absUrl().length - $location.url().length);
+                                    console.log('going there:' + path);
+                                    $location.path(path);
+                                }
+                            });
+                        event.preventDefault();
+                        //return;
+                    }
+                }
+            );
 
             function getMessage(formName, name) {
                 var field = getForm(formName)[name];
@@ -65,4 +100,4 @@ angular.module('xodus').directive('formView', function() {
             }
         }
     };
-});
+}]);

@@ -6,8 +6,8 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import com.lehvolk.xodus.exceptions.InvalidFieldException;
-import com.lehvolk.xodus.vo.ServerErrorVO;
+import com.lehvolk.xodus.web.exceptions.InvalidFieldException;
+import com.lehvolk.xodus.web.vo.ServerErrorVO;
 import lombok.extern.slf4j.Slf4j;
 
 /**

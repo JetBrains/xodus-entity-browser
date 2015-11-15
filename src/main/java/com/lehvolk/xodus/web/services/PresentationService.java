@@ -1,12 +1,12 @@
-package com.lehvolk.xodus.repo;
+package com.lehvolk.xodus.web.services;
 
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.lehvolk.xodus.vo.LightEntityVO;
-import com.lehvolk.xodus.vo.LightEntityVO.EntityPropertyVO;
+import com.lehvolk.xodus.web.vo.LightEntityVO;
+import com.lehvolk.xodus.web.vo.LightEntityVO.EntityPropertyVO;
 
 /**
  * @author Alexey Volkov

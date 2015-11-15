@@ -53,7 +53,7 @@
                                                data-ng-required="true"
                                                data-ng-model="property.name"
                                                data-ng-disabled="!editMode"
-                                               data-ng-change="props.checkName(property)"
+                                               data-ng-change="props.checkDuplicates(property)"
                                                placeholder="Enter name"
                                                data-uib-tooltip="{{getMessage('propsForm', $index + 'name')}}"
                                                data-uib-tooltip-trigger="mouseenter">
@@ -86,6 +86,7 @@
                                                    data-ng-model="property.value"
                                                    data-ng-required="true"
                                                    placeholder="Enter value"
+                                                   data-ng-change="props.validateType(property)"
                                                    data-ng-disabled="!editMode || property.type.readonly"
                                                    data-uib-tooltip="{{getMessage('propsForm', $index + 'value')}}"
                                                    data-uib-tooltip-trigger="mouseenter">

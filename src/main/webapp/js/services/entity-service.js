@@ -6,12 +6,10 @@ angular.module('xodus').service('EntitiesService', ['$http', '$q', '$location', 
         newType({
             displayName: 'String',
             clazz: 'java.lang.String',
-            inputType: 'text',
             pattern: null
         }), newType({
             displayName: 'Boolean',
             clazz: 'java.lang.Boolean',
-            inputType: 'checkbox',
             pattern: null
         }), newType({
             displayName: 'Byte',
@@ -51,6 +49,7 @@ angular.module('xodus').service('EntitiesService', ['$http', '$q', '$location', 
     this.getChangeSummary = getChangeSummary;
     this.save = save;
     this.byId = byId;
+    this.deleteEntity = deleteEntity;
 
     function allTypes() {
         return angular.copy(propertyTypes);
@@ -178,7 +177,6 @@ angular.module('xodus').service('EntitiesService', ['$http', '$q', '$location', 
         });
     }
 
-
     function newType(object) {
         return angular.extend({}, {
             displayName: null,
@@ -186,8 +184,11 @@ angular.module('xodus').service('EntitiesService', ['$http', '$q', '$location', 
             maxValue: null,
             minValue: null,
             readonly: false,
-            inputType: 'number',
             pattern: integerPattern
         }, object);
+    }
+
+    function deleteEntity(typeId, entityId) {
+        return $http['delete']('api/type/' + typeId + '/entity/' + entityId);
     }
 }]);

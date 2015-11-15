@@ -1,12 +1,12 @@
-package com.lehvolk.xodus.repo;
+package com.lehvolk.xodus.web.services;
 
 import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
 
-import com.lehvolk.xodus.repo.SearchTerm.Range;
-import com.lehvolk.xodus.repo.SearchTerm.SearchTermType;
+import com.lehvolk.xodus.web.services.SearchTerm.Range;
+import com.lehvolk.xodus.web.services.SearchTerm.SearchTermType;
 import static org.junit.Assert.assertEquals;
 
 public class SmartSearchQueryParserTest {

@@ -1,4 +1,4 @@
-package com.lehvolk.xodus.vo;
+package com.lehvolk.xodus.web.vo;
 
 import lombok.Getter;
 import lombok.Setter;

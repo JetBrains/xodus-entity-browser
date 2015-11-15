@@ -1,4 +1,4 @@
-package com.lehvolk.xodus.repo;
+package com.lehvolk.xodus.web.services;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package com.lehvolk.xodus.vo;
+package com.lehvolk.xodus.web.vo;
 
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlRootElement;

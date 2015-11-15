@@ -1,4 +1,4 @@
-package com.lehvolk.xodus.repo;
+package com.lehvolk.xodus.web.services;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

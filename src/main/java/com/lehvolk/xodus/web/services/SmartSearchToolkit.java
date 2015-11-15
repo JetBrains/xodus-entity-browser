@@ -1,11 +1,11 @@
-package com.lehvolk.xodus.repo;
+package com.lehvolk.xodus.web.services;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import com.lehvolk.xodus.repo.SearchTerm.Range;
+import com.lehvolk.xodus.web.services.SearchTerm.Range;
 import jetbrains.exodus.entitystore.EntityId;
 import jetbrains.exodus.entitystore.EntityIterable;
 import jetbrains.exodus.entitystore.PersistentEntityId;
@@ -18,7 +18,7 @@ import jetbrains.exodus.entitystore.iterate.EntityIterableBase;
  * @author Alexey Volkov
  * @since 02.11.15
  */
-public class SmartSearchToolkit {
+public final class SmartSearchToolkit {
 
     private static final Pattern INTEGER = Pattern.compile("\\d*");
 
@@ -52,7 +52,11 @@ public class SmartSearchToolkit {
         } else {
             EntityId entityId = toEntityId(typeId, term);
             if (entityId != null) {
-                result = t.getSingletonIterable(t.getEntity(entityId));
+                try {
+                    result = t.getSingletonIterable(t.getEntity(entityId));
+                } catch (RuntimeException e) {
+                    result = EntityIterableBase.EMPTY;
+                }
             } else {
                 try {
                     result = searchByTerms(term, type, typeId, t);

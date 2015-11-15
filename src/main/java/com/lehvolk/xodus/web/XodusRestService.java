@@ -3,6 +3,7 @@ package com.lehvolk.xodus.web;
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
@@ -14,11 +15,11 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.StreamingOutput;
 
-import com.lehvolk.xodus.repo.PersistentStoreService;
-import com.lehvolk.xodus.vo.ChangeSummaryVO;
-import com.lehvolk.xodus.vo.EntityTypeVO;
-import com.lehvolk.xodus.vo.EntityVO;
-import com.lehvolk.xodus.vo.SearchPagerVO;
+import com.lehvolk.xodus.web.services.PersistentStoreService;
+import com.lehvolk.xodus.web.vo.ChangeSummaryVO;
+import com.lehvolk.xodus.web.vo.EntityTypeVO;
+import com.lehvolk.xodus.web.vo.EntityVO;
+import com.lehvolk.xodus.web.vo.SearchPagerVO;
 import jetbrains.exodus.entitystore.EntityStoreException;
 import lombok.extern.slf4j.Slf4j;
 import static java.lang.Math.min;
@@ -105,6 +106,14 @@ public class XodusRestService {
             @PathParam("id") int id,
             ChangeSummaryVO vo) {
         return persistentStoreService.newEntity(id, vo);
+    }
+
+    @DELETE
+    @Path("/type/{id}/entity/{entityId}")
+    public void deleteEntity(
+            @PathParam("id") int id,
+            @PathParam("entityId") long entityId) {
+        persistentStoreService.deleteEntity(id, entityId);
     }
 
     @GET
