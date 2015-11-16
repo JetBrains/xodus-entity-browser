@@ -59,6 +59,20 @@ angular.module('xodus').controller('DataViewController', ['EntityTypeService', '
             dataView.pager.pageChanged();
         };
 
+        $scope.openInfo = function() {
+            var searchInfo = $uibModal.open({
+                animation: true,
+                templateUrl: 'search-info.html',
+                size: 'lg',
+                controller: ['$scope', function($scope) {
+                    $scope.closeInfo = function() {
+                        searchInfo.dismiss();
+                    };
+                }]
+
+            })
+        };
+
         function newPager(searchTerm) {
             return {
                 totalCount: 0,

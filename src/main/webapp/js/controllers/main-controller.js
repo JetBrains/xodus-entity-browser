@@ -9,27 +9,14 @@ angular.module('xodus').controller('MainController', ['EntityTypeService', '$loc
         types.all().then(function(data) {
             $scope.types = data;
             $scope.filteredTypes = data;
-            var selectedType = null;
-            if ($routeParams.typeId) {
-                angular.forEach($scope.types, function(type) {
-                    if (type.id === $routeParams.typeId) {
-                        selectedType = type;
-                    }
-                });
-            }
-            if (!selectedType) {
-                selectedType = data[0];
-                $location.path(selectedType.id);
-            } else {
-                $scope.selectedType = selectedType;
-            }
+            updateType();
             if ($scope.types.length >= 10) {
                 main.filter = true;
             }
         });
         main.onTypeSelect = function(type) {
-            $scope.selectedType = type;
-            $location.path('type/' + type.id);
+            //$scope.selectedType = type;
+            $location.path('/type/' + type.id);
         };
         main.doFilter = function() {
             if (!main.typeName) {
@@ -44,5 +31,20 @@ angular.module('xodus').controller('MainController', ['EntityTypeService', '$loc
                 $scope.filteredTypes = filtered;
             }
         };
+        var cleanUp = $scope.$on('$routeChangeSuccess', updateType);
+        $scope.$on('$destroy', cleanUp);
 
+        function updateType() {
+            if ($routeParams.typeId) {
+                angular.forEach($scope.types, function(type) {
+                    if (type.id === $routeParams.typeId) {
+                        $scope.selectedType = type;
+                    }
+                });
+            }
+            if (!$scope.selectedType && $scope.types.length) {
+                $scope.selectedType = $scope.types[0];
+                $location.path('/type/' + $scope.selectedType.id);
+            }
+        }
     }]);

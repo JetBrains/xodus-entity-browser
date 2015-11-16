@@ -9,6 +9,9 @@ angular.module('xodus').config(['$routeProvider',
             when('/error', {
                 templateUrl: 'views/error.html'
             }).
+            when('/empty-store', {
+                templateUrl: 'views/empty-store.html'
+            }).
             otherwise({
                 redirectTo: '/type/0',
                 templateUrl: 'views/main.html'

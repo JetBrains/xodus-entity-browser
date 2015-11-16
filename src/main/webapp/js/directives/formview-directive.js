@@ -31,14 +31,8 @@ angular.module('xodus').directive('formView', ['$uibModal', '$location', functio
                 });
             };
             scope.getForm = getForm;
-            //window.onbeforeunload = function(){
-            //    if (scope.editMode) {
-            //        return "The form is dirty, do you want to stay on the page?";
-            //    }
-            //};
-            scope.$on('$locationChangeStart', function(event, next, current) {
+            var cleanUp = scope.$on('$locationChangeStart', function(event, next, current) {
                     if (scope.editMode) {
-                        //event.preventDefault();
                         $uibModal.open({
                             animation: true,
                             templateUrl: 'views/directives/confirmation-dialog.html',
@@ -57,15 +51,14 @@ angular.module('xodus').directive('formView', ['$uibModal', '$location', functio
                                     scope.editMode = false;
                                     // due to https://github.com/angular/angular.js/issues/8617
                                     var path = next.substring($location.absUrl().length - $location.url().length);
-                                    console.log('going there:' + path);
                                     $location.path(path);
                                 }
                             });
                         event.preventDefault();
-                        //return;
                     }
                 }
             );
+            scope.$on('$destroy', cleanUp);
 
             function getMessage(formName, name) {
                 var field = getForm(formName)[name];

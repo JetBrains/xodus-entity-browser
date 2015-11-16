@@ -47,12 +47,13 @@
                                 <include>xodus-app.js</include>
                                 <include>services/entity-type-service.js</include>
                                 <include>services/entity-service.js</include>
-                                <include>controllers/menu-controller.js</include>
+                                <include>controllers/main-controller.js</include>
                                 <include>controllers/dataview-controller.js</include>
                                 <include>controllers/confirmation-controller.js</include>
                                 <include>controllers/formview-controller.js</include>
                                 <include>controllers/properties-controller.js</include>
                                 <include>controllers/links-controller.js</include>
+                                <include>controllers/blobs-controller.js</include>
                                 <include>directives/dataview-directive.js</include>
                                 <include>directives/formview-directive.js</include>
                             </includes>
@@ -108,10 +109,13 @@
                         <include>xodus-app.js</include>
                         <include>services/entity-type-service.js</include>
                         <include>services/entity-service.js</include>
-                        <include>controllers/menu-controller.js</include>
+                        <include>controllers/main-controller.js</include>
                         <include>controllers/dataview-controller.js</include>
                         <include>controllers/confirmation-controller.js</include>
                         <include>controllers/formview-controller.js</include>
+                        <include>controllers/properties-controller.js</include>
+                        <include>controllers/links-controller.js</include>
+                        <include>controllers/blobs-controller.js</include>
                         <include>directives/dataview-directive.js</include>
                         <include>directives/formview-directive.js</include>
                     </sourceIncludes>

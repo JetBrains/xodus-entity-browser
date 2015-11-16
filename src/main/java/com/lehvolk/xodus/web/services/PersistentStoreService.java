@@ -15,6 +15,7 @@ import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.lehvolk.xodus.web.exceptions.EntityNotFoundException;
 import com.lehvolk.xodus.web.vo.ChangeSummaryVO;
 import com.lehvolk.xodus.web.vo.EntityTypeVO;
 import com.lehvolk.xodus.web.vo.EntityVO;
@@ -105,8 +106,7 @@ public class PersistentStoreService {
                     .forEach(applyValues(entity));
             vo.getLinks().getAdded().stream()
                     .forEach(property -> {
-                        Entity link = t.getEntity(
-                                new PersistentEntityId(property.getTypeId(), property.getEntityId()));
+                        Entity link = getEntity(property.getTypeId(), property.getEntityId(), t);
                         entity.addLink(property.getName(), link);
                     });
             return entity.getId().getLocalId();
@@ -117,7 +117,7 @@ public class PersistentStoreService {
     public void getBlob(int typeId, long entityId, String blobName, OutputStream out) throws IOException {
         PersistentStoreTransaction tx = store.beginReadonlyTransaction();
         try {
-            Entity entity = tx.getEntity(new PersistentEntityId(typeId, entityId));
+            Entity entity = getEntity(typeId, entityId, tx);
             InputStream blob = entity.getBlob(blobName);
             if (blob != null) {
                 IOUtils.copy(blob, out);
@@ -141,7 +141,7 @@ public class PersistentStoreService {
 
     public EntityVO updateEntity(int typeId, long entityId, ChangeSummaryVO vo) {
         long localId = modifyStore(t -> {
-            PersistentEntity entity = t.getEntity(new PersistentEntityId(typeId, entityId));
+            PersistentEntity entity = getEntity(typeId, entityId, t);
             List<String> properties = entity.getPropertyNames();
             vo.getProperties().getDeleted().stream()
                     .map(BasePropertyVO::getName)
@@ -160,7 +160,7 @@ public class PersistentStoreService {
             vo.getLinks().getDeleted().stream()
                     .filter(link -> links.contains(link.getName()))
                     .forEach(link -> {
-                        Entity linked = t.getEntity(new PersistentEntityId(link.getTypeId(), link.getEntityId()));
+                        Entity linked = getEntity(link.getTypeId(), link.getEntityId(), t);
                         entity.deleteLink(link.getName(), linked);
                     });
             vo.getLinks().getAdded().stream()
@@ -179,10 +179,27 @@ public class PersistentStoreService {
     public EntityVO getEntity(int typeId, long entityId) {
         return callStore(
                 t -> {
-                    Entity entity = t.getEntity(new PersistentEntityId(typeId, entityId));
+                    Entity entity = getEntity(typeId, entityId, t);
                     return transformations.entity(store, t).apply(entity);
                 }
         );
+    }
+
+    public void deleteEntity(int id, long entityId) {
+        modifyStore(t -> {
+            Entity entity = getEntity(id, entityId, t);
+            entity.delete();
+            return null;
+        });
+    }
+
+    private PersistentEntity getEntity(int typeId, long entityId, PersistentStoreTransaction t) {
+        try {
+            return t.getEntity(new PersistentEntityId(typeId, entityId));
+        } catch (RuntimeException e) {
+            log.error("entity not found by type '" + typeId + "' and entityId '" + entityId + "'", e);
+            throw new EntityNotFoundException(e, typeId, entityId);
+        }
     }
 
 
@@ -214,13 +231,5 @@ public class PersistentStoreService {
         }
         String trimmed = value.trim();
         return trimmed.isEmpty() ? null : trimmed;
-    }
-
-    public void deleteEntity(int id, long entityId) {
-        modifyStore(t -> {
-            Entity entity = t.getEntity(new PersistentEntityId(id, entityId));
-            entity.delete();
-            return null;
-        });
     }
 }

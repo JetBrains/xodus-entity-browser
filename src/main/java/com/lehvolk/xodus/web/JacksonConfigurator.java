@@ -5,6 +5,7 @@ import javax.ws.rs.ext.Provider;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
 
 /**
  * provider for object mapper
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Provider
 public class JacksonConfigurator implements ContextResolver<ObjectMapper> {
 
+    @Getter
     private final ObjectMapper mapper;
 
     public JacksonConfigurator() {

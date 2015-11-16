@@ -23,6 +23,9 @@
                                     </div>
                                 </div>
                                 <div class="col-md-2">
+                                    <a class="btn btn-default pull-left" data-ng-click="openInfo()">
+                                        <i class="fa fa-fw fa-question"></i>
+                                    </a>
                                     <a class="btn btn-primary pull-right" data-ng-click="dataView.newEntity()">Create
                                         new</a>
                                 </div>
@@ -109,6 +112,69 @@
                 <form-view data-entity-id="dataView.currentEntityId" data-entity-type-id="type.id"
                            data-back-to-search="dataView.refresh()"></form-view>
             </div>
+
+
+            <script type="text/ng-template" id="search-info.html">
+                <div class="modal-header">
+                    <h3>Searching tutorial</h3>
+                </div>
+
+                <div class="modal-body">
+                    <section class="search-info-section">
+                        <h4>ID search</h4>
+                        <span>Passing any integer value to search field produces search by id</span>
+                    </section>
+                    <section class="search-info-section">
+                        <h4>Fielded search</h4>
+                        <code>firstName=John and secondName=McCain</code>
+
+                        <p>Produces search for all entities where there with property firstName equals to John and
+                            property secondName equals to McCain
+                        </p>
+
+                        <p>In case of special character using for property key or value string should be wrapped
+                            with single braces:
+                        </p>
+
+                        <code>'first!Name'=John and secondName='Mc''Cain'</code>
+
+                        <p>escape symbol for single brace is double single brace</p>
+                    </section>
+
+                    <section class="search-info-section">
+                        <h4>Starts with search</h4>
+                        <code>firstName~J and secondName=McCain</code>
+
+                        <p>Produces search for all entities where property firstName starts with J symbol and
+                            property secondName equals to McCain
+                        </p>
+
+                    </section>
+
+                    <section class="search-info-section">
+                        <h4>Range search</h4>
+                        <code>firstName=John and age=[25,50]</code>
+
+                        <p>Produces search for all entities where property firstName equals to John and
+                            property age placed in range from 35 up to 50
+                        </p>
+
+                        <p><strong>Note</strong>: range search worked only with integer values.
+                            <code>age=[a,
+                                b]</code>
+                            produces search for entities with property age equals to '[a,b]'
+                        </p>
+
+                    </section>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" ng-click="closeInfo()"
+                            data-dismiss="modal">Close
+                    </button>
+                </div>
+            </script>
         </div>
     </div>
 </div>

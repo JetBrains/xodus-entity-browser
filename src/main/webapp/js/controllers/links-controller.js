@@ -18,7 +18,8 @@ angular.module('xodus').controller('LinksController', ['$scope', 'EntitiesServic
         };
 
         links.updateEntities = function() {
-            links.entities = [];
+            links.newLink.value = null;
+            links.searchEntities(null);
         };
 
         links.removeLink = function(link) {

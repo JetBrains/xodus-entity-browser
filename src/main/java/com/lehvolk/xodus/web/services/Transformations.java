@@ -73,7 +73,7 @@ public class Transformations {
         vo.setProperties(properties);
         int typeId = entity.getId().getTypeId();
         String entityType = store.getEntityType(t, typeId);
-        presentations.presentation(typeId, entityType).apply(vo);
+        presentations.presentationOf(typeId, entityType).apply(vo);
         vo.setTypeId(String.valueOf(typeId));
         vo.setType(entityType);
         return vo;

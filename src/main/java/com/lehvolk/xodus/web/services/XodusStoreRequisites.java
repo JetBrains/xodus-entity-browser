@@ -49,7 +49,7 @@ public class XodusStoreRequisites {
                 return Optional.of(new XodusStoreRequisites(location, key));
             }
         } catch (IOException e) {
-            //ignore parsing or loading file exceptions
+            //ignore parsing exceptions
         } finally {
             closeQuietly(is);
         }

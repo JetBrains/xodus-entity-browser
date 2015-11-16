@@ -1,4 +1,4 @@
-angular.module('xodus').service('EntityTypeService', ['$http', '$q', function($http, $q) {
+angular.module('xodus').service('EntityTypeService', ['$http', '$q', '$location', function($http, $q, $location) {
     var types = null;
     this.all = all;
     this.byId = byId;
@@ -11,7 +11,10 @@ angular.module('xodus').service('EntityTypeService', ['$http', '$q', function($h
         } else {
             return $http.get('api/types').then(function(data) {
                 types = data.data;
-                return types;
+                if (angular.isArray(types) && types.length) {
+                    return types;
+                }
+                $location.path('/empty-store');
             });
         }
     }
