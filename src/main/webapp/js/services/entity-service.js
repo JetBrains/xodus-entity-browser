@@ -6,45 +6,64 @@ angular.module('xodus').service('EntitiesService', ['$http', '$q', '$location', 
         newType({
             displayName: 'String',
             clazz: 'java.lang.String',
-            pattern: null
+            validation: {
+                pattern: null
+            }
         }), newType({
             displayName: 'Boolean',
             clazz: 'java.lang.Boolean',
-            pattern: null
+            validation: {
+                pattern: null
+            }
         }), newType({
             displayName: 'Byte',
             clazz: 'java.lang.Byte',
-            minValue: -128,
-            maxValue: 127
+            validation: {
+                pattern: integerPattern,
+                minValue: -128,
+                maxValue: 127
+            }
         }), newType({
             displayName: 'Short',
             clazz: 'java.lang.Short',
-            minValue: -32768,
-            maxValue: 32767,
-            readonly: false
+            validation: {
+                pattern: integerPattern,
+                minValue: -32768,
+                maxValue: 32767
+            }
         }), newType({
             displayName: 'Integer',
             clazz: 'java.lang.Integer',
-            minValue: -2147483648,
-            maxValue: 2147483647,
-            readonly: false
+            validation: {
+                pattern: integerPattern,
+                minValue: -2147483648,
+                maxValue: 2147483647
+            }
         }), newType({
             displayName: 'Long',
-            clazz: 'java.lang.Long'
+            clazz: 'java.lang.Long',
+            validation: {
+                pattern: integerPattern
+            }
         }), newType({
             displayName: 'Double',
             clazz: 'java.lang.Double',
-            pattern: decimalPattern
+            validation: {
+                pattern: decimalPattern
+            }
         }), newType({
             displayName: 'Float',
             clazz: 'java.lang.Float',
-            pattern: decimalPattern
+            validation: {
+                pattern: decimalPattern
+            }
         })
     ];
 
     this.allTypes = allTypes;
     this.newProperty = newProperty;
     this.fromProperty = fromProperty;
+    this.appendValidation = appendValidation;
     this.newEntity = newEntity;
     this.getChangeSummary = getChangeSummary;
     this.save = save;
@@ -77,6 +96,15 @@ angular.module('xodus').service('EntitiesService', ['$http', '$q', '$location', 
         };
     }
 
+    function appendValidation(property) {
+        var result = propertyTypes.filter(function(p) {
+            return p.clazz === property.type.clazz;
+        });
+        if (result[0]) {
+            property.type.validation = angular.copy(result[0].validation);
+        }
+    }
+
     function getChangeSummary(initial, modified) {
         var changeSummary = {
             properties: {
@@ -103,7 +131,10 @@ angular.module('xodus').service('EntitiesService', ['$http', '$q', '$location', 
             });
         processChangeSummary(changeSummary, initial, modified, sectionOf('links'),
             function(initialLink, modifiedLink) {
-                changeSummary.links.modified.push(modifiedLink);
+                if (initialLink.entityId !== modifiedLink.entityId ||
+                    initialLink.typeId !== modifiedLink.typeId) {
+                    changeSummary.links.modified.push(modifiedLink);
+                }
             });
         return changeSummary;
     }
@@ -181,10 +212,7 @@ angular.module('xodus').service('EntitiesService', ['$http', '$q', '$location', 
         return angular.extend({}, {
             displayName: null,
             clazz: null,
-            maxValue: null,
-            minValue: null,
-            readonly: false,
-            pattern: integerPattern
+            readonly: false
         }, object);
     }
 

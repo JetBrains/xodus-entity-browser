@@ -1,15 +1,14 @@
 <div>
-    <div class="row" ng-controller="FormViewController as formView">
+    <div class="row" data-ng-controller="FormViewController as formView">
         <div class="row">
             <h2 class="pull-left">{{formView.label}}</h2>
         </div>
         <div class="row entity-actions">
-            <button class="btn btn-primary pull-left" data-ng-click="cancel()">Back to list</button>
+            <button class="btn btn-primary pull-left" data-ng-click="cancel()">Back to search</button>
 
             <div class="pull-right" data-ng-show="editMode">
                 <button class="btn btn-primary action-button" data-ng-click="formView.save()">Save</button>
-                <button class="btn btn-danger action-button" data-ng-click="cancel()">Cancel</button>
-                <button class="btn btn-primary action-button" data-ng-click="formView.revert()">Revert</button>
+                <button class="btn btn-danger action-button" data-ng-click="formView.revert()">Revert</button>
             </div>
             <div class="pull-right" data-ng-hide="editMode">
                 <button class="btn btn-primary action-button" data-ng-click="toggleView()">Edit</button>
@@ -32,6 +31,10 @@
                         </div>
                     </div>
                     <div class="panel-body">
+                        <div ng-show="properties.length === 0">
+                            No properties
+                        </div>
+
                         <form class="form-horizontal" name="propsForm" novalidate>
                             <div class="row" style="font-weight: bold" data-ng-show="properties.length">
                                 <div class="col-md-3">
@@ -67,22 +70,20 @@
                                         <ui-select-match placeholder="Select type">
                                             {{$select.selected.displayName}}
                                         </ui-select-match>
-                                        <ui-select-choices repeat="type in formView.allTypes">
+                                        <ui-select-choices repeat="type in props.allTypes">
                                             <small data-ng-bind="type.displayName"></small>
                                         </ui-select-choices>
                                     </ui-select>
                                 </div>
                                 <div class="col-md-7">
                                     <div class="form-group col-md-10"
-                                         data-ng-class=
-                                                 "{'has-error':  hasError('propsForm', $index + 'value' )}">
+                                         data-ng-class="{'has-error':  hasError('propsForm', $index + 'value' )}">
                                         <div>
                                             <input name="{{$index + 'value'}}"
                                                    class="form-control"
-                                                   data-ng-type="{{property.type.inputType}}"
-                                                   max="{{property.type.maxValue}}"
-                                                   min="{{property.type.minValue}}"
-                                                   data-ng-pattern="{{property.type.pattern}}"
+                                                   max="{{property.type.validation.maxValue}}"
+                                                   min="{{property.type.validation.minValue}}"
+                                                   data-ng-pattern="{{property.type.validation.pattern}}"
                                                    data-ng-model="property.value"
                                                    data-ng-required="true"
                                                    placeholder="Enter value"
@@ -94,7 +95,7 @@
                                     </div>
                                     <div class="col-md-2" data-ng-show="editMode">
                                         <div data-ng-show="$index + 1 !== properties.length">
-                                            <a class="btn btn-danger" ng-click="props.removeProperty(property)">
+                                            <a class="btn btn-danger" data-ng-click="props.removeProperty(property)">
                                                 <i class="fa fa-minus"></i>
                                             </a>
                                         </div>
@@ -114,7 +115,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="panel panel-default" ng-controller="LinksController as links">
+                <div class="panel panel-default" data-ng-controller="LinksController as links">
                     <div class="panel-heading clearfix">
                         <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Links</h4>
                     </div>
@@ -131,7 +132,7 @@
                                 Value
                             </div>
                         </div>
-                        <div class="row" ng-show="editMode">
+                        <div class="row add-link-section" ng-show="editMode">
                             <form class="form-horizontal" name="linksForm" novalidate>
                                 <div class="col-md-3">
                                     <div data-ng-class="{'has-error':  hasError('linksForm', 'name' )}">
@@ -149,21 +150,19 @@
                                         <ui-select-match placeholder="Select type">
                                             {{$select.selected.name}}
                                         </ui-select-match>
-                                        <ui-select-choices repeat="type in links.allLinksTypes">
+                                        <ui-select-choices repeat="type in links.allEntityTypes">
                                             <small data-ng-bind="type.name"></small>
                                         </ui-select-choices>
                                     </ui-select>
                                 </div>
                                 <div class="col-md-7">
                                     <div class="form-group col-md-10"
-                                         data-ng-class=
-                                                 "{'has-error':  hasError('linksForm', 'value' )}">
+                                         data-ng-class="{'has-error':  hasError('linksForm', 'value' )}">
                                         <div>
                                             <ui-select data-ng-model="links.newLink.value"
                                                        data-theme="bootstrap"
                                                        data-ng-required="true"
-                                                       name="value"
-                                                    >
+                                                       name="value">
                                                 <ui-select-match placeholder="Search entity">
                                                     {{$select.selected.label}}
                                                 </ui-select-match>
@@ -182,6 +181,12 @@
                                     </div>
                                 </div>
                             </form>
+                            <hr>
+                        </div>
+                        <div data-ng-show="uiLinks.length === 0">
+                            <div data-ng-class="{'no-link-text' : editMode}">
+                                No links
+                            </div>
                         </div>
                         <div class="row form-view-link-row" data-ng-repeat="link in uiLinks">
                             <div class="col-md-3">
@@ -195,7 +200,7 @@
                                     {{link.label}}
                                 </div>
                                 <div class="col-md-2" data-ng-show="editMode">
-                                    <a class="btn btn-danger" ng-click="links.removeLink(link)">
+                                    <a class="btn btn-danger" data-ng-click="links.removeLink(link)">
                                         <i class="fa fa-minus"></i>
                                     </a>
                                 </div>
@@ -205,12 +210,15 @@
                 </div>
             </div>
             <div class="row">
-                <div class="panel panel-default" ng-controller="BlobsController as blobs">
+                <div class="panel panel-default" data-ng-controller="BlobsController as blobs">
                     <div class="panel-heading clearfix">
                         <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Blobs</h4>
                     </div>
                     <div class="panel-body">
-                        <div class="row" style="font-weight: bold" ng-show="uiBlobs.length">
+                        <div data-ng-show="uiBlobs.length === 0">
+                            No blobs
+                        </div>
+                        <div class="row" style="font-weight: bold" data-ng-show="uiBlobs.length">
                             <div class="col-md-3">
                                 Name
                             </div>
@@ -229,7 +237,7 @@
                                 {{blob.blobSize}}
                             </div>
                             <div class="col-md-7">
-                                <a class="btn btn-default" ng-click="download(blob)">
+                                <a class="btn btn-default" target="_self" data-ng-href="{{downloadLink(blob)}}">
                                     <i class="fa fa-download"></i>
                                 </a>
                             </div>

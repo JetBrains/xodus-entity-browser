@@ -69,7 +69,6 @@ angular.module('xodus').controller('DataViewController', ['EntityTypeService', '
                         searchInfo.dismiss();
                     };
                 }]
-
             })
         };
 

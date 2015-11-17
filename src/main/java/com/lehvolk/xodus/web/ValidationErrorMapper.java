@@ -22,7 +22,7 @@ public class ValidationErrorMapper implements ExceptionMapper<InvalidFieldExcept
     public Response toResponse(InvalidFieldException e) {
         log.debug("get invalid field {} with value '{}'", e.getFieldName(), e.getFieldValue());
         ServerErrorVO vo = new ServerErrorVO();
-        vo.setMsg("invalid property '" + e.getFieldName() + "' value='" + e.getFieldValue() + "'");
+        vo.setMsg("invalid value of property '" + e.getFieldName() + "': '" + e.getFieldValue() + "'");
         return Response.status(Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(vo).build();
     }
 

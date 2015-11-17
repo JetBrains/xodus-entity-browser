@@ -1,4 +1,4 @@
-angular.module('xodus').directive('formView', ['$uibModal', '$location', function($uibModal, $location) {
+angular.module('xodus').directive('formView', ['$uibModal', '$location', '$q', function($uibModal, $location, $q) {
     return {
         restrict: 'E',
         scope: {
@@ -14,7 +14,11 @@ angular.module('xodus').directive('formView', ['$uibModal', '$location', functio
                 scope.editMode = !scope.editMode;
             };
             scope.cancel = function() {
-                scope.backToSearch();
+                if (scope.editMode) {
+                    confirmExit(scope.backToSearch);
+                } else {
+                    scope.backToSearch();
+                }
             };
             scope.getMessage = getMessage;
 
@@ -33,27 +37,11 @@ angular.module('xodus').directive('formView', ['$uibModal', '$location', functio
             scope.getForm = getForm;
             var cleanUp = scope.$on('$locationChangeStart', function(event, next, current) {
                     if (scope.editMode) {
-                        $uibModal.open({
-                            animation: true,
-                            templateUrl: 'views/directives/confirmation-dialog.html',
-                            controller: 'ConfirmationController',
-                            resolve: {
-                                item: function() {
-                                    return {
-                                        label: 'You can loose unsaved data',
-                                        message: 'Are you sure to proceed?',
-                                        action: 'Proceed'
-                                    };
-                                }
-                            }
-                        }).result.then(function(result) {
-                                if (result) {
-                                    scope.editMode = false;
-                                    // due to https://github.com/angular/angular.js/issues/8617
-                                    var path = next.substring($location.absUrl().length - $location.url().length);
-                                    $location.path(path);
-                                }
-                            });
+                        confirmExit(function() {
+                            // due to https://github.com/angular/angular.js/issues/8617
+                            var path = next.substring($location.absUrl().length - $location.url().length);
+                            $location.path(path);
+                        });
                         event.preventDefault();
                     }
                 }
@@ -91,6 +79,29 @@ angular.module('xodus').directive('formView', ['$uibModal', '$location', functio
             function getForm(name) {
                 return element.find('form[name="' + name + '"]').scope()[name];
             }
+
+            function confirmExit(callback) {
+                return $uibModal.open({
+                    animation: true,
+                    templateUrl: 'views/directives/confirmation-dialog.html',
+                    controller: 'ConfirmationController',
+                    resolve: {
+                        item: function() {
+                            return {
+                                label: 'You can loose unsaved data',
+                                message: 'Are you sure to proceed?',
+                                action: 'Proceed'
+                            };
+                        }
+                    }
+                }).result.then(function(result) {
+                        if (result) {
+                            scope.editMode = false;
+                            callback();
+                        }
+                    });
+            }
         }
     };
-}]);
+}])
+;

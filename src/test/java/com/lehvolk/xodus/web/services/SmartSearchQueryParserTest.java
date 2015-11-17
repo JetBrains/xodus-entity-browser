@@ -16,10 +16,10 @@ public class SmartSearchQueryParserTest {
 
     @Test
     public void testSimple() {
-        List<SearchTerm<?>> result = parse("firstName='John' and lastName='McCain'");
+        List<SearchTerm<?>> result = parse("firstName='John' and lastName='McClane'");
         assertEquals(2, result.size());
         verifyTerm(result.get(0), FIRST_NAME, "John", SearchTermType.VALUE);
-        verifyTerm(result.get(1), LAST_NAME, "McCain", SearchTermType.VALUE);
+        verifyTerm(result.get(1), LAST_NAME, "McClane", SearchTermType.VALUE);
     }
 
     @Test
@@ -31,19 +31,19 @@ public class SmartSearchQueryParserTest {
 
     @Test
     public void testWithoutQuotes() {
-        List<SearchTerm<?>> result = parse("firstName=John and lastName=McCain and age=43");
+        List<SearchTerm<?>> result = parse("firstName=John and lastName=McClane and age=43");
         assertEquals(3, result.size());
         verifyTerm(result.get(0), FIRST_NAME, "John", SearchTermType.VALUE);
-        verifyTerm(result.get(1), LAST_NAME, "McCain", SearchTermType.VALUE);
+        verifyTerm(result.get(1), LAST_NAME, "McClane", SearchTermType.VALUE);
         verifyTerm(result.get(2), "age", "43", SearchTermType.VALUE);
     }
 
     @Test
     public void testLike() {
-        List<SearchTerm<?>> result = parse("firstName=John and lastName~McCain");
+        List<SearchTerm<?>> result = parse("firstName=John and lastName~McClane");
         assertEquals(2, result.size());
         verifyTerm(result.get(0), FIRST_NAME, "John", SearchTermType.VALUE);
-        verifyTerm(result.get(1), LAST_NAME, "McCain", SearchTermType.LIKE);
+        verifyTerm(result.get(1), LAST_NAME, "McClane", SearchTermType.LIKE);
     }
 
     @Test
@@ -55,42 +55,42 @@ public class SmartSearchQueryParserTest {
 
     @Test
     public void testEscapingQuotes() {
-        List<SearchTerm<?>> result = parse("firstName=John and lastName='Mc''Cain'");
+        List<SearchTerm<?>> result = parse("firstName=John and lastName='Mc''Clane'");
         assertEquals(2, result.size());
         verifyTerm(result.get(0), FIRST_NAME, "John", SearchTermType.VALUE);
-        verifyTerm(result.get(1), LAST_NAME, "Mc'Cain", SearchTermType.VALUE);
+        verifyTerm(result.get(1), LAST_NAME, "Mc'Clane", SearchTermType.VALUE);
     }
 
     @Test
     public void testOmitAndIntoQuotes() {
-        List<SearchTerm<?>> result = parse("firstName='John and Mike' and lastName='McCain'");
+        List<SearchTerm<?>> result = parse("firstName='John and Mike' and lastName='McClane'");
         assertEquals(2, result.size());
         verifyTerm(result.get(0), FIRST_NAME, "John and Mike", SearchTermType.VALUE);
-        verifyTerm(result.get(1), LAST_NAME, "McCain", SearchTermType.VALUE);
+        verifyTerm(result.get(1), LAST_NAME, "McClane", SearchTermType.VALUE);
     }
 
     @Test
     public void testEqualsIntoQuotes() {
-        List<SearchTerm<?>> result = parse("firstName='John=Mike' and lastName='McCain'");
+        List<SearchTerm<?>> result = parse("firstName='John=Mike' and lastName='McClane'");
         assertEquals(2, result.size());
         verifyTerm(result.get(0), FIRST_NAME, "John=Mike", SearchTermType.VALUE);
-        verifyTerm(result.get(1), LAST_NAME, "McCain", SearchTermType.VALUE);
+        verifyTerm(result.get(1), LAST_NAME, "McClane", SearchTermType.VALUE);
     }
 
     @Test
     public void testSpacesIntoQuotes() {
-        List<SearchTerm<?>> result = parse("firstName='John Mike' and lastName='McCain'");
+        List<SearchTerm<?>> result = parse("firstName='John Mike' and lastName='McClane'");
         assertEquals(2, result.size());
         verifyTerm(result.get(0), FIRST_NAME, "John Mike", SearchTermType.VALUE);
-        verifyTerm(result.get(1), LAST_NAME, "McCain", SearchTermType.VALUE);
+        verifyTerm(result.get(1), LAST_NAME, "McClane", SearchTermType.VALUE);
     }
 
     @Test
     public void testSpecialSymbols() {
-        List<SearchTerm<?>> result = parse("'_!@firstName'='John Mike' and '_!@lastName'='McCain'");
+        List<SearchTerm<?>> result = parse("'_!@firstName'='John Mike' and '_!@lastName'='McClane'");
         assertEquals(2, result.size());
         verifyTerm(result.get(0), "_!@firstName", "John Mike", SearchTermType.VALUE);
-        verifyTerm(result.get(1), "_!@lastName", "McCain", SearchTermType.VALUE);
+        verifyTerm(result.get(1), "_!@lastName", "McClane", SearchTermType.VALUE);
     }
 
     @Test
@@ -122,10 +122,10 @@ public class SmartSearchQueryParserTest {
 
     @Test
     public void testCaseInsensitive() {
-        List<SearchTerm<?>> result = parse("firstName='John Mike' AND lastName='McCain'");
+        List<SearchTerm<?>> result = parse("firstName='John Mike' AND lastName='McClane'");
         assertEquals(2, result.size());
         verifyTerm(result.get(0), FIRST_NAME, "John Mike", SearchTermType.VALUE);
-        verifyTerm(result.get(1), LAST_NAME, "McCain", SearchTermType.VALUE);
+        verifyTerm(result.get(1), LAST_NAME, "McClane", SearchTermType.VALUE);
     }
 
     private void verifyTerm(SearchTerm<?> term, String property, String value, SearchTermType type) {

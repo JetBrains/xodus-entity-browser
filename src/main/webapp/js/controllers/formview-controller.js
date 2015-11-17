@@ -36,6 +36,9 @@ angular.module('xodus').controller('FormViewController', ['$scope', 'EntitiesSer
 
         formView.revert = function() {
             $scope.state.revert();
+            if (!formView.isNew) {
+                $scope.toggleView();
+            }
         };
 
         function initialize() {
@@ -45,7 +48,6 @@ angular.module('xodus').controller('FormViewController', ['$scope', 'EntitiesSer
                     $scope.state = newState(entity);
                     formView.error = null;
                     updateContext();
-                    formView.allTypes = entities.allTypes();
                 });
             } else {
                 types.byId($scope.entityTypeId).then(function(type) {
@@ -91,20 +93,4 @@ angular.module('xodus').controller('FormViewController', ['$scope', 'EntitiesSer
             formView.isNew = !angular.isDefined(initial.id);
             formView.label = (formView.isNew ? 'New ' + initial.type : initial.label);
         }
-    }])
-    .controller('BlobsController', ['$scope', '$http', function($scope, $http) {
-        $scope.uiBlobs = $scope.state.current.blobs;
-
-        $scope.download = function(blob) {
-            var path = 'api/type/' + $scope.entityTypeId + '/entity/' + $scope.entityId + "/blob/" + blob.name;
-            $http.get(path).success(function(data) {
-                var anchor = angular.element('<a/>');
-                anchor.attr({
-                    href: 'data:attachment/text;charset=utf-8' + encodeURI(data),
-                    target: '_blank',
-                    download: 'blob.txt'
-                })[0].click();
-            });
-        }
-
     }]);

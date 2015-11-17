@@ -241,3 +241,11 @@ ul.alert-dropdown {
 .search-info-section {
     margin-bottom: 30px;
 }
+
+.add-link-section {
+    border-bottom: 1px solid #ddd;
+}
+
+.no-link-text {
+    margin-top: 10px;
+}

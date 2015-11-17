@@ -1,7 +1,7 @@
 <div id="page-wrapper">
-    <div ng-if="selectedType() != null">
-        <div class="container" ng-controller="DataViewController as dataView">
-            <div class="row" ng-show="dataView.isListView">
+    <div data-ng-if="selectedType() != null">
+        <div class="container" data-ng-controller="DataViewController as dataView">
+            <div class="row" data-ng-show="dataView.isListView">
                 <div class="row">
                     <form class="form form-horizontal" data-ng-submit="dataView.onSearch()">
                         <div class="form-group">
@@ -72,10 +72,10 @@
                                     </div>
                                 </div>
                                 <div class="panel-body">
-                                    <div ng-hide="item.properties.length">
+                                    <div data-ng-hide="item.properties.length">
                                         No properties
                                     </div>
-                                    <div ng-show="item.properties.length">
+                                    <div data-ng-show="item.properties.length">
                                         <table class="table table-striped table-condensed">
                                             <thead>
                                             <tr style="font-weight: bold">
@@ -85,7 +85,7 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <tr ng-repeat="p in item.properties">
+                                            <tr data-ng-repeat="p in item.properties">
                                                 <td width="20%">{{p.name}}</td>
                                                 <td width="10%">{{p.type.displayName}}</td>
                                                 <td width="70%">{{p.value}}</td>
@@ -108,7 +108,7 @@
                 </div>
             </div>
 
-            <div class="row" ng-if="!dataView.isListView">
+            <div class="row" data-ng-if="!dataView.isListView">
                 <form-view data-entity-id="dataView.currentEntityId" data-entity-type-id="type.id"
                            data-back-to-search="dataView.refresh()"></form-view>
             </div>
@@ -121,32 +121,31 @@
 
                 <div class="modal-body">
                     <section class="search-info-section">
-                        <h4>ID search</h4>
-                        <span>Passing any integer value to search field produces search by id</span>
+                        <h4>Search by entity id</h4>
+                        <span>Passing any integer value to search input produces search by id</span>
                     </section>
                     <section class="search-info-section">
-                        <h4>Fielded search</h4>
-                        <code>firstName=John and secondName=McCain</code>
+                        <h4>Search by properties</h4>
+                        <code>firstName=John and secondName=McClane</code>
 
-                        <p>Produces search for all entities where there with property firstName equals to John and
-                            property secondName equals to McCain
+                        <p>Produces search for all entities with property firstName equals to John and
+                            property secondName equals to McClane
                         </p>
 
-                        <p>In case of special character using for property key or value string should be wrapped
-                            with single braces:
+                        <p>Non alphanumeric characters keys and values should be wrapped with single braces:
                         </p>
 
-                        <code>'first!Name'=John and secondName='Mc''Cain'</code>
+                        <code>'first!Name'=John and secondName='Mc''Clane'</code>
 
-                        <p>escape symbol for single brace is double single brace</p>
+                        <p><strong>Note</strong>: escape symbol for single brace is double single brace</p>
                     </section>
 
                     <section class="search-info-section">
-                        <h4>Starts with search</h4>
-                        <code>firstName~J and secondName=McCain</code>
+                        <h4>'Starts with' search</h4>
+                        <code>firstName~J and secondName=McClane</code>
 
-                        <p>Produces search for all entities where property firstName starts with J symbol and
-                            property secondName equals to McCain
+                        <p>Produces search for all entities with property firstName starts with J symbol and
+                            secondName equals to McClane
                         </p>
 
                     </section>
@@ -160,8 +159,7 @@
                         </p>
 
                         <p><strong>Note</strong>: range search worked only with integer values.
-                            <code>age=[a,
-                                b]</code>
+                            <code>age=[a,b]</code>
                             produces search for entities with property age equals to '[a,b]'
                         </p>
 

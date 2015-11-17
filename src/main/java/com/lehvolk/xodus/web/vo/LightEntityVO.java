@@ -43,9 +43,6 @@ public class LightEntityVO extends BaseVO {
         private boolean readonly;
         private String clazz;
         private String displayName;
-        private String maxLength;
-        private Long maxValue;
-        private Long minValue;
     }
 
     private String label;

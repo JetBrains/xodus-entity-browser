@@ -2,6 +2,8 @@ angular.module('xodus').controller('PropertiesController', ['$scope', 'EntitiesS
     function($scope, entities) {
         var props = this;
         $scope.properties = $scope.state.current.properties;
+        angular.forEach($scope.properties, entities.appendValidation);
+        props.allTypes = entities.allTypes();
 
         props.newProperty = function() {
             $scope.properties.push(entities.newProperty());
@@ -22,32 +24,20 @@ angular.module('xodus').controller('PropertiesController', ['$scope', 'EntitiesS
             var sameProperties = $scope.properties.filter(function(item) {
                 return property.name == item.name;
             });
-            if (sameProperties.length > 1) {
-                propsForm[inputName].$setValidity("duplicated", false);
-            } else {
-                propsForm[inputName].$setValidity("duplicated", true);
-            }
+            propsForm[inputName].$setValidity("duplicated", sameProperties.length <= 1);
         };
 
         //stock angular min/max validation works bad with dynamic types
         props.validateType = function(property) {
-            var maxValue = property.type.maxValue;
-            var minValue = property.type.minValue;
+            var maxValue = property.type.validation.maxValue;
+            var minValue = property.type.validation.minValue;
             if (maxValue || minValue) {
                 var value = parseInt(property.value);
                 if (value) {
                     var inputName = $scope.properties.indexOf(property) + 'value';
                     var input = $scope.propsForm[inputName];
-                    if (maxValue && value > maxValue) {
-                        input.$setValidity("max", false);
-                    } else {
-                        input.$setValidity("max", true);
-                    }
-                    if (minValue && value < minValue) {
-                        input.$setValidity("min", false);
-                    } else {
-                        input.$setValidity("min", true);
-                    }
+                    input.$setValidity("max", !maxValue || value < maxValue);
+                    input.$setValidity("min", !minValue || value > minValue);
                 }
             }
         }

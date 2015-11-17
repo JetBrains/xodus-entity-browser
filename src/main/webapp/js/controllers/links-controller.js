@@ -4,10 +4,10 @@ angular.module('xodus').controller('LinksController', ['$scope', 'EntitiesServic
 
         $scope.uiLinks = $scope.state.current.links;
 
-        links.allLinksTypes = [];
+        links.allEntityTypes = [];
         links.entities = [];
         types.all().then(function(data) {
-            links.allLinksTypes = data;
+            links.allEntityTypes = data;
             links.newLink = newLink();
         });
 
@@ -41,6 +41,7 @@ angular.module('xodus').controller('LinksController', ['$scope', 'EntitiesServic
                 }
                 $scope.state.current.links.push(toBackendLink(links.newLink));
                 links.newLink = newLink();
+                links.updateEntities();
                 linksForm.$setPristine(true);
             }
         };
@@ -48,7 +49,7 @@ angular.module('xodus').controller('LinksController', ['$scope', 'EntitiesServic
         function newLink() {
             return {
                 name: null,
-                type: links.allLinksTypes[0],
+                type: links.allEntityTypes[0],
                 value: null
             }
         }

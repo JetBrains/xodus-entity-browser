@@ -116,12 +116,12 @@ public class SmartSearchToolkitTest {
     @Test
     public void testSearchByParams() {
         when(tx.findStartingWith(TYPE_NAME, "firstName", "Jo")).thenReturn(iterable);
-        when(tx.find(TYPE_NAME, "lastName", "McCain")).thenReturn(iterable);
+        when(tx.find(TYPE_NAME, "lastName", "McClane")).thenReturn(iterable);
 
-        EntityIterable search = search("firstName~Jo and lastName=McCain");
+        EntityIterable search = search("firstName~Jo and lastName=McClane");
         assertEquals(intersection, search);
         verify(tx).findStartingWith(eq(TYPE_NAME), eq("firstName"), eq("Jo"));
-        verify(tx).find(eq(TYPE_NAME), eq("lastName"), eq("McCain"));
+        verify(tx).find(eq(TYPE_NAME), eq("lastName"), eq("McClane"));
     }
 
     private EntityIterable search(String term) {

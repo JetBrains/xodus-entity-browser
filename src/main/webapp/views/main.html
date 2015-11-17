@@ -1,15 +1,15 @@
-<div ng-controller="MainController as main">
+<div data-ng-controller="MainController as main">
 
     <div class="collapse navbar-collapse navbar-ex1-collapse">
         <ul class="nav navbar-nav side-nav">
-            <li ng-show="main.filter">
+            <li data-ng-show="main.filter">
                 <div class="form-group nav-search">
-                    <input class="form-control" ng-model="main.typeName" ng-change="main.doFilter()"
+                    <input class="form-control" data-ng-model="main.typeName" data-ng-change="main.doFilter()"
                            type="text" placeholder="Search for type">
                 </div>
             </li>
-            <li ng-repeat="type in filteredTypes" ng-class="{'active' : type.id == selectedType.id}">
-                <a href ng-click="main.onTypeSelect(type)">{{type.name}}</a>
+            <li data-ng-repeat="type in filteredTypes" data-ng-class="{'active' : type.id == selectedType.id}">
+                <a href data-ng-click="main.onTypeSelect(type)">{{type.name}}</a>
             </li>
         </ul>
     </div>
