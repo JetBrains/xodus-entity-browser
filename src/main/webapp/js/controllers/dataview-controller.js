@@ -11,8 +11,8 @@ angular.module('xodus').controller('DataViewController', ['EntityTypeService', '
         dataView.newInstance = entities.newEntity($scope.type.id, $scope.type.name);
         dataView.currentEntityId = null;
 
-        //uncomment this if you want to load data on view show
-        //dataView.pager.pageChanged(1);
+        //comment this if you want to load data on view show
+        dataView.pager.pageChanged(1);
 
         dataView.onSearch = function() {
             dataView.pager = newPager(dataView.searchQuery);

@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -142,18 +143,17 @@ public class PersistentStoreService {
     public EntityVO updateEntity(int typeId, long entityId, ChangeSummaryVO vo) {
         long localId = modifyStore(t -> {
             PersistentEntity entity = getEntity(typeId, entityId, t);
-            List<String> properties = entity.getPropertyNames();
             vo.getProperties().getDeleted().stream()
+                    .filter(inProperties(entity))
                     .map(BasePropertyVO::getName)
-                    .filter(properties::contains)
                     .forEach(entity::deleteProperty);
 
             vo.getProperties().getAdded().stream()
-                    .filter(propertyVO -> !properties.contains(propertyVO.getName()))
+                    .filter(notInProperties(entity))
                     .forEach(applyValues(entity));
 
             vo.getProperties().getModified().stream()
-                    .filter(propertyVO -> properties.contains(propertyVO.getName()))
+                    .filter(inProperties(entity))
                     .forEach(applyValues(entity));
 
             List<String> links = entity.getLinkNames();
@@ -232,4 +232,15 @@ public class PersistentStoreService {
         String trimmed = value.trim();
         return trimmed.isEmpty() ? null : trimmed;
     }
+
+    private <T extends BasePropertyVO> Predicate<T> inProperties(Entity entity) {
+        List<String> names = entity.getPropertyNames();
+        return property -> names.contains(property.getName());
+    }
+
+    private <T extends BasePropertyVO> Predicate<T> notInProperties(Entity entity) {
+        List<String> names = entity.getPropertyNames();
+        return property -> !names.contains(property.getName());
+    }
+
 }

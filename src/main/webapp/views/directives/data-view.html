@@ -76,7 +76,7 @@
                                         No properties
                                     </div>
                                     <div data-ng-show="item.properties.length">
-                                        <table class="table table-striped table-condensed">
+                                        <table class="table table-striped table-condensed preview-entity-properties">
                                             <thead>
                                             <tr style="font-weight: bold">
                                                 <td>Name</td>
@@ -86,9 +86,9 @@
                                             </thead>
                                             <tbody>
                                             <tr data-ng-repeat="p in item.properties">
-                                                <td width="20%">{{p.name}}</td>
-                                                <td width="10%">{{p.type.displayName}}</td>
-                                                <td width="70%">{{p.value}}</td>
+                                                <td>{{p.name}}</td>
+                                                <td>{{p.type.displayName}}</td>
+                                                <td>{{p.value}}</td>
                                             </tr>
                                             </tbody>
                                         </table>

@@ -249,3 +249,8 @@ ul.alert-dropdown {
 .no-link-text {
     margin-top: 10px;
 }
+
+.preview-entity-properties {
+    table-layout: fixed;
+    overflow: hidden;
+}
