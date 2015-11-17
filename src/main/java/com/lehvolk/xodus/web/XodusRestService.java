@@ -145,7 +145,16 @@ public class XodusRestService {
     public void deleteEntity(
             @PathParam("id") int id,
             @PathParam("entityId") long entityId) {
-        persistentStoreService.deleteEntity(id, entityId);
+        log.debug("deleting entity for type {} and id {}", id, entityId);
+        try {
+            persistentStoreService.deleteEntity(id, entityId);
+        } catch (EntityNotFoundException e) {
+            log.error("error deleting entity", e);
+            throw e;
+        } catch (RuntimeException e) {
+            log.error("error deleting entity", e);
+            throw new XodusRestException(e);
+        }
     }
 
     @GET
@@ -155,6 +164,7 @@ public class XodusRestService {
             @PathParam("id") int id,
             @PathParam("entityId") long entityId,
             @PathParam("blobName") String blobName) {
+        log.debug("getting entity blob data for type {} and id {} and blob '{}'", id, entityId, blobName);
         return outputStream -> {
             try {
                 persistentStoreService.getBlob(id, entityId, blobName, outputStream);

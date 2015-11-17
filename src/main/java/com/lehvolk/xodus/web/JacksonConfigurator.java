@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 
 /**
- * provider for object mapper
+ * provider for Jackson ObjectMapper
  * @author Alexey Volkov
  * @since 14.11.2015
  */

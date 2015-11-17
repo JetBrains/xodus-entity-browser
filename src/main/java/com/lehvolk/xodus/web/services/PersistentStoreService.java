@@ -7,12 +7,9 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,6 +30,7 @@ import jetbrains.exodus.entitystore.PersistentStoreTransaction;
 import jetbrains.exodus.env.Environments;
 import lombok.extern.slf4j.Slf4j;
 import static java.util.stream.StreamSupport.stream;
+import static org.apache.commons.io.IOUtils.copy;
 
 /**
  * @author Alexey Volkov
@@ -47,7 +45,6 @@ public class PersistentStoreService {
     @Inject
     private Transformations transformations;
 
-    @PostConstruct
     public void construct() {
         try {
             XodusStoreRequisites requisites = XodusStoreRequisites.get();
@@ -60,15 +57,6 @@ public class PersistentStoreService {
         }
     }
 
-    public EntityTypeVO[] getTypes() {
-        return callStore(
-                tx -> tx.getEntityTypes().stream()
-                        .map(transformations.entityType(store, tx))
-                        .toArray(EntityTypeVO[]::new)
-        );
-    }
-
-    @PreDestroy
     public void destroy() {
         boolean proceed = true;
         int count = 0;
@@ -83,6 +71,14 @@ public class PersistentStoreService {
                 count++;
             }
         }
+    }
+
+    public EntityTypeVO[] getTypes() {
+        return callStore(
+                tx -> tx.getEntityTypes().stream()
+                        .map(transformations.entityType(store, tx))
+                        .toArray(EntityTypeVO[]::new)
+        );
     }
 
     public SearchPagerVO searchType(int typeId, String term, int offset, int pageSize) {
@@ -121,12 +117,11 @@ public class PersistentStoreService {
             Entity entity = getEntity(typeId, entityId, tx);
             InputStream blob = entity.getBlob(blobName);
             if (blob != null) {
-                IOUtils.copy(blob, out);
+                copy(blob, out);
             }
         } finally {
             tx.commit();
         }
-
     }
 
     @NotNull
@@ -201,7 +196,6 @@ public class PersistentStoreService {
             throw new EntityNotFoundException(e, typeId, entityId);
         }
     }
-
 
     private <T> T callStore(Function<PersistentStoreTransaction, T> call) {
         PersistentStoreTransaction tx = store.beginReadonlyTransaction();

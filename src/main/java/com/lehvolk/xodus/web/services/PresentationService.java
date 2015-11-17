@@ -17,9 +17,8 @@ import com.lehvolk.xodus.web.vo.LightEntityVO.EntityPropertyVO;
 @Singleton
 public class PresentationService {
 
-    public <T extends LightEntityVO> Function<T, T> presentationOf(final int typeId, final String
-            type) {
-        return (T entity) -> {
+    public <T extends LightEntityVO> Function<T, T> presentationOf(final int typeId, final String type) {
+        return entity -> {
             String labelFormat = getLabelFormat(typeId);
             labelFormat = labelFormat.replaceAll(wrap("type"), type);
             entity.setLabel(format(labelFormat, entity));

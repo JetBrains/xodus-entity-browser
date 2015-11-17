@@ -206,11 +206,6 @@
             <artifactId>jersey2-guice</artifactId>
             <version>0.10</version>
         </dependency>
-        <dependency>
-            <groupId>ru.vyarus</groupId>
-            <artifactId>guice-ext-annotations</artifactId>
-            <version>1.1.1</version>
-        </dependency>
 
         <dependency>
             <groupId>ch.qos.logback</groupId>

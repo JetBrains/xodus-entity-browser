@@ -27,7 +27,7 @@ public class XodusStoreRequisites {
     private final String location;
     private final String key;
 
-    public static Optional<XodusStoreRequisites> from(String pathToFile) {
+    private static Optional<XodusStoreRequisites> from(String pathToFile) {
         if (pathToFile == null) {
             return Optional.absent();
         }
@@ -39,7 +39,7 @@ public class XodusStoreRequisites {
         return Optional.absent();
     }
 
-    public static Optional<XodusStoreRequisites> from(InputStream is) {
+    private static Optional<XodusStoreRequisites> from(InputStream is) {
         try {
             Properties properties = new Properties();
             properties.load(is);
@@ -56,7 +56,7 @@ public class XodusStoreRequisites {
         return Optional.absent();
     }
 
-    public static Optional<XodusStoreRequisites> fromSystem() {
+    private static Optional<XodusStoreRequisites> fromSystem() {
         String location = System.getProperty(LOCATION_KEY);
         String key = System.getProperty(STORE_ACCESS_KEY);
         if (location != null && key != null) {

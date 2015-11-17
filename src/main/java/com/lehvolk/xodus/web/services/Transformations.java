@@ -62,7 +62,6 @@ public class Transformations {
 
     }
 
-    @NotNull
     private <T extends LightEntityVO> T getEntityVO(Supplier<T> supplier, PersistentEntityStoreImpl store,
             PersistentStoreTransaction t, Entity entity) {
         List<EntityPropertyVO> properties = entity.getPropertyNames().stream()
@@ -79,7 +78,6 @@ public class Transformations {
         return vo;
     }
 
-    @NotNull
     private Function<String, LinkPropertyVO> link(PersistentEntityStoreImpl store, PersistentStoreTransaction t,
             Entity entity) {
         return name -> {
@@ -97,7 +95,6 @@ public class Transformations {
         };
     }
 
-    @NotNull
     private Function<String, BlobPropertyVO> blob(Entity entity) {
         return name -> {
             BlobPropertyVO vo = newProperty(new BlobPropertyVO(), name);
@@ -106,7 +103,6 @@ public class Transformations {
         };
     }
 
-    @NotNull
     private Function<String, EntityPropertyVO> property(PersistentEntityStoreImpl store, Entity entity) {
         return name -> {
             EntityPropertyVO vo = newProperty(new EntityPropertyVO(), name);
@@ -126,6 +122,7 @@ public class Transformations {
         };
     }
 
+    @NotNull
     public Function<String, EntityTypeVO> entityType(final PersistentEntityStoreImpl store,
             final PersistentStoreTransaction tx) {
         return entityType -> {
