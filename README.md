@@ -9,9 +9,8 @@ Application needs store location path and store access key for proper work:
 
 The lookup order for this parameters is:
 * System properties - application try to get (location, access key) from System.properties by specified keys.
-* Custom configuration file - application get path to custom properties file from System.properties by value "xodus
-.store.file.config"   
-and try to get values for (location, access key) from it by specified keys.  
+* Custom configuration file - application get path to custom properties file from system properties by value "xodus
+.store.file.config" and try to get values for (location, access key) from it by specified keys.  
 * Default configuration file - application gets default properties-file bundled with application 
 (src/main/resources/xodus-store.properties) and lookup (location, access key) parameters from it by specified keys.
 
@@ -28,10 +27,7 @@ NOTE: Do not forget to place correct values into default configuration file (src
 ## Running with maven
 
 run from command line:
->mvn jetty:run-war
-
-NOTE: Do not forget to place correct values into default configuration file (src/main/resources/xodus-store
-.properties)
+>mvn jetty:run-war -Dxodus.store.location=/path/to/store -Dxodus.store.key=storekey
 
 
 

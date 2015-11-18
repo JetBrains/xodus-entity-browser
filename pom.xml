@@ -12,7 +12,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <jersey.version>2.19</jersey.version>
         <jackson.version>1.9.6</jackson.version>
     </properties>
@@ -146,7 +145,6 @@
                 </configuration>
             </plugin>
         </plugins>
-
     </build>
 
     <dependencies>
@@ -162,7 +160,6 @@
             <scope>test</scope>
             <version>4.11</version>
         </dependency>
-
 
         <dependency>
             <groupId>javax.inject</groupId>
