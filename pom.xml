@@ -93,6 +93,14 @@
                 <artifactId>jasmine-maven-plugin</artifactId>
                 <version>2.0</version>
                 <configuration>
+                    <phantomjs>
+                        <version>1.9.8</version>
+                        <checkSystemPath>true</checkSystemPath>
+                        <enforceVersion>true</enforceVersion>
+                        <source>REPOSITORY</source>
+                        <baseUrl></baseUrl>
+                        <outputDirectory>target/phantomjs</outputDirectory>
+                    </phantomjs>
                     <preloadSources>
                         <source>webjars/jquery/jquery.js</source>
                         <source>webjars/angularjs/angular.js</source>
