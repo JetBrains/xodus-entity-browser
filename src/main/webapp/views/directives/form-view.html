@@ -22,7 +22,7 @@
                 </uib-alert>
                 <div class="panel panel-default" data-ng-controller="PropertiesController as props">
                     <div class="panel-heading clearfix">
-                        <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Properties</h4>
+                        <h4 class="panel-title pull-left">Properties</h4>
 
                         <div class="btn-group pull-right">
                             <button data-ng-show="editMode" class="btn btn-primary pull-right"
@@ -115,7 +115,7 @@
             <div class="row">
                 <div class="panel panel-default" data-ng-controller="LinksController as links">
                     <div class="panel-heading clearfix">
-                        <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Links</h4>
+                        <h4 class="panel-title pull-left">Links</h4>
                     </div>
                     <div class="panel-body">
 
@@ -195,7 +195,12 @@
                             </div>
                             <div class="col-md-7">
                                 <div class="col-md-10" style="padding: 0; margin-right: -30px;">
-                                    {{link.label}}
+                                    <entity-link
+                                            title="{{link.label}}"
+                                            typeid="{{link.typeId}}"
+                                            entityid="{{link.entityId}}">
+                                    </entity-link>
+
                                 </div>
                                 <div class="col-md-2" data-ng-show="editMode">
                                     <a class="btn btn-danger" data-ng-click="links.removeLink(link)">
@@ -210,7 +215,7 @@
             <div class="row">
                 <div class="panel panel-default" data-ng-controller="BlobsController as blobs">
                     <div class="panel-heading clearfix">
-                        <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Blobs</h4>
+                        <h4 class="panel-title pull-left">Blobs</h4>
                     </div>
                     <div class="panel-body">
                         <div data-ng-show="uiBlobs.length === 0">

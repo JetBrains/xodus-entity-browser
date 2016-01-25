@@ -1,10 +1,12 @@
-angular.module('xodus').directive('formView', ['$uibModal', '$location', '$q', function($uibModal, $location, $q) {
+angular.module('xodus').directive('formView', [
+    '$uibModal',
+    '$location',
+    'NavigationService', function($uibModal, $location, navigation) {
     return {
         restrict: 'E',
         scope: {
             entityId: '=',
-            entityTypeId: '=',
-            backToSearch: '&'
+            entityTypeId: '='
         },
         replace: true,
         templateUrl: 'views/directives/form-view.html',
@@ -15,9 +17,9 @@ angular.module('xodus').directive('formView', ['$uibModal', '$location', '$q', f
             };
             scope.cancel = function() {
                 if (scope.editMode) {
-                    confirmExit(scope.backToSearch);
+                    confirmExit(toSearch);
                 } else {
-                    scope.backToSearch();
+                    navigation.toType(scope.entityTypeId);
                 }
             };
             scope.getMessage = getMessage;
@@ -100,6 +102,10 @@ angular.module('xodus').directive('formView', ['$uibModal', '$location', '$q', f
                             callback();
                         }
                     });
+            }
+
+            function toSearch(){
+                navigation.toType(scope.entityTypeId);
             }
         }
     };

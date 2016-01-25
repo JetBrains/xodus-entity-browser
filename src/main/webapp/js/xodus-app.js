@@ -4,7 +4,14 @@ angular.module('xodus').config(['$routeProvider',
     function($routeProvider) {
         $routeProvider.
             when('/type/:typeId', {
-                templateUrl: 'views/main.html'
+                templateUrl: 'views/main.html',
+                reloadOnSearch: false
+            }).
+            when('/type/:typeId/entity/:entityId', {
+                templateUrl: 'views/entity.html'
+            }).
+            when('/type/:typeId/new', {
+                templateUrl: 'views/entity.html'
             }).
             when('/error', {
                 templateUrl: 'views/error.html'

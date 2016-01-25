@@ -254,3 +254,16 @@ ul.alert-dropdown {
     table-layout: fixed;
     overflow: hidden;
 }
+
+.search-extended-header {
+    font-weight: bold;
+    background-color: #faf2cc !important;
+}
+
+.panel-heading {
+    background-color: #faf2cc !important;
+}
+
+.pagination {
+    margin: 0;
+}
