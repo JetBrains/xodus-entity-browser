@@ -1,2 +1,7 @@
+/entity-browser-launcher/entity-browser-launcher.iml
+/entity-browser-app/entity-browser-app.iml
+/xodus-entity-browser.iml
 /target
 /.idea
+/entity-browser-app/target
+/entity-browser-launcher/target

@@ -1,0 +1,120 @@
+options {
+  STATIC = false;
+  IGNORE_CASE = true;
+}
+
+PARSER_BEGIN(SmartSearchQueryParser)
+
+package com.lehvolk.xodus.web;
+
+import java.util.List;
+import java.util.ArrayList;
+
+public class SmartSearchQueryParser {
+
+    static List<SearchTerm> check(List<SearchTerm> terms, String query) throws ParseException {
+         if(terms == null || terms.isEmpty()){
+            throw new ParseException("can't parse query '"  + query + "'");
+         }
+         return terms;
+    }
+
+     private static String prepare(String value) {
+            if (value == null || value.length() <= 1) {
+                return value;
+            }
+            int first = value.charAt(0);
+            int last = value.charAt(value.length() - 1);
+            boolean trim = (first == '\'' && last == '\'') || (first == '"' && last == '"');
+            if (trim) {
+                return removeDoubleQuotes(value.substring(1, value.length() - 1));
+            }
+            return removeDoubleQuotes(value);
+     }
+
+     private static String removeDoubleQuotes(String value) {
+            if (value == null || value.length() <= 1) {
+                return value;
+            }
+            return value.replaceAll("''", "'");
+     }
+}
+PARSER_END(SmartSearchQueryParser)
+
+SKIP:
+{
+  " "
+  | "\n"
+  | "\r"
+  | "\t"
+}
+
+TOKEN:
+{
+ <SIMPLEVALUE : (["a"-"z", "A"-"Z", "0"-"9", "_", "[", "]", "."])+ >
+| <QUOTED_STRING : "'" (~["'"])* "'" ("'" (~["'"])* "'")* >
+| <RANGE_STRING : "[" (~["[","]"])* "]" ("[" (~["[", "]"])* "]")* >
+| <EQUALS : "=">
+| <LIKE : "~">
+}
+
+public List<SearchTerm> parse():
+{
+    List<SearchTerm> terms = new ArrayList<SearchTerm>();
+}
+{
+    (keyValue(terms) (" and " keyValue(terms))*)?
+    {
+        return check(terms, token.image);
+    }
+}
+
+public void keyValue(List<SearchTerm> terms):
+{
+    String k;
+    String v;
+    String operand;
+}
+{
+    (k=key()) (operand = operand()) (v=value())
+    {
+        terms.add(SearchTerm.from(k, operand, v));
+    }
+}
+
+public String key():
+{
+    Token token;
+}
+{
+    ( token = <SIMPLEVALUE>
+    | token = <QUOTED_STRING>)
+    {
+        return prepare(token.image);
+    }
+}
+
+public String operand():
+{
+    Token token;
+}
+{
+    ( token = <EQUALS>
+    | token = <LIKE>)
+    {
+        return prepare(token.image);
+    }
+}
+
+public String value():
+{
+    Token token;
+}
+{
+    ( token = <SIMPLEVALUE>
+    | token = <QUOTED_STRING>
+    | token = <RANGE_STRING>)
+    {
+        return prepare(token.image);
+    }
+}

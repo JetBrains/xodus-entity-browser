@@ -4,150 +4,26 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.lehvolk</groupId>
+    <groupId>com.lehvolk.xodus</groupId>
     <artifactId>xodus-entity-browser</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>pom</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jersey.version>2.19</jersey.version>
         <jackson.version>1.9.6</jackson.version>
+        <jetty.version>9.2.10.v20150310</jetty.version>
+        <kotlin.version>1.0.0-rc-1017</kotlin.version>
     </properties>
 
+    <modules>
+        <module>entity-browser-app</module>
+        <module>entity-browser-launcher</module>
+    </modules>
+
     <build>
-        <finalName>xodus-entity-browser</finalName>
         <plugins>
-            <plugin>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.3</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>yuicompressor-maven-plugin</artifactId>
-                <version>1.3.2</version>
-                <configuration>
-                    <preProcessAggregates>true</preProcessAggregates>
-                    <aggregations>
-                        <aggregation>
-                            <insertNewLine>true</insertNewLine>
-                            <output>${project.build.directory}/${project.build.finalName}/js/all.js</output>
-                            <inputDir>${basedir}/src/main/webapp/js</inputDir>
-                            <includes>
-                                <include>xodus-app.js</include>
-                                <include>services/navigation.js</include>
-                                <include>services/entity-type.js</include>
-                                <include>services/entity.js</include>
-                                <include>controllers/main.js</include>
-                                <include>controllers/data-view.js</include>
-                                <include>controllers/confirmation-dialog.js</include>
-                                <include>controllers/form-view.js</include>
-                                <include>controllers/properties.js</include>
-                                <include>controllers/entity-view.js</include>
-                                <include>controllers/links.js</include>
-                                <include>controllers/blobs.js</include>
-                                <include>directives/data-view.js</include>
-                                <include>directives/form-view.js</include>
-                                <include>directives/entity-link.js</include>
-                            </includes>
-                        </aggregation>
-                    </aggregations>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>compress</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>compress</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>javacc-maven-plugin</artifactId>
-                <version>2.4</version>
-                <executions>
-                    <execution>
-                        <id>javacc-smartsearch-query</id>
-                        <goals>
-                            <goal>javacc</goal>
-                        </goals>
-                        <configuration>
-                            <includes>
-                                <include>smart-search.jj</include>
-                            </includes>
-                            <unicodeInput>true</unicodeInput>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.github.searls</groupId>
-                <artifactId>jasmine-maven-plugin</artifactId>
-                <version>2.1</version>
-                <configuration>
-                    <phantomjs>
-                        <version>1.9.8</version>
-                        <checkSystemPath>true</checkSystemPath>
-                        <enforceVersion>true</enforceVersion>
-                        <source>REPOSITORY</source>
-                        <baseUrl></baseUrl>
-                        <outputDirectory>target/phantomjs</outputDirectory>
-                    </phantomjs>
-                    <preloadSources>
-                        <source>webjars/jquery/jquery.js</source>
-                        <source>webjars/angularjs/angular.js</source>
-                        <source>webjars/angularjs/angular-route.js</source>
-                        <source>webjars/angularjs/angular-mocks.js</source>
-                        <source>webjars/angular-ui-bootstrap/ui-bootstrap-tpls.js</source>
-                        <source>webjars/angular-ui-select/select.min.js</source>
-                    </preloadSources>
-                    <keepServerAlive>true</keepServerAlive>
-                    <specRunnerTemplate>DEFAULT</specRunnerTemplate>
-                    <jsSrcDir>${project.basedir}/src/main/webapp/js/</jsSrcDir>
-                    <sourceIncludes>
-                        <include>xodus-app.js</include>
-                        <include>services/navigation.js</include>
-                        <include>services/entity-type.js</include>
-                        <include>services/entity.js</include>
-                        <include>controllers/main.js</include>
-                        <include>controllers/data-view.js</include>
-                        <include>controllers/confirmation-dialog.js</include>
-                        <include>controllers/form-view.js</include>
-                        <include>controllers/properties.js</include>
-                        <include>controllers/links.js</include>
-                        <include>controllers/blobs.js</include>
-                        <include>directives/data-view.js</include>
-                        <include>directives/form-view.js</include>
-                    </sourceIncludes>
-                    <jsTestSrcDir>${project.basedir}/src/test/js</jsTestSrcDir>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.3.6.v20151106</version>
-                <configuration>
-                    <war>${project.basedir}/target/${build.finalName}.war</war>
-                </configuration>
-            </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
@@ -159,117 +35,6 @@
         </plugins>
     </build>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>1.10.19</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-            <version>4.11</version>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>1</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.0.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.containers</groupId>
-            <artifactId>jersey-container-servlet</artifactId>
-            <version>${jersey.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.16.6</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.xodus</groupId>
-            <artifactId>xodus-environment</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.xodus</groupId>
-            <artifactId>xodus-entity-store</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.xodus</groupId>
-            <artifactId>xodus-openAPI</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.squarespace.jersey2-guice</groupId>
-            <artifactId>jersey2-guice</artifactId>
-            <version>0.10</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.1.3</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>1.1.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.media</groupId>
-            <artifactId>jersey-media-json-jackson</artifactId>
-            <version>2.22.1</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.4</version>
-        </dependency>
-
-        <!-- webjars -->
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>angularjs</artifactId>
-            <version>1.4.7</version>
-        </dependency>
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>jquery</artifactId>
-            <version>2.1.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>angular-ui-bootstrap</artifactId>
-            <version>0.14.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>bootstrap</artifactId>
-            <version>3.3.5</version>
-        </dependency>
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>angular-ui-select</artifactId>
-            <version>0.13.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>font-awesome</artifactId>
-            <version>4.4.0</version>
-        </dependency>
-    </dependencies>
-
     <repositories>
         <repository>
             <id>sonatype</id>
@@ -278,5 +43,30 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>kotlin-eap</id>
+            <url>http://dl.bintray.com/kotlin/kotlin-eap</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
     </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>kotlin-eap</id>
+            <url>http://dl.bintray.com/kotlin/kotlin-eap</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <distributionManagement>
+        <repository>
+            <id>bintray-lehvolk-maven</id>
+            <name>lehvolk-maven</name>
+            <url>https://api.bintray.com/maven/lehvolk/maven/public/;publish=1</url>
+        </repository>
+    </distributionManagement>
 </project>
