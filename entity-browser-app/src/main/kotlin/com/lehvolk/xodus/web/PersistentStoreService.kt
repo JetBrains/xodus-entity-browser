@@ -83,7 +83,7 @@ object PersistentStoreService {
 
     private fun PersistentEntity.applyValues(property: EntityProperty) {
         property.value = safeTrim(property.value)
-        val value = string2value(property)
+        val value = property.string2value()
         if (value != null) {
             this.setProperty(property.name!!, value)
         }

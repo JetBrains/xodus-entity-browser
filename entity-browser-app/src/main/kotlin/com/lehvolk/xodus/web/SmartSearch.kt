@@ -1,5 +1,6 @@
 package com.lehvolk.xodus.web
 
+import com.lehvolk.xodus.web.SearchTerm.SearchTermType
 import jetbrains.exodus.entitystore.EntityId
 import jetbrains.exodus.entitystore.EntityIterable
 import jetbrains.exodus.entitystore.PersistentEntityId
@@ -42,12 +43,12 @@ object SmartSearchToolkit {
         return termStream.map { item ->
             var itemResult: EntityIterable?
             val isById = "id".equals(item.property, ignoreCase = true)
-            when (item.value) {
+            when (item.type) {
                 SearchTermType.RANGE -> {
-                    item.value as Range
-                    itemResult = t.find(type, item.property, item.value.start, item.value.end)
+                    val value = item.value as SearchTerm.Range
+                    itemResult = t.find(type, item.property, value.start, value.end)
                     if (isById) {
-                        itemResult = itemResult.union(t.findIds(type, item.value.start, item.value.end))
+                        itemResult = itemResult.union(t.findIds(type, value.start, value.end))
                     }
                 }
                 SearchTermType.LIKE -> itemResult = t.findStartingWith(type, item.property, item.value.toString())
@@ -73,34 +74,6 @@ object SmartSearchToolkit {
         return null
     }
 
-}
-
-enum class SearchTermType {
-    VALUE,
-    LIKE,
-    RANGE
-}
-
-class Range(val start: Long = 0, val end: Long = 0)
-
-class SearchTerm(val property: String, val value: Any, val type: SearchTermType) {
-
-    companion object {
-
-        private val RANGE_PATTERN = Pattern.compile("\\[\\s*(\\d*)\\s*,\\s*(\\d*)\\s*\\]")
-
-        @JvmStatic
-        fun from(property: String, operand: String, value: String): SearchTerm {
-            val type = if ("~" == operand) SearchTermType.LIKE else SearchTermType.VALUE
-            val matcher = RANGE_PATTERN.matcher(value)
-            if (matcher.matches()) {
-                val start = java.lang.Long.valueOf(matcher.group(1))!!
-                val end = java.lang.Long.valueOf(matcher.group(2))!!
-                return SearchTerm(property, Range(start, end), SearchTermType.RANGE)
-            }
-            return SearchTerm(property, value, type)
-        }
-    }
 }
 
 fun String.newParser(): SmartSearchQueryParser {

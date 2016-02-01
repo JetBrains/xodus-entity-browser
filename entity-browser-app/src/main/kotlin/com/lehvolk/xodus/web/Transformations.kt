@@ -78,16 +78,16 @@ fun String.asEntityType(store: PersistentEntityStoreImpl): EntityType {
     }
 }
 
-fun string2value(property: EntityProperty): Comparable<*>? {
-    if (property.value == null) {
+fun EntityProperty.string2value(): Comparable<*>? {
+    if (this.value == null) {
         return null
     }
     try {
-        val clazz = property.type.clazz
+        val clazz = this.type.clazz
         val type = UIPropertyTypes.uiTypeOf<Comparable<*>>(clazz!!)
-        return type.toValue(property.value)
+        return type.toValue(this.value)
     } catch (e: RuntimeException) {
-        throw InvalidFieldException(e, property.name!!, property.value!!)
+        throw InvalidFieldException(e, this.name!!, this.value!!)
     }
 }
 

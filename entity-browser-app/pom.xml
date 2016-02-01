@@ -143,7 +143,7 @@
                 <executions>
                     <execution>
                         <id>compile</id>
-                        <phase>process-sources</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>compile</goal>
                         </goals>
@@ -157,7 +157,7 @@
                     </execution>
                     <execution>
                         <id>test-compile</id>
-                        <phase>process-test-sources</phase>
+                        <phase>test-compile</phase>
                         <goals>
                             <goal>test-compile</goal>
                         </goals>
