@@ -1,6 +1,8 @@
 package com.lehvolk.xodus.web
 
 import com.lehvolk.xodus.web.SearchTerm.SearchTermType
+import com.lehvolk.xodus.web.UIPropertyTypes.rangeTree
+import com.lehvolk.xodus.web.UIPropertyTypes.tree
 import jetbrains.exodus.entitystore.EntityId
 import jetbrains.exodus.entitystore.EntityIterable
 import jetbrains.exodus.entitystore.PersistentEntityId
@@ -15,7 +17,7 @@ object SmartSearchToolkit {
 
     fun doSmartSearch(term: String?, type: String, typeId: Int, t: StoreTransaction): EntityIterable {
         if (term == null || term.trim { it <= ' ' }.isEmpty()) {
-            return  t.getAll(type)
+            return t.getAll(type)
         } else {
             val entityId = toEntityId(typeId, term)
             if (entityId != null) {
@@ -30,7 +32,7 @@ object SmartSearchToolkit {
         }
     }
 
-    private fun orEmpty (f: () -> EntityIterable) : EntityIterable {
+    private fun orEmpty(f: () -> EntityIterable): EntityIterable {
         try {
             return f()
         } catch (e: RuntimeException) {
@@ -46,7 +48,7 @@ object SmartSearchToolkit {
             when (item.type) {
                 SearchTermType.RANGE -> {
                     val value = item.value as SearchTerm.Range
-                    itemResult = t.find(type, item.property, value.start, value.end)
+                    itemResult = t.fullSearch(type, item.property, value.start, value.end)
                     if (isById) {
                         itemResult = itemResult.union(t.findIds(type, value.start, value.end))
                     }
@@ -54,7 +56,7 @@ object SmartSearchToolkit {
                 SearchTermType.LIKE -> itemResult = t.findStartingWith(type, item.property, item.value.toString())
                 else -> {
                     val value = item.value.toString()
-                    itemResult = t.find(type, item.property, value)
+                    itemResult = t.fullSearch(type, item.property, value)
                     if (isById) {
                         val byId = toEntityId(typeId, value)
                         if (byId != null) {
@@ -72,6 +74,14 @@ object SmartSearchToolkit {
             return PersistentEntityId(typeId, java.lang.Long.valueOf(value)!!)
         }
         return null
+    }
+
+    private fun StoreTransaction.fullSearch(type: String, property: String, value: String): EntityIterable {
+        return tree.map { it.find(this, type, property, value) }.reduce { it1, it2 -> it1.union(it2) }
+    }
+
+    private fun StoreTransaction.fullSearch(type: String, property: String, start: Long, end: Long): EntityIterable {
+        return rangeTree.find(this, type, property, start.toString(), end.toString())
     }
 
 }

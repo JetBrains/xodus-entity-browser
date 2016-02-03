@@ -1,24 +1,85 @@
 package com.lehvolk.xodus.web
 
 
+import jetbrains.exodus.entitystore.EntityIterable
+import jetbrains.exodus.entitystore.StoreTransaction
+import jetbrains.exodus.entitystore.iterate.EntityIterableBase
 import java.util.concurrent.ConcurrentHashMap
 
 object UIPropertyTypes {
 
+    class TypeTreeNode(val type: UIPropertyType<*>, val low: TypeTreeNode? = null) {
+        init {
+            type.node = this
+        }
+
+        fun find(tr: StoreTransaction, type: String, property: String, value: String): EntityIterable {
+            try {
+                val realValue = this.type.toValue(value)
+                return if (realValue != null) {
+                    val result = tr.find(type, property, realValue)
+                    if (low != null) {
+                        result.union(low.find(tr, type, property, value))
+                    }
+                    result
+                } else {
+                    EntityIterableBase.EMPTY
+                }
+            } catch(e: Exception) {
+                //ignore
+                return EntityIterableBase.EMPTY
+            }
+        }
+
+        fun find(tr: StoreTransaction, type: String, property: String, start: String, end: String): EntityIterable {
+            try {
+                val realStart = this.type.toValue(start)
+                val realEnd = this.type.toValue(end)
+                if (realStart != null && realEnd != null) {
+                    var result = tr.find(type, property, realStart, realEnd)
+                    if (low != null) {
+                        return result.union(low.find(tr, type, property, start, end))
+                    }
+                    return result
+                }
+                return EntityIterableBase.EMPTY
+            } catch(e: Exception) {
+                //ignore
+                return EntityIterableBase.EMPTY
+            }
+        }
+    }
+
     private val BY_CLASS = ConcurrentHashMap<Class<out Comparable<*>>, UIPropertyType<*>>()
     private val BY_NAME = ConcurrentHashMap<String, UIPropertyType<*>>()
 
-    private val STRING = newType("java.lang.String", { it })
-    private val BOOLEAN = newType("java.lang.Boolean", { java.lang.Boolean.valueOf(it) })
+    private val STRING = newType("String", { it })
+    private val BOOLEAN = newType("Boolean", { java.lang.Boolean.valueOf(it) })
 
-    private val BYTE = newType("java.lang.Byte", { java.lang.Byte.valueOf(it) })
-    private val SHORT = newType("java.lang.Short", { java.lang.Short.valueOf(it) })
-    private val INT = newType("java.lang.Integer", { Integer.valueOf(it) })
-    private val LONG = newType("java.lang.Long", { java.lang.Long.valueOf(it) })
-    private val FLOAT = newType("java.lang.Float", { java.lang.Float.valueOf(it) })
-    private val DOUBLE = newType("java.lang.Double", { java.lang.Double.valueOf(it) })
+    private val BYTE = newType("Byte", { java.lang.Byte.valueOf(it) })
+    private val SHORT = newType("Short", { java.lang.Short.valueOf(it) })
+    private val INT = newType("Integer", { Integer.valueOf(it) })
+    private val LONG = newType("Long", { java.lang.Long.valueOf(it) })
+    private val FLOAT = newType("Float", { java.lang.Float.valueOf(it) })
+    private val DOUBLE = newType("Double", { java.lang.Double.valueOf(it) })
+
+    val rangeTree =
+            TypeTreeNode(LONG,
+                    TypeTreeNode(INT,
+                            TypeTreeNode(SHORT,
+                                    TypeTreeNode(BYTE))))
+
+    val tree = arrayOf(
+            TypeTreeNode(STRING),
+            TypeTreeNode(BOOLEAN),
+            TypeTreeNode(DOUBLE,
+                    TypeTreeNode(FLOAT)
+            ),
+            rangeTree)
 
     class UIPropertyType<T : Comparable<*>> constructor(private val clazz: String, private val function: (String) -> T) {
+
+        var node: TypeTreeNode? = null
 
         fun toString(value: T?): String? {
             if (value == null) {
@@ -48,9 +109,10 @@ object UIPropertyTypes {
 
     @Suppress("UNCHECKED_CAST")
     private fun <T : Comparable<*>> newType(clazz: String, function: (String) -> T): UIPropertyType<T> {
-        val type = UIPropertyType(clazz, function)
-        BY_CLASS.put(Class.forName(clazz) as Class<out Comparable<*>>, type)
-        BY_NAME.put(clazz, type)
+        val fullName = "java.lang." + clazz
+        val type = UIPropertyType(fullName, function)
+        BY_CLASS.put(Class.forName(fullName) as Class<out Comparable<*>>, type)
+        BY_NAME.put(fullName, type)
         return type
     }
 

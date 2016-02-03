@@ -13,7 +13,6 @@
     <packaging>war</packaging>
 
     <build>
-        <finalName>xodus-entity-browser</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-source-plugin</artifactId>
@@ -149,9 +148,7 @@
                         </goals>
                         <configuration>
                             <sourceDirs>
-                                <source>src/main/java</source>
-                                <source>src/main/kotlin</source>
-                                <source>src/main/resources</source>
+                                <source>${project.basedir}/src/main/kotlin</source>
                             </sourceDirs>
                         </configuration>
                     </execution>
@@ -163,9 +160,7 @@
                         </goals>
                         <configuration>
                             <sourceDirs>
-                                <source>src/test/java</source>
-                                <source>src/test/kotlin</source>
-                                <source>src/test/resources</source>
+                                <source>${project.basedir}/src/test/kotlin</source>
                             </sourceDirs>
                         </configuration>
                     </execution>
