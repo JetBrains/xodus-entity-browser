@@ -4,9 +4,11 @@ package com.lehvolk.xodus.web
 import jetbrains.exodus.entitystore.EntityIterable
 import jetbrains.exodus.entitystore.StoreTransaction
 import jetbrains.exodus.entitystore.iterate.EntityIterableBase
+import org.slf4j.LoggerFactory
 import java.util.concurrent.ConcurrentHashMap
 
 object UIPropertyTypes {
+    val log = LoggerFactory.getLogger(UIPropertyTypes.javaClass)
 
     class TypeTreeNode(val type: UIPropertyType<*>, val low: TypeTreeNode? = null) {
         init {
@@ -16,9 +18,12 @@ object UIPropertyTypes {
         fun find(tr: StoreTransaction, type: String, property: String, value: String): EntityIterable {
             try {
                 val realValue = this.type.toValue(value)
+                log.debug("searching by type: {} value {} ", realValue?.javaClass?.name, realValue)
                 return if (realValue != null) {
                     val result = tr.find(type, property, realValue)
+                    log.debug("found: {} results", result.size())
                     if (low != null) {
+                        log.debug("searching childs of {}", low.type.clazz)
                         result.union(low.find(tr, type, property, value))
                     }
                     result
@@ -77,7 +82,7 @@ object UIPropertyTypes {
             ),
             rangeTree)
 
-    class UIPropertyType<T : Comparable<*>> constructor(private val clazz: String, private val function: (String) -> T) {
+    class UIPropertyType<T : Comparable<*>>(val clazz: String, val function: (String) -> T) {
 
         var node: TypeTreeNode? = null
 
@@ -103,7 +108,6 @@ object UIPropertyTypes {
                 // ignore result if conversion failed
                 return false
             }
-
         }
     }
 
@@ -118,10 +122,6 @@ object UIPropertyTypes {
 
     fun isSupported(clazz: Class<*>): Boolean {
         return BY_CLASS.containsKey(clazz)
-    }
-
-    fun isSupported(clazz: String): Boolean {
-        return BY_NAME.containsKey(clazz)
     }
 
     @Suppress("UNCHECKED_CAST")

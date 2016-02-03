@@ -20,10 +20,10 @@ class XodusRestService {
     @GET
     @Path("/types")
     @Produces(MediaType.APPLICATION_JSON)
-    fun getAllTypes(): Array<EntityType> {
+    fun getAllTypes(): List<EntityType> {
         log.debug("getting all entity types")
         try {
-            return persistentStoreService.types
+            return persistentStoreService.types.sortedBy { it.name }
         } catch (e: RuntimeException) {
             log.error("error getting all types", e)
             throw NotFoundException(e)

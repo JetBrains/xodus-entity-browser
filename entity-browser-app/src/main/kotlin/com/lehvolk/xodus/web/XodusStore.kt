@@ -8,9 +8,9 @@ import java.util.*
 
 object XodusStore {
 
-    val LOCATION_KEY = "xodus.store.location";
-    val STORE_ACCESS_KEY = "xodus.store.key";
-    val FILE_KEY = "xodus.store.file.config";
+    val LOCATION_KEY = "entity.browser.store.location";
+    val STORE_ACCESS_KEY = "entity.browser.store.key";
+    val FILE_KEY = "entity.browser.config";
 
     fun from(pathToFile: String?): XodusStoreRequisites? {
         if (pathToFile == null) {

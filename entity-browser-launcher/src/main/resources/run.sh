@@ -8,4 +8,4 @@ else
   echo "info: Using java located in ${JAVA_HOME}."
 fi
 
-${JAVA} -Dxodus.store.file.config=./xodus-store.properties -jar jetty-runner.jar --port ${SERVER_PORT} ./resources/xodus-entity-browse.war
+${JAVA} -Dentity.browser.config=./xodus-store.properties -jar jetty-runner.jar --port ${SERVER_PORT} ./resources/xodus-entity-browse.war
