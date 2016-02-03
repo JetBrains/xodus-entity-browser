@@ -1,10 +1,11 @@
 #!/bin/sh
+SERVER_PORT=8080
 
 if [ -z "${JAVA_HOME}" ]; then
   JAVA=java
 else
   JAVA="${JAVA_HOME}/bin/java"
-  echo "$0 info: Using jdk located in ${JAVA_HOME}."
+  echo "info: Using java located in ${JAVA_HOME}."
 fi
 
-${JAVA} -Dxodus.store.file.config=./xodus-store.properties -jar jetty-runner.jar --port 8080 ./resources/xodus-entity-browse.war
+${JAVA} -Dxodus.store.file.config=./xodus-store.properties -jar jetty-runner.jar --port ${SERVER_PORT} ./resources/xodus-entity-browse.war

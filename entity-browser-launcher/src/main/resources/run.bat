@@ -1,4 +1,5 @@
 @echo off
+set SERVER_PORT=8080
 
 if %JAVA_HOME%.==. (
     set JAVA = java
@@ -6,4 +7,4 @@ if %JAVA_HOME%.==. (
     set JAVA = %JAVA_HOME%\bin\java
 )
 
-%JAVA% -Dxodus.store.file.config=./xodus-store.properties -jar jetty-runner.jar --port 8080 ./resources/xodus-entity-browse.war
+%JAVA% -Dxodus.store.file.config=./xodus-store.properties -jar jetty-runner.jar --port %SERVER_PORT% ./resources/xodus-entity-browse.war
