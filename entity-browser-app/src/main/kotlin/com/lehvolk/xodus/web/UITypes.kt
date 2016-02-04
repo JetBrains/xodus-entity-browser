@@ -20,11 +20,11 @@ object UIPropertyTypes {
                 val realValue = this.type.toValue(value)
                 log.debug("searching property '{}' by type {} and value {} ", property, realValue?.javaClass?.name, realValue)
                 return if (realValue != null) {
-                    val result = tr.find(type, property, realValue)
+                    var result = tr.find(type, property, realValue)
                     log.debug("found: {} results", result.size())
                     if (low != null) {
                         log.debug("searching childs of {}", low.type.clazz)
-                        result.union(low.find(tr, type, property, value))
+                        result = result.union(low.find(tr, type, property, value))
                     }
                     result
                 } else {
