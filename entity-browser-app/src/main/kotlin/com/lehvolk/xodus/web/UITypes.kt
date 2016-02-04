@@ -18,7 +18,7 @@ object UIPropertyTypes {
         fun find(tr: StoreTransaction, type: String, property: String, value: String): EntityIterable {
             try {
                 val realValue = this.type.toValue(value)
-                log.debug("searching by type: {} value {} ", realValue?.javaClass?.name, realValue)
+                log.debug("searching property '{}' by type {} and value {} ", property, realValue?.javaClass?.name, realValue)
                 return if (realValue != null) {
                     val result = tr.find(type, property, realValue)
                     log.debug("found: {} results", result.size())
