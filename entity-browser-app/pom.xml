@@ -39,20 +39,7 @@
                             <inputDir>${basedir}/src/main/webapp/js</inputDir>
                             <includes>
                                 <include>xodus-app.js</include>
-                                <include>services/navigation.js</include>
-                                <include>services/entity-type.js</include>
-                                <include>services/entity.js</include>
-                                <include>controllers/main.js</include>
-                                <include>controllers/data-view.js</include>
-                                <include>controllers/confirmation-dialog.js</include>
-                                <include>controllers/form-view.js</include>
-                                <include>controllers/properties.js</include>
-                                <include>controllers/entity-view.js</include>
-                                <include>controllers/links.js</include>
-                                <include>controllers/blobs.js</include>
-                                <include>directives/data-view.js</include>
-                                <include>directives/form-view.js</include>
-                                <include>directives/entity-link.js</include>
+                                <include>**/*.js</include>
                             </includes>
                         </aggregation>
                     </aggregations>
@@ -111,19 +98,7 @@
                     <specRunnerTemplate>DEFAULT</specRunnerTemplate>
                     <jsSrcDir>${project.basedir}/src/main/webapp/js/</jsSrcDir>
                     <sourceIncludes>
-                        <include>xodus-app.js</include>
-                        <include>services/navigation.js</include>
-                        <include>services/entity-type.js</include>
-                        <include>services/entity.js</include>
-                        <include>controllers/main.js</include>
-                        <include>controllers/data-view.js</include>
-                        <include>controllers/confirmation-dialog.js</include>
-                        <include>controllers/form-view.js</include>
-                        <include>controllers/properties.js</include>
-                        <include>controllers/links.js</include>
-                        <include>controllers/blobs.js</include>
-                        <include>directives/data-view.js</include>
-                        <include>directives/form-view.js</include>
+                        <include>**/*.js</include>
                     </sourceIncludes>
                     <jsTestSrcDir>${project.basedir}/src/test/js</jsTestSrcDir>
                 </configuration>

@@ -12,6 +12,8 @@ object XodusStore {
     val STORE_ACCESS_KEY = "entity.browser.store.key";
     val FILE_KEY = "entity.browser.config";
 
+    private var current: XodusStoreRequisites? = null
+
     fun from(pathToFile: String?): XodusStoreRequisites? {
         if (pathToFile == null) {
             return null
@@ -54,12 +56,27 @@ object XodusStore {
         return null
     }
 
-    fun requisites(): XodusStoreRequisites {
+    fun lookupRequisites(): XodusStoreRequisites? {
         val file = System.getProperty(FILE_KEY);
-        val defaultConfig = XodusStore.javaClass.getResourceAsStream("/xodus-store.properties");
-        val result = (fromSystem() ?: from(file)) ?: from(defaultConfig)
-        return result!!
+        var result = fromSystem() ?: from(file)
+        if (result == null) {
+            val lastRecent = Databases.allRecent().lastOrNull()
+            if (lastRecent != null) {
+                result = XodusStoreRequisites(lastRecent.location!!, lastRecent.key!!)
+            }
+        }
+        current = result
+        return result
     }
+
+    fun current(): XodusStoreRequisites? {
+        return current
+    }
+
+    fun use(requisites: XodusStoreRequisites) {
+        current = requisites
+    }
+
 }
 
 

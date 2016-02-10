@@ -11,9 +11,6 @@ object UIPropertyTypes {
     val log = LoggerFactory.getLogger(UIPropertyTypes.javaClass)
 
     class TypeTreeNode(val type: UIPropertyType<*>, val low: TypeTreeNode? = null) {
-        init {
-            type.node = this
-        }
 
         fun find(tr: StoreTransaction, type: String, property: String, value: String): EntityIterable {
             try {
@@ -83,8 +80,6 @@ object UIPropertyTypes {
             rangeTree)
 
     class UIPropertyType<T : Comparable<*>>(val clazz: String, val function: (String) -> T) {
-
-        var node: TypeTreeNode? = null
 
         fun toString(value: T?): String? {
             if (value == null) {

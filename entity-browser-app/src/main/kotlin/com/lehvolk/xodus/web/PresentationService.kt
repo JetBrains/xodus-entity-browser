@@ -1,19 +1,17 @@
 package com.lehvolk.xodus.web
 
 
-object PresentationService {
+class PresentationService {
+
+    val labelFormat = "{{type}}[{{id}}]"
 
     fun labelOf(typeId: Int, type: String): (EntityView) -> EntityView {
         return { entity ->
-            var labelFormat = labelFormat(typeId)
+            var labelFormat = labelFormat
             labelFormat = labelFormat.replace(wrap("type").toRegex(), type)
             entity.label = doFormat(labelFormat, entity)
             entity
         }
-    }
-
-    fun labelFormat(typeId: Int): String {
-        return "{{type}}[{{id}}]"
     }
 
     private fun doFormat(format: String, entityVO: EntityView): String {

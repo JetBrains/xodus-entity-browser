@@ -2,25 +2,16 @@ angular.module('xodus').service('EntityTypeService', [
     '$http',
     '$q',
     '$location',
-    function ($http, $q, $location) {
-        var types = null;
+    'DatabaseService',
+    function ($http, $q, $location, database) {
         this.all = all;
         this.byId = byId;
         this.search = search;
-        this.remove = remove;
 
         function all() {
-            if (types) {
-                return $q.when(types);
-            } else {
-                return $http.get('api/types').then(function (data) {
-                    types = data.data;
-                    if (angular.isArray(types) && types.length) {
-                        return types;
-                    }
-                    $location.path('/empty-store');
-                });
-            }
+            return database.getSummary().then(function (data) {
+                return data.types;
+            });
         }
 
         function byId(id) {
@@ -47,9 +38,4 @@ angular.module('xodus').service('EntityTypeService', [
             });
         }
 
-        function remove(typeId, entityId) {
-            return $http['delete']('api/type/' + typeId + '/entity/' + entityId).then(function (response) {
-                return response.data;
-            });
-        }
     }]);

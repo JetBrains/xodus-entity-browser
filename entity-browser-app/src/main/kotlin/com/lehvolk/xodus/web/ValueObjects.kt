@@ -70,6 +70,20 @@ class ChangeSummary {
 
 }
 
+class DB {
+    var location: String? = null
+    var key: String? = null
+    var title: String? = null
+}
+
+class DBSummary {
+    var location: String? = null
+    var key: String? = null
+    var title: String? = null
+    var recent: List<DB> = emptyList()
+    var types: List<EntityType> = emptyList()
+}
+
 fun <T : Named> T.withName(name: String): T {
     this.name = name;
     return this;

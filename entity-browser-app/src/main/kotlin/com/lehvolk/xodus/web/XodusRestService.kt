@@ -9,21 +9,28 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.StreamingOutput
 
 @Path("/")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 class XodusRestService {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    val persistentStoreService = PersistentStoreService
+    val persistentStoreService = DI.persistenceService
 
     private val configurator = JacksonConfigurator()
 
     @GET
-    @Path("/types")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun getAllTypes(): List<EntityType> {
-        log.debug("getting all entity types")
+    @Path("/db")
+    fun getDBSummary(): DBSummary {
+        log.debug("getting database summary")
         try {
-            return persistentStoreService.types.sortedBy { it.name }
+            val result = DBSummary()
+            val requisites = XodusStore.current();
+            result.location = requisites?.location
+            result.key = requisites?.key
+            result.types = persistentStoreService.allTypes().sortedBy { it.name }
+            result.recent = Databases.allRecent()
+            return result
         } catch (e: RuntimeException) {
             log.error("error getting all types", e)
             throw NotFoundException(e)
@@ -32,7 +39,6 @@ class XodusRestService {
 
     @GET
     @Path("/type/{id}/entities")
-    @Produces(MediaType.APPLICATION_JSON)
     fun searchEntities(
             @PathParam("id") id: Int,
             @QueryParam("q") term: String?,
@@ -54,7 +60,6 @@ class XodusRestService {
 
     @GET
     @Path("/type/{id}/entity/{entityId}")
-    @Produces(MediaType.APPLICATION_JSON)
     fun getEntity(
             @PathParam("id") id: Int,
             @PathParam("entityId") entityId: Long): EntityView {
@@ -73,8 +78,6 @@ class XodusRestService {
 
     @PUT
     @Path("/type/{id}/entity/{entityId}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     fun updateEntity(
             @PathParam("id") id: Int,
             @PathParam("entityId") entityId: Long,
@@ -98,8 +101,6 @@ class XodusRestService {
 
     @POST
     @Path("/type/{id}/entity")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     fun newEntity(
             @PathParam("id") id: Int,
             vo: ChangeSummary): EntityView {
@@ -139,7 +140,6 @@ class XodusRestService {
 
     @GET
     @Path("/type/{id}/entity/{entityId}/blob/{blobName}")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
     fun getBlob(
             @PathParam("id") id: Int,
             @PathParam("entityId") entityId: Long,
@@ -155,6 +155,19 @@ class XodusRestService {
                 log.error("error getting blob:", e)
                 throw e
             }
+        }
+    }
+
+    @POST
+    @Path("/db")
+    fun updateDB(db: DB) {
+        XodusStore.use(XodusStoreRequisites(db.location!!, db.key!!))
+        persistentStoreService.destroy()
+        persistentStoreService.update()
+        try {
+            Databases.add(db)
+        } catch(e: Exception) {
+            log.error("error adding dabase to recent")
         }
     }
 

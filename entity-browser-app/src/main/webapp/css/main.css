@@ -267,3 +267,15 @@ ul.alert-dropdown {
 .pagination {
     margin: 0;
 }
+
+.top-nav > .open > .dropdown-menu > li > a {
+    white-space: nowrap !important;
+}
+
+a {
+    cursor: pointer;
+}
+
+.selected-item {
+    background-color: #faf2cc;
+}

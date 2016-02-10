@@ -20,7 +20,7 @@ fun Entity.asLightView(): EntityView {
         this.properties = entity.propertyNames.map { entity.propertyView(it) }
         val typeId = entity.id.typeId
         val entityType = store.getEntityType(store.currentTransaction!!, typeId)
-        PresentationService.labelOf(typeId, entityType)(this)
+        DI.presentationService.labelOf(typeId, entityType)(this)
         this.typeId = typeId.toString()
         this.type = entityType
     }

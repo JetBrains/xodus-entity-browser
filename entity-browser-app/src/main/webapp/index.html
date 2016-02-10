@@ -15,7 +15,7 @@
 <body>
 <div>
     <header>
-        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" ng-controller="DBController as db">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
                     <span class="sr-only">Toggle navigation</span>
@@ -23,8 +23,27 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" onclick="window.location.hash='';window.location.reload();">Xodus entity browser</a>
+                <a class="navbar-brand" data-ng-click="db.forceReload()">Xodus entity browser</a>
             </div>
+            <ul class="nav navbar-right top-nav">
+                <li uib-dropdown class="dropdown">
+                    <a uib-dropdown-toggle class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="fa fa-fw fa-database"></i>Databases<b class="caret"></b></a>
+                    <ul uib-dropdown-menu class="dropdown-menu">
+                        <li ng-repeat="database in dbs" ng-class="{'selected-item' : database.isCurrent }">
+                            <a ng-click="db.changeDB(database)">
+                                <i data-ng-show="database.isCurrent" class="fa fa-check"></i>
+                                <i data-ng-show="!database.isCurrent" class="fa fa-trash"></i>
+                                {{database.title}}
+                            </a>
+                        </li>
+                        <li role="separator" class="divider"></li>
+                        <li>
+                            <a ng-click="db.openDialog()"><i class="fa fa-fw fa-plus"></i>add new</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
         </nav>
     </header>
     <main>

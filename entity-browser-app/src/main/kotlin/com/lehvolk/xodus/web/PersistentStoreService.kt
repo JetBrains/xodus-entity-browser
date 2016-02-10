@@ -7,15 +7,28 @@ import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.io.OutputStream
 
-object PersistentStoreService {
+class PersistentStoreService {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    private lateinit var store: PersistentEntityStoreImpl
+    private var store: PersistentEntityStoreImpl? = null
 
     fun construct() {
+        val requisites = XodusStore.lookupRequisites()
+        if (requisites != null) {
+            init(requisites)
+        }
+    }
+
+    fun update() {
+        val current = XodusStore.current()
+        if (current != null) {
+            init(current)
+        }
+    }
+
+    fun init(requisites: XodusStoreRequisites) {
         try {
-            val requisites = XodusStore.requisites()
             store = PersistentEntityStores.newInstance(
                     Environments.newInstance(requisites.location), requisites.key)
         } catch (e: RuntimeException) {
@@ -23,7 +36,6 @@ object PersistentStoreService {
             log.error(msg, e)
             throw IllegalStateException(msg, e)
         }
-
     }
 
     fun destroy() {
@@ -32,7 +44,7 @@ object PersistentStoreService {
         while (proceed && count < 10) {
             try {
                 log.info("trying to close persistent store. attempt {}", count)
-                store.close()
+                store?.close()
                 proceed = false
                 log.info("persistent store closed")
             } catch (e: RuntimeException) {
@@ -43,12 +55,20 @@ object PersistentStoreService {
         }
     }
 
-    val types: Array<EntityType>
-        get() = readonly { tx -> tx.entityTypes.map { it.asEntityType(tx.store) }.toTypedArray() }
+    fun isInited(): Boolean {
+        return store != null
+    }
+
+    fun allTypes(): Array<EntityType> {
+        if (store == null) {
+            return emptyArray()
+        }
+        return readonly { tx -> tx.entityTypes.map { it.asEntityType(tx.store) }.toTypedArray() }
+    }
 
     fun searchType(typeId: Int, term: String?, offset: Int, pageSize: Int): SearchPager {
         return readonly { t ->
-            val type = store.getEntityType(t, typeId)
+            val type = store!!.getEntityType(t, typeId)
             val result = SmartSearchToolkit.doSmartSearch(term, type, typeId, t)
             val totalCount = result.size()
             val items = result.skip(offset).take(pageSize).map { it.asView() }
@@ -58,7 +78,7 @@ object PersistentStoreService {
 
     fun newEntity(typeId: Int, vo: ChangeSummary): EntityView {
         val entityId = transactional { t ->
-            val type = store.getEntityType(t, typeId)
+            val type = store!!.getEntityType(t, typeId)
             val entity = t.newEntity(type)
             vo.properties.added.forEach { entity.applyValues(it) }
             vo.links.added.forEach {
@@ -72,7 +92,7 @@ object PersistentStoreService {
 
     @Throws(IOException::class)
     fun getBlob(typeId: Int, entityId: Long, blobName: String, out: OutputStream) {
-        val tx = store.beginReadonlyTransaction()
+        val tx = store!!.beginReadonlyTransaction()
         try {
             val entity = getEntity(typeId, entityId, tx)
             entity.getBlob(blobName)?.copyTo(out, bufferSize = 4096)
@@ -145,13 +165,13 @@ object PersistentStoreService {
         return if (trimmed.isEmpty()) null else trimmed
     }
 
-   private fun Entity.has(named: Named): Boolean {
+    private fun Entity.has(named: Named): Boolean {
         return this.propertyNames.contains(named.name)
     }
 
 
     private inline fun <T> transactional(call: (PersistentStoreTransaction) -> T): T {
-        val tx = store.beginTransaction()
+        val tx = store!!.beginTransaction()
         try {
             return call(tx)
         } catch (e: RuntimeException) {
@@ -163,7 +183,7 @@ object PersistentStoreService {
     }
 
     private inline fun <T> readonly(call: (PersistentStoreTransaction) -> T): T {
-        val tx = store.beginReadonlyTransaction()
+        val tx = store!!.beginReadonlyTransaction()
         try {
             return call(tx)
         } catch (e: RuntimeException) {
