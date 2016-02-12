@@ -268,7 +268,7 @@ ul.alert-dropdown {
     margin: 0;
 }
 
-.top-nav > .open > .dropdown-menu > li > a {
+.top-nav > .open > .dropdown-menu > li > div {
     white-space: nowrap !important;
 }
 
@@ -278,4 +278,25 @@ a {
 
 .selected-item {
     background-color: #faf2cc;
+}
+
+.for-delete {
+    text-decoration: line-through;
+}
+
+.database-action {
+    padding-left: 10px;
+}
+
+.database-action-item:hover {
+    color: white;
+    background-color: black;
+}
+
+.with-pointer {
+    cursor: pointer;
+}
+
+.database-action span {
+    cursor: pointer;
 }

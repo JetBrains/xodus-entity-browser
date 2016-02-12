@@ -43,5 +43,17 @@ angular.module('xodus').controller('DBController', [
             });
         };
         db.forceReload = navigation.forceReload;
+        db.deleteDB = function (database, $event) {
+            if (database.markForDelete) {
+                //delete it
+                return;
+            }
+            $event.stopPropagation();
+            database.markForDelete = true;
+        };
+        db.undoDeleteDB = function (database, $event) {
+            database.markForDelete = false;
+            $event.stopPropagation();
+        };
     }]
 );

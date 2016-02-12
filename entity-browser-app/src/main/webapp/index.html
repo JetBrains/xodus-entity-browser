@@ -9,7 +9,7 @@
     <link href="webjars/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
     <link href="webjars/angular-ui-select/0.13.1/select.min.css" rel="stylesheet">
     <link href="css/main-min.css" rel="stylesheet">
-
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="webjars/font-awesome/4.4.0/css/font-awesome.min.css">
 </head>
 <body>
@@ -30,12 +30,18 @@
                     <a uib-dropdown-toggle class="dropdown-toggle" data-toggle="dropdown">
                         <i class="fa fa-fw fa-database"></i>Databases<b class="caret"></b></a>
                     <ul uib-dropdown-menu class="dropdown-menu">
-                        <li ng-repeat="database in dbs" ng-class="{'selected-item' : database.isCurrent }">
-                            <a ng-click="db.changeDB(database)">
+                        <li data-ng-repeat="database in dbs" data-ng-class="{'selected-item' : database.isCurrent }">
+                            <div class="database-action">
                                 <i data-ng-show="database.isCurrent" class="fa fa-check"></i>
-                                <i data-ng-show="!database.isCurrent" class="fa fa-trash"></i>
-                                {{database.title}}
-                            </a>
+                                <i data-ng-show="!database.isCurrent && database.markForDelete"
+                                   class="fa fa-undo with-pointer database-action-item"
+                                   data-ng-click="db.undoDeleteDB(database, $event)"></i>
+                                <i data-ng-show="!database.isCurrent"
+                                   class="fa fa-trash with-pointer database-action-item"
+                                   data-ng-click="db.deleteDB(database, $event)"></i>
+                                <span data-ng-click="db.changeDB(database)" ng-class="{'for-delete': database.markForDelete}"
+                                >{{database.title}}</span>
+                            </div>
                         </li>
                         <li role="separator" class="divider"></li>
                         <li>

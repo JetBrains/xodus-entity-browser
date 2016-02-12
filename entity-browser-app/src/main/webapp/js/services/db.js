@@ -14,16 +14,16 @@ angular.module('xodus').service('DatabaseService', [
             }
             return $http.get('api/db').then(function (data) {
                 summary = data.data;
-                if (angular.isObject(summary)) {
-                    return summary;
-                }
-                if (!angular.isArray(summary.types) || summary.types.length) {
-                    $location.path('/empty-store');
-                    return $q.reject('empty store');
-                }
                 if (!summary.location || !summary.key) {
                     $location.path('/setup');
                     return $q.reject('setup database first');
+                }
+                if (!angular.isArray(summary.types) || !summary.types.length) {
+                    $location.path('/empty-store');
+                    return $q.reject('empty store');
+                }
+                if (angular.isObject(summary)) {
+                    return $q.when(summary);
                 }
                 return $q.reject('something strange with server');
             });

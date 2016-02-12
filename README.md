@@ -3,14 +3,13 @@ Web UI entity browser for Xodus database. Provides ability to search, delete, cr
 
 ## Run
 
-* get distribution [comming soon...](https://bintray.com/lehvolk/maven)
-* fill database credentials into xodus-store.properties file
+* get latest version [comming soon...](https://bintray.com/lehvolk/maven)
 * execute script run.bat or run.sh
 * open browser http://localhost:8080 (Jetty server binds to all interfaces on port 8080 therefore all interfaces can be
         used to access application)
 
 ## Configuring
-* JVM arguments, server port and properties file location can be modified in startup script.
+* JVM arguments, server port can be modified in startup script.
 
 ## Build from sources
 

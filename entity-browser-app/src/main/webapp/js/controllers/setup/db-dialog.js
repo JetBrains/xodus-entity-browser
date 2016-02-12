@@ -13,4 +13,18 @@ angular.module('xodus').controller('DBDialogController', [
         $scope.cancel = function () {
             $modalInstance.dismiss('cancel');
         };
+
+        $scope.getMessage = function (name) {
+            var field = $scope.database[name];
+            if (('undefined' === typeof(field)) || field.$valid) {
+                return undefined;
+            }
+            var message = '';
+            if (field.$error['required']) {
+                message += ' - is required';
+            } else {
+                message += ' - is invalid';
+            }
+            return message;
+        }
     }]);
