@@ -167,7 +167,19 @@ class XodusRestService {
         try {
             Databases.add(db)
         } catch(e: Exception) {
+            log.error("error adding dababase to recent")
+            throw XodusRestException(e)
+        }
+    }
+
+    @DELETE
+    @Path("/db")
+    fun deleteDB(db: DB) {
+        try {
+            Databases.delete(db)
+        } catch(e: Exception) {
             log.error("error adding dabase to recent")
+            throw XodusRestException(e)
         }
     }
 

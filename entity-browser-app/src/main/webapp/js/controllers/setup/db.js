@@ -44,11 +44,11 @@ angular.module('xodus').controller('DBController', [
         };
         db.forceReload = navigation.forceReload;
         db.deleteDB = function (database, $event) {
+            $event.stopPropagation();
             if (database.markForDelete) {
-                //delete it
+                databases.deleteDB(database);
                 return;
             }
-            $event.stopPropagation();
             database.markForDelete = true;
         };
         db.undoDeleteDB = function (database, $event) {

@@ -14,6 +14,11 @@ object Databases {
         sync()
     }
 
+    fun delete(db: DB) {
+        dbs.removeAll { db.location == it.location && db.key == it.key }
+        sync()
+    }
+
     fun allRecent(): List<DB> {
         return dbs.toList()
     }
