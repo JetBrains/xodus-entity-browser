@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.lehvolk.xodus</groupId>
     <artifactId>xodus-entity-browser</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0-rc1</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -14,7 +14,7 @@
         <jersey.version>2.19</jersey.version>
         <jackson.version>1.9.6</jackson.version>
         <jetty.version>9.2.10.v20150310</jetty.version>
-        <kotlin.version>1.0.0-rc-1017</kotlin.version>
+        <kotlin.version>1.0.0-rc-1050</kotlin.version>
     </properties>
 
     <modules>

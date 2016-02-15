@@ -13,7 +13,7 @@
                 <include>*.txt</include>
                 <include>*.bat</include>
                 <include>*.sh</include>
-                <include>*.properties</include>
+                <include>*.xml</include>
             </includes>
         </fileSet>
     </fileSets>
