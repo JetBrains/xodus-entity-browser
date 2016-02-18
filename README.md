@@ -19,5 +19,5 @@ Web UI entity browser for Xodus database. Provides ability to search, delete, cr
 
     in the root of the project
 
-* unzip file ./entity-browser-launcher/target/xodus-entity-browser-1.0.0-SNAPSHOT.zip
+* unzip file ./entity-browser-launcher/target/xodus-entity-browser-{current.version}.zip
 * see Run section to run app
