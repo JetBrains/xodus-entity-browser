@@ -170,28 +170,12 @@ class PersistentStoreService {
     }
 
 
-    private inline fun <T> transactional(call: (PersistentStoreTransaction) -> T): T {
-        val tx = store!!.beginTransaction()
-        try {
-            return call(tx)
-        } catch (e: RuntimeException) {
-            tx.revert()
-            throw e
-        } finally {
-            tx.commit()
-        }
+    private fun <T> transactional(call: (PersistentStoreTransaction) -> T): T {
+        return store!!.computeInTransaction { call(it as PersistentStoreTransaction) }
     }
 
-    private inline fun <T> readonly(call: (PersistentStoreTransaction) -> T): T {
-        val tx = store!!.beginReadonlyTransaction()
-        try {
-            return call(tx)
-        } catch (e: RuntimeException) {
-            tx.revert()
-            throw e
-        } finally {
-            tx.commit()
-        }
+    private fun <T> readonly(call: (PersistentStoreTransaction) -> T): T {
+        return store!!.computeInReadonlyTransaction { call(it as PersistentStoreTransaction) }
     }
 
 }
