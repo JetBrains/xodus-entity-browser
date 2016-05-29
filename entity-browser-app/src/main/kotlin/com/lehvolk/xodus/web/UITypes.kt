@@ -1,6 +1,7 @@
 package com.lehvolk.xodus.web
 
 
+import jetbrains.exodus.bindings.ComparableSet
 import jetbrains.exodus.entitystore.EntityIterable
 import jetbrains.exodus.entitystore.StoreTransaction
 import jetbrains.exodus.entitystore.iterate.EntityIterableBase
@@ -55,15 +56,24 @@ object UIPropertyTypes {
     private val BY_CLASS = ConcurrentHashMap<Class<out Comparable<*>>, UIPropertyType<*>>()
     private val BY_NAME = ConcurrentHashMap<String, UIPropertyType<*>>()
 
-    private val STRING = newType("String", { it })
-    private val BOOLEAN = newType("Boolean", { java.lang.Boolean.valueOf(it) })
+    private val STRING = newType { it }
+    private val BOOLEAN = newType { java.lang.Boolean.valueOf(it) }
 
-    private val BYTE = newType("Byte", { java.lang.Byte.valueOf(it) })
-    private val SHORT = newType("Short", { java.lang.Short.valueOf(it) })
-    private val INT = newType("Integer", { Integer.valueOf(it) })
-    private val LONG = newType("Long", { java.lang.Long.valueOf(it) })
-    private val FLOAT = newType("Float", { java.lang.Float.valueOf(it) })
-    private val DOUBLE = newType("Double", { java.lang.Double.valueOf(it) })
+    private val BYTE = newType { java.lang.Byte.valueOf(it) }
+    private val SHORT = newType { java.lang.Short.valueOf(it) }
+    private val INT = newType { Integer.valueOf(it) }
+    private val LONG = newType { java.lang.Long.valueOf(it) }
+    private val FLOAT = newType { java.lang.Float.valueOf(it) }
+    private val DOUBLE = newType { java.lang.Double.valueOf(it) }
+    private val CMP_SET = newType {
+        val matchResult = Regex("ComparableSet\\[(.*)\\]").matchEntire(it)
+        if (matchResult != null) {
+            val (commaSeparatedValues) = matchResult.destructured
+            ComparableSet(commaSeparatedValues.split(","))
+        } else {
+            ComparableSet<String>()
+        }
+    }
 
     val rangeTree =
             TypeTreeNode(LONG,
@@ -107,8 +117,8 @@ object UIPropertyTypes {
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun <T : Comparable<*>> newType(clazz: String, function: (String) -> T): UIPropertyType<T> {
-        val fullName = "java.lang." + clazz
+    inline private fun <reified T : Comparable<*>> newType(noinline function: (String) -> T): UIPropertyType<T> {
+        val fullName = T::class.java.name
         val type = UIPropertyType(fullName, function)
         BY_CLASS.put(Class.forName(fullName) as Class<out Comparable<*>>, type)
         BY_NAME.put(fullName, type)
