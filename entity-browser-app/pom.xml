@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.lehvolk.xodus</groupId>
         <artifactId>xodus-entity-browser</artifactId>
-        <version>1.0.0-rc3</version>
+        <version>1.0.0-rc4</version>
     </parent>
     <artifactId>entity-browser-app</artifactId>
     <packaging>war</packaging>
