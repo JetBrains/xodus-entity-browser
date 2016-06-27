@@ -1,10 +1,9 @@
 angular.module('xodus').directive('formView', [
     '$uibModal',
     '$location',
-    'templateUrl',
     'NavigationService',
     'ConfirmationService',
-    function ($uibModal, $location, templateUrl, navigation, confirmation) {
+    function ($uibModal, $location, navigation, confirmation) {
         return {
             restrict: 'E',
             scope: {
@@ -13,7 +12,7 @@ angular.module('xodus').directive('formView', [
             },
             replace: true,
             template: require('../templates/form-view.html'),
-            link: function (scope, element, attrs) {
+            link: function (scope, element) {
                 scope.editMode = (scope.entityId === null);
                 scope.toggleView = function () {
                     scope.editMode = !scope.editMode;

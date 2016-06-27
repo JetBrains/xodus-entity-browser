@@ -5,3 +5,5 @@
 /.idea
 /entity-browser-app/target
 /entity-browser-launcher/target
+/entity-browser-frontend/entity-browser-frontend.iml
+/entity-browser-frontend/dist/

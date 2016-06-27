@@ -57,7 +57,7 @@ module.exports = {
     main: './app/app.js'
   },
 
-  outputPath: 'dist/static',
+  outputPath: 'dist',
 
   resolve: {
     unsafeCache: true,

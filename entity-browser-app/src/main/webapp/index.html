@@ -9,7 +9,7 @@
 
     <link href="webjars/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
     <link href="webjars/angular-ui-select/0.13.1/select.min.css" rel="stylesheet">
-    <link href="webjars/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" >
+    <link href="webjars/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
 <body>
 <div>
@@ -26,7 +26,7 @@
             </div>
             <ul class="nav navbar-right top-nav">
                 <li uib-dropdown class="dropdown">
-                    <a uib-dropdown-toggle class="dropdown-toggle" data-toggle="dropdown">
+                    <a uib-dropdown-toggle class="dropdown-toggle">
                         <i class="fa fa-fw fa-database"></i>Databases<b class="caret"></b></a>
                     <ul uib-dropdown-menu class="dropdown-menu">
                         <li data-ng-repeat="database in dbs" data-ng-class="{'selected-item' : database.isCurrent }">
@@ -38,13 +38,17 @@
                                 <i data-ng-show="!database.isCurrent"
                                    class="fa fa-trash with-pointer database-action-item"
                                    data-ng-click="db.deleteDB(database, $event)"></i>
-                                <span data-ng-click="db.changeDB(database)" ng-class="{'for-delete': database.markForDelete}"
+                                <span data-ng-click="db.changeDB(database)"
+                                      ng-class="{'for-delete': database.markForDelete}"
                                 >{{database.title}}</span>
                             </div>
                         </li>
                         <li role="separator" class="divider"></li>
                         <li>
-                            <a ng-click="db.openDialog()"><i class="fa fa-fw fa-plus"></i>add new</a>
+                            <div class="database-action">
+                                <i class="fa fa-fw fa-plus"></i>
+                                <a ng-click="db.openDialog()">new connection</a>
+                            </div>
                         </li>
                     </ul>
                 </li>
@@ -58,8 +62,8 @@
 </div>
 
 
-<script src="vendor.d1d2b2bfe99c27233cf7.js"></script>
-<script src="main.d1d2b2bfe99c27233cf7.js"></script>
+<script src="/vendor.b147f640a15c433baab9.js"></script>
+<script src="/main.b147f640a15c433baab9.js"></script>
 
 </body>
 </html>

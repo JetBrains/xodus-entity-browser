@@ -1,7 +1,6 @@
 angular.module('xodus').factory('ConfirmationService', [
     '$uibModal',
-    'templateUrl',
-    function ($uibModal, templateUrl) {
+    function ($uibModal) {
         return function (text, callback) {
             return $uibModal.open({
                 animation: true,

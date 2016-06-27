@@ -1,4 +1,4 @@
-angular.module('xodus').directive('entityTypeView', ['templateUrl', function (templateUrl) {
+angular.module('xodus').directive('entityTypeView', [function () {
     return {
         restrict: 'E',
         scope: {

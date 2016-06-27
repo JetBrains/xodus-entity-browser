@@ -15,13 +15,9 @@ angular.module('xodus', [
     'ui.select']
 );
 
-angular.module('xodus')
-    .constant('templateUrl', function (path) {
-        return require('path').join('templates/', path);
-    }).config([
+angular.module('xodus').config([
     '$routeProvider',
-    'templateUrl',
-    function ($routeProvider,templateUrl) {
+    function ($routeProvider) {
         $routeProvider.when('/type/:typeId', {
             template: require('./templates/main.html'),
             reloadOnSearch: false

@@ -41,18 +41,7 @@
         <repository>
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-            <!--<snapshots>-->
-                <!--<enabled>true</enabled>-->
-            <!--</snapshots>-->
         </repository>
-        <!--<repository>-->
-            <!--<snapshots>-->
-                <!--<enabled>false</enabled>-->
-            <!--</snapshots>-->
-            <!--<id>jetbrains</id>-->
-            <!--<name>repo</name>-->
-            <!--<url>http://repository.jetbrains.com/repo</url>-->
-        <!--</repository>-->
 
         <repository>
             <id>kotlin-eap</id>

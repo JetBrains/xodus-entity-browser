@@ -9,7 +9,7 @@ module.exports = require('webpack-config-merger')(
     entry: webpackShare.entryPoints,
     output: {
       path: webpackShare.outputPath,
-      publicPath: 'static/',
+      publicPath: '/',
       filename: '[name].[hash].js'
     },
     resolve: webpackShare.resolve,
