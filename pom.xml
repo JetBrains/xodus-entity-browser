@@ -15,9 +15,11 @@
         <jackson.version>1.9.6</jackson.version>
         <jetty.version>9.2.10.v20150310</jetty.version>
         <kotlin.version>1.0.1</kotlin.version>
+        <xodus.version>1.0-SNAPSHOT</xodus.version>
     </properties>
 
     <modules>
+        <module>entity-browser-frontend</module>
         <module>entity-browser-app</module>
         <module>entity-browser-launcher</module>
     </modules>
@@ -39,10 +41,19 @@
         <repository>
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+            <!--<snapshots>-->
+                <!--<enabled>true</enabled>-->
+            <!--</snapshots>-->
         </repository>
+        <!--<repository>-->
+            <!--<snapshots>-->
+                <!--<enabled>false</enabled>-->
+            <!--</snapshots>-->
+            <!--<id>jetbrains</id>-->
+            <!--<name>repo</name>-->
+            <!--<url>http://repository.jetbrains.com/repo</url>-->
+        <!--</repository>-->
+
         <repository>
             <id>kotlin-eap</id>
             <url>http://dl.bintray.com/kotlin/kotlin-eap</url>

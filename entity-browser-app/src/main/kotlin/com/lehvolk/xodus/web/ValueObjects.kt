@@ -1,9 +1,10 @@
 package com.lehvolk.xodus.web
 
+import com.lehvolk.xodus.web.db.Databases
+import com.lehvolk.xodus.web.db.dbFilter
 import java.util.*
 
-class ServerError(val msg: String) {
-}
+class ServerError(val msg: String)
 
 open class BaseVO {
     var id: String? = null
@@ -74,14 +75,22 @@ class DB {
     var location: String? = null
     var key: String? = null
     var title: String? = null
+    var isOpened: Boolean = true
+    var uuid: String = UUID.randomUUID().toString()
 }
 
 class DBSummary {
     var location: String? = null
     var key: String? = null
     var title: String? = null
-    var recent: List<DB> = emptyList()
+    var recent: List<DB> = Databases.allRecent() //TODO: remove this property
     var types: List<EntityType> = emptyList()
+}
+
+class AppConfig {
+    var opened = Databases.allOpened()
+    var recent = Databases.allRecent()
+    var current: DB? = Databases.current()
 }
 
 fun <T : Named> T.withName(name: String): T {

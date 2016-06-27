@@ -20,7 +20,7 @@ fun Entity.asLightView(): EntityView {
         this.properties = entity.propertyNames.map { entity.propertyView(it) }
         val typeId = entity.id.typeId
         val entityType = store.getEntityType(store.currentTransaction!!, typeId)
-        DI.presentationService.labelOf(typeId, entityType)(this)
+        labeled(entityType)
         this.typeId = typeId.toString()
         this.type = entityType
     }
@@ -54,7 +54,7 @@ private fun Entity.propertyView(name: String): EntityProperty {
     val entity = this
     val store = entity.store as PersistentEntityStoreImpl
     val typeVO = PropertyType().apply {
-        var clazz: Class<*> = if (value != null) {
+        val clazz: Class<*> = if (value != null) {
             val propertyType = store.propertyTypes.getPropertyType(value.javaClass)
             propertyType.clazz
         } else {
@@ -103,4 +103,29 @@ fun <T : Comparable<*>> value2string(value: T?): String? {
         throw IllegalStateException(e)
     }
 
+}
+
+
+private val labelFormat = "{{type}}[{{id}}]"
+
+fun EntityView.labeled(type: String) {
+
+    fun wrap(key: String): String {
+        return "\\{\\{$key\\}\\}"
+    }
+
+    fun doFormat(format: String, entityVO: EntityView): String {
+        var formatted = format.replace(wrap("id").toRegex(), entityVO.id.toString())
+        for (property in entityVO.properties) {
+            formatted = formatted.replace(wrap("entity." + property).toRegex(), property.value.toString())
+            if (!formatted.contains("\\{\\{\\.*\\}\\}")) {
+                return formatted
+            }
+        }
+        return formatted
+    }
+
+    var labelFormat = labelFormat
+    labelFormat = labelFormat.replace(wrap("type").toRegex(), type)
+    label = doFormat(labelFormat, this)
 }

@@ -1,0 +1,105 @@
+package com.lehvolk.xodus.web.db
+
+import com.lehvolk.xodus.web.DB
+import com.lehvolk.xodus.web.InjectionContexts
+import com.lehvolk.xodus.web.JacksonConfigurator
+import java.io.File
+import java.util.*
+
+private val mapper = JacksonConfigurator().mapper
+
+fun dbFilter(db: DB): (DB) -> Boolean {
+    return { db.location == it.location && db.key == it.key }
+}
+
+object Databases {
+
+    private val current = ThreadLocal<DB>()
+
+    private val dbs = arrayListOf<DB>()
+
+    private val recentStore = DBStore("./recent-dbs.json", dbs).load()
+
+    fun add(db: DB) {
+        synchronized(this) {
+            db.uuid = UUID.randomUUID().toString()
+            dbs.add(db)
+            recentStore.doSync()
+        }
+    }
+
+    fun delete(db: DB) {
+        val predicate = dbFilter(db)
+        synchronized(this) {
+            dbs.removeAll(predicate)
+            if (db.isOpened) {
+                InjectionContexts.stop(db)
+            }
+            recentStore.doSync()
+        }
+    }
+
+    fun open(db: DB) {
+        synchronized(this) {
+            db.isOpened = true
+            dbs.add(db)
+            recentStore.doSync()
+        }
+    }
+
+    fun allRecent(): List<DB> {
+        return dbs.toList()
+    }
+
+    fun allOpened(): List<DB> {
+        return dbs.filter { it.isOpened }
+    }
+
+    fun firstOpened(): DB? {
+        return dbs.find { it.isOpened }
+    }
+
+
+    fun current(uuid: String) {
+        val opened = dbs.find { it.uuid == uuid }
+        if (opened != null && opened.isOpened) {
+            current.set(opened)
+        } else {
+            current.set(firstOpened())
+        }
+    }
+
+    fun current() = current.get()
+
+}
+
+private class DBStore(val fileName: String, val dbs: MutableList<DB>) {
+
+    private val file = File(fileName)
+
+    fun doSync() {
+        val copy = dbs.toList()
+        val distinct = copy.distinctBy { it.location to it.key }
+        mapper.writeValue(file, distinct)
+        dbs.clear()
+        dbs.addAll(distinct)
+    }
+
+
+    fun load(): DBStore {
+        dbs.clear()
+        if (!file.exists()) {
+            if (!file.createNewFile()) {
+                throw IllegalStateException("can't create file $fileName")
+            }
+        }
+        try {
+            val type = mapper.typeFactory.constructCollectionType(List::class.java, DB::class.java)
+            dbs.addAll(mapper.readValue(file, type))
+        } catch(e: Exception) {
+            // ignore
+        }
+        return this
+    }
+
+}

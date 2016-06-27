@@ -1,6 +1,7 @@
 package com.lehvolk.xodus.web
 
 
+import com.lehvolk.xodus.web.db.Databases
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
@@ -12,7 +13,6 @@ object XodusStore {
     val STORE_ACCESS_KEY = "entity.browser.store.key";
     val FILE_KEY = "entity.browser.config";
 
-    private var current: XodusStoreRequisites? = null
 
     fun from(pathToFile: String?): XodusStoreRequisites? {
         if (pathToFile == null) {
@@ -65,19 +65,12 @@ object XodusStore {
                 result = XodusStoreRequisites(lastRecent.location!!, lastRecent.key!!)
             }
         }
-        current = result
         return result
-    }
-
-    fun current(): XodusStoreRequisites? {
-        return current
-    }
-
-    fun use(requisites: XodusStoreRequisites) {
-        current = requisites
     }
 
 }
 
 
 class XodusStoreRequisites(val location: String, val key: String)
+
+fun DB.asRequisites(): XodusStoreRequisites = XodusStoreRequisites(location!!, key!!)
