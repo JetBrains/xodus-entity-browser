@@ -8,4 +8,4 @@ else
   echo "info: Using java located in ${JAVA_HOME}."
 fi
 
-${JAVA} -Dlogback.configurationFile=logback.xml -Dserver.port=${SERVER_PORT} -Dentity.browser.config=./xodus-store.properties -jar jetty-runner.jar --port ${SERVER_PORT} ./resources/xodus-entity-browse.war
+${JAVA} -Dlogback.configurationFile=logback.xml -Dserver.port=${SERVER_PORT} -Dentity.browser.config=./xodus-store.properties -Dexodus.entityStore.refactoring.skipAll=true -Dexodus.entityStore.cachingDisabled=true -jar jetty-runner.jar --port ${SERVER_PORT} ./resources/xodus-entity-browse.war
