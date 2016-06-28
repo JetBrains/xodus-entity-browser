@@ -3,7 +3,7 @@ Web UI entity browser for Xodus database. Provides ability to search, delete, cr
 
 ## Run
 
-* get [latest version](https://bintray.com/artifact/download/lehvolk/maven/com/lehvolk/xodus/entity-browser-launcher/1.0.0-rc4/entity-browser-launcher-1.0.0-rc4.zip)
+* get [latest version](https://bintray.com/artifact/download/lehvolk/maven/com/lehvolk/xodus/entity-browser-launcher/1.0.0-rc5/entity-browser-launcher-1.0.0-rc5.zip)
 * execute run.bat or run.sh
 * open browser http://localhost:8080 (Jetty server binds to all interfaces on port 8080 therefore all interfaces can be
         used to access application)
