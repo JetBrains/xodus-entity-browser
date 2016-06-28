@@ -32,7 +32,11 @@ abstract class BulkJob : Job() {
 
     override fun run() {
         log.info("running {}", this)
-        while (shouldContinue()) {
+        var isFirst = true
+        while (shouldContinue() || isFirst) {
+            if (isFirst) {
+                isFirst = !isFirst
+            }
             log.info("iteration {} of ", iteration, this)
             newSubJob().run()
             iteration++
