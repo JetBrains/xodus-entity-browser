@@ -24,7 +24,6 @@ class JobsService {
 
 }
 
-
 abstract class Job : Runnable
 
 abstract class BulkJob : Job() {
@@ -48,7 +47,7 @@ abstract class BulkJob : Job() {
 
 abstract class EntityBulkJob(internal val store: PersistentEntityStore) : BulkJob() {
 
-    open val bulkSize = 20
+    open val bulkSize = 1000
 
     var size = 0L
 

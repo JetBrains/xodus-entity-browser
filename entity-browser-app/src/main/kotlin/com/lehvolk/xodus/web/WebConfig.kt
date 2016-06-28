@@ -53,7 +53,7 @@ class EntityBrowserFilter : Filter {
     }
 
     override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
-        var uuid = (request as HttpServletRequest).cookies.find { it.name == DB_COOKIE }?.value
+        var uuid = (request as HttpServletRequest).cookies?.find { it.name == DB_COOKIE }?.value
         if (uuid == null) {
             if (Databases.firstOpened() != null) {
                 uuid = Databases.firstOpened()!!.uuid
