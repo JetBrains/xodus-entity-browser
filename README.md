@@ -7,8 +7,7 @@ Application has 2 builds: based on xodus builds from teamcity.jetbrains.com and 
 
 Highly desirable to use entity browser shipped with the same xodus version as used in application which produce database.
 
-That's mean that if your application uses 'x' version of xodus and you modify data with 'y' version of xodus then
-application (with 'x' version of xodus) may not working as expected on this database.
+That's mean that if your application uses 'x' version of xodus and you modify data with 'y' version of xodus shipped with entity browser then application (with 'x' version of xodus) may not working as expected on this database.
 
 ## Run
 
