@@ -1,0 +1,34 @@
+plugins {
+    id "com.moowork.node" version "0.13"
+}
+
+configurations {
+    frontend
+}
+
+node {
+    version = '5.4.0'
+}
+
+task upgradeNpm(type: NpmTask, dependsOn: 'npmInstall') {
+    args = ['install', '-g', '-f', 'npm']
+}
+
+task runNpm(type: NpmTask, dependsOn: 'upgradeNpm') {  args = ['run', 'build'] }
+
+task zipFrontend(type: Zip, dependsOn: 'runNpm') { from 'dist' }
+
+artifacts {
+    compile file: zipFrontend.archivePath, builtBy: zipFrontend
+}
+
+clean {
+    delete 'dist'
+}
+
+idea {
+    module {
+        // make Idea mark some dirs as excluded on module import
+        excludeDirs += [file('node_modules'), file('dist'), file('.tmp')]
+    }
+}

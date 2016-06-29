@@ -7,4 +7,4 @@ if "%JAVA_HOME%"=="" (
     set JAVA="%JAVA_HOME%\bin\java"
 )
 
-%JAVA% -Dlogback.configurationFile=logback.xml -Dserver.port=%SERVER_PORT% -Dentity.browser.config=./xodus-store.properties -Dexodus.entityStore.refactoring.skipAll=true -Dexodus.entityStore.cachingDisabled=true -jar jetty-runner.jar --port %SERVER_PORT% ./resources/xodus-entity-browse.war
+%JAVA% -Dlogback.configurationFile=logback.xml -Dserver.port=%SERVER_PORT% -Dentity.browser.config=./xodus-store.properties -Dexodus.entityStore.refactoring.skipAll=true -Dexodus.entityStore.cachingDisabled=true -jar jetty-runner.jar --port %SERVER_PORT% ./resources/xodus-entity-browser.war

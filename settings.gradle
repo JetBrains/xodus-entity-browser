@@ -1,0 +1,6 @@
+rootProject.name = 'xodus-entity-browser'
+// application modules
+include 'entity-browser-frontend',
+        'entity-browser-app',
+        'entity-browser-launcher'
+

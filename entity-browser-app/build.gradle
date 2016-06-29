@@ -1,0 +1,68 @@
+plugins {
+    id 'war'
+    id "ca.coglinc.javacc" version "2.3.1"
+}
+
+apply plugin: 'kotlin'
+
+configurations {
+    frontend
+}
+
+def javaCCFolder = "src/main/generated"
+
+sourceSets {
+    main {
+        java {
+            srcDir file(javaCCFolder)
+        }
+    }
+}
+
+dependencies {
+    compile lib('org.jetbrains.kotlin:kotlin-stdlib')
+    compile lib('org.jetbrains.kotlin:kotlin-reflect')
+
+    compile lib('javax.servlet:javax.servlet-api')
+
+    compile lib('org.webjars:bootstrap')
+    compile lib('org.webjars:angular-ui-select')
+    compile lib('org.webjars:font-awesome')
+
+    compile lib('ch.qos.logback:logback-classic')
+    compile lib('ch.qos.logback:logback-core')
+
+    compile lib('org.glassfish.jersey.media:jersey-media-json-jackson')
+    compile lib('org.glassfish.jersey.containers:jersey-container-servlet')
+
+    frontend project(path: ':entity-browser-frontend', configuration: 'compile')
+
+    compile tc(buildTypeId: xodusBuildTypeId, version: xodusVersion, artifactPath: 'environment/build/libs/xodus-environment.jar')
+    compile tc(buildTypeId: xodusBuildTypeId, version: xodusVersion, artifactPath: 'entity-store/build/libs/xodus-entity-store.jar')
+    compile tc(buildTypeId: xodusBuildTypeId, version: xodusVersion, artifactPath: 'openAPI/build/libs/xodus-openAPI.jar')
+    compile tc(buildTypeId: xodusBuildTypeId, version: xodusVersion, artifactPath: 'compress/build/libs/xodus-compress.jar')
+    compile tc(buildTypeId: xodusBuildTypeId, version: xodusVersion, artifactPath: 'utils/build/libs/xodus-utils.jar')
+    compile tc(buildTypeId: xodusBuildTypeId, version: xodusVersion, artifactPath: 'vfs/build/libs/xodus-vfs.jar')
+
+    testCompile lib('org.mockito:mockito-all')
+    testCompile lib('junit:junit')
+}
+
+war {
+    dependsOn configurations.frontend
+    archiveName = "xodus-entity-browser.war"
+    destinationDir = globalArtifactsBuildDir
+    from {
+        // use of closure defers configuration evaluation until execution time
+        configurations.frontend.collect { zipTree(it) }
+    }
+}
+
+clean {
+    delete javaCCFolder
+}
+
+compileJavacc {
+    inputDirectory = file('src/main/javacc')
+    outputDirectory = file(javaCCFolder + '/com/lehvolk/xodus/web') // plugin wont create package for generated classes
+}

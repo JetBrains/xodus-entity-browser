@@ -1,9 +1,10 @@
 /entity-browser-launcher/entity-browser-launcher.iml
 /entity-browser-app/entity-browser-app.iml
 /xodus-entity-browser.iml
-/target
 /.idea
-/entity-browser-app/target
-/entity-browser-launcher/target
 /entity-browser-frontend/entity-browser-frontend.iml
 /entity-browser-frontend/dist/
+/entity-browser-frontend/.idea/
+/deploy-to-bintray.sh
+/entity-browser-app/src/main/generated/
+/classes

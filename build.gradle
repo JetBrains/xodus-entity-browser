@@ -1,0 +1,91 @@
+buildscript {
+    ext.xodusBuildTypeId = 'Xodus_BuildBranchYoutrack70hub20'
+    ext.xodusVersion = '2243'
+    ext.kotlinVersion = '1.0.2'
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    }
+}
+
+plugins {
+    id 'java'
+    id 'idea'                                         // ide sync fine tuning
+    id 'com.github.jk1.tcdeps' version '0.9.1'        // resolves dependencies from TeamCity
+    id "com.jfrog.bintray" version "1.7"
+}
+
+apply from: 'libraries.gradle'
+apply plugin: 'kotlin'
+
+ext.globalArtifactsBuildDir = buildDir
+
+group = 'com.lehvolk.xodus'
+version = "1.0.$xodusVersion"
+
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'com.github.jk1.tcdeps'
+    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
+
+    sourceCompatibility = 1.7
+
+    repositories {
+        mavenCentral()
+        teamcityServer {
+            url = 'http://teamcity.jetbrains.com'
+        }
+        maven {
+            url  "http://dl.bintray.com/lehvolk/maven"
+        }
+    }
+
+    idea {
+        module {
+            downloadSources = true
+        }
+    }
+}
+
+bintray {
+    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getProperty('BINTRAY_USER')
+    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getProperty('BINTRAY_API_KEY')
+    publications = ['mavenBintray']
+    pkg {
+        repo = 'maven'
+        name = 'public'
+        userOrg = user
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/lehvolk/xodus-entity-browser.git'
+        labels = ['xodus']
+        publicDownloadNumbers = true
+        publish = true
+        version {
+            name = "1.0.$xodusVersion"
+            desc = 'Xodus entity browser'
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenBintray(MavenPublication) {
+            artifact 'build/entity-browser-launcher.zip'
+
+            groupId 'com.lehvolk.xodus'
+            artifactId 'entity-browser-launcher'
+            version "1.0.$xodusVersion"
+        }
+    }
+}
+
+defaultTasks 'clean build'
+
+repositories {
+    mavenCentral()
+}

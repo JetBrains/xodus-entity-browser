@@ -51,7 +51,6 @@ open class EntityType() : Named() {
 
 open class SearchPager(val items: Array<EntityView>, val totalCount: Long)
 
-
 open class ChangeSummarySection<T> {
 
     var added: List<T> = ArrayList()
