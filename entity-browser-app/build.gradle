@@ -37,13 +37,18 @@ dependencies {
 
     frontend project(path: ':entity-browser-frontend', configuration: 'compile')
 
-    compile tc(buildTypeId: xodusBuildTypeId, version: xodusVersion, artifactPath: 'environment/build/libs/xodus-environment.jar')
-    compile tc(buildTypeId: xodusBuildTypeId, version: xodusVersion, artifactPath: 'entity-store/build/libs/xodus-entity-store.jar')
-    compile tc(buildTypeId: xodusBuildTypeId, version: xodusVersion, artifactPath: 'openAPI/build/libs/xodus-openAPI.jar')
-    compile tc(buildTypeId: xodusBuildTypeId, version: xodusVersion, artifactPath: 'compress/build/libs/xodus-compress.jar')
-    compile tc(buildTypeId: xodusBuildTypeId, version: xodusVersion, artifactPath: 'utils/build/libs/xodus-utils.jar')
-    compile tc(buildTypeId: xodusBuildTypeId, version: xodusVersion, artifactPath: 'vfs/build/libs/xodus-vfs.jar')
-
+    if (isMavenXodus) {
+        compile lib('org.jetbrains.xodus:xodus-environment')
+        compile lib('org.jetbrains.xodus:xodus-entity-store')
+        compile lib('org.jetbrains.xodus:xodus-openAPI')
+    } else {
+        compile tc(buildTypeId: xodusBuildTypeId, version: xodusTeamcityBuildNumber, artifactPath: 'environment/build/libs/xodus-environment.jar')
+        compile tc(buildTypeId: xodusBuildTypeId, version: xodusTeamcityBuildNumber, artifactPath: 'entity-store/build/libs/xodus-entity-store.jar')
+        compile tc(buildTypeId: xodusBuildTypeId, version: xodusTeamcityBuildNumber, artifactPath: 'openAPI/build/libs/xodus-openAPI.jar')
+        compile tc(buildTypeId: xodusBuildTypeId, version: xodusTeamcityBuildNumber, artifactPath: 'compress/build/libs/xodus-compress.jar')
+        compile tc(buildTypeId: xodusBuildTypeId, version: xodusTeamcityBuildNumber, artifactPath: 'utils/build/libs/xodus-utils.jar')
+        compile tc(buildTypeId: xodusBuildTypeId, version: xodusTeamcityBuildNumber, artifactPath: 'vfs/build/libs/xodus-vfs.jar')
+    }
     testCompile lib('org.mockito:mockito-all')
     testCompile lib('junit:junit')
 }

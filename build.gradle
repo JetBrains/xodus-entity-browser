@@ -1,6 +1,7 @@
 buildscript {
     ext.xodusBuildTypeId = 'Xodus_BuildBranchYoutrack70hub20'
-    ext.xodusVersion = '2243'
+    ext.xodusTeamcityBuildNumber = '2243'
+    ext.xodusMavenVersion = '1.0-SNAPSHOT'
     ext.kotlinVersion = '1.0.2'
 
     repositories {
@@ -23,8 +24,13 @@ apply plugin: 'kotlin'
 
 ext.globalArtifactsBuildDir = buildDir
 
+def isMavenXodus = Boolean.getBoolean('xodus-from-maven')
+ext.isMavenXodus = isMavenXodus
+
+def buildVersion = isMavenXodus ? "1.0.0-" + (new Date().format('yyyyMMdd')) : "1.0.$xodusTeamcityBuildNumber"
+
 group = 'com.lehvolk.xodus'
-version = "1.0.$xodusVersion"
+version = buildVersion
 
 allprojects {
     apply plugin: 'java'
@@ -38,10 +44,13 @@ allprojects {
     repositories {
         mavenCentral()
         teamcityServer {
-            url = 'http://teamcity.jetbrains.com'
+            url = 'https://teamcity.jetbrains.com'
         }
         maven {
-            url  "http://dl.bintray.com/lehvolk/maven"
+            url "https://dl.bintray.com/lehvolk/maven"
+        }
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots"
         }
     }
 
@@ -56,9 +65,10 @@ bintray {
     user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getProperty('BINTRAY_USER')
     key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getProperty('BINTRAY_API_KEY')
     publications = ['mavenBintray']
+
     pkg {
         repo = 'maven'
-        name = 'public'
+        name = isMavenXodus ? 'public' : 'jetbrains-team'
         userOrg = user
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/lehvolk/xodus-entity-browser.git'
@@ -66,7 +76,7 @@ bintray {
         publicDownloadNumbers = true
         publish = true
         version {
-            name = "1.0.$xodusVersion"
+            name = buildVersion
             desc = 'Xodus entity browser'
         }
     }
@@ -79,7 +89,7 @@ publishing {
 
             groupId 'com.lehvolk.xodus'
             artifactId 'entity-browser-launcher'
-            version "1.0.$xodusVersion"
+            version buildVersion
         }
     }
 }

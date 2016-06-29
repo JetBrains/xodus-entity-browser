@@ -19,6 +19,10 @@ ext.libraries = [
 
         'org.eclipse.jetty:jetty-runner'                          : '9.2.10.v20150310',
 
+        'org.jetbrains.xodus:xodus-environment'                   : xodusMavenVersion,
+        'org.jetbrains.xodus:xodus-entity-store'                  : xodusMavenVersion,
+        'org.jetbrains.xodus:xodus-openAPI'                       : xodusMavenVersion,
+
         'org.mockito:mockito-all'                                 : '1.9.5',
         'junit:junit'                                             : '4.11'
 ]
