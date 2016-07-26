@@ -1,7 +1,7 @@
 buildscript {
     ext.xodusBuildTypeId = 'Xodus_BuildBranchYoutrack70hub20'
-    ext.xodusTeamcityBuildNumber = '2243'
-    ext.xodusMavenVersion = '1.0-SNAPSHOT'
+    ext.xodusTeamcityBuildNumber = '2295'
+    ext.xodusMavenVersion = '1.0.1'
     ext.kotlinVersion = '1.0.2'
 
     repositories {

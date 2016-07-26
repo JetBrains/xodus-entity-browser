@@ -10,11 +10,7 @@ node {
     version = '5.4.0'
 }
 
-task upgradeNpm(type: NpmTask, dependsOn: 'npmInstall') {
-    args = ['install', '-g', '-f', 'npm']
-}
-
-task runNpm(type: NpmTask, dependsOn: 'upgradeNpm') {  args = ['run', 'build'] }
+task runNpm(type: NpmTask, dependsOn: 'npmInstall') { args = ['run', 'build'] }
 
 task zipFrontend(type: Zip, dependsOn: 'runNpm') { from 'dist' }
 

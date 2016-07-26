@@ -11,8 +11,8 @@ That's mean that if your application uses 'x' version of xodus and you modify da
 
 ## Run
 
-* get [latest version based on maven repo](https://bintray.com/artifact/download/lehvolk/maven/com/lehvolk/xodus/entity-browser-launcher/1.0.0-20160629/entity-browser-launcher-1.0.0-20160629.zip)
-* get [latest version based on teamcity.jetbrains.com](https://bintray.com/artifact/download/lehvolk/maven/com/lehvolk/xodus/entity-browser-launcher/1.0.2243/entity-browser-launcher-1.0.2243.zip)
+* get [latest version based on maven repo](https://bintray.com/artifact/download/lehvolk/maven/com/lehvolk/xodus/entity-browser-launcher/1.0.0-20160726/entity-browser-launcher-1.0.0-20160701.zip)
+* get [latest version based on teamcity.jetbrains.com](https://bintray.com/artifact/download/lehvolk/maven/com/lehvolk/xodus/entity-browser-launcher/1.0.2295/entity-browser-launcher-1.0.2243.zip)
 * execute run.bat or run.sh
 * open browser http://localhost:8080 (Jetty server binds to all interfaces on port 8080 therefore all interfaces can be
         used to access application)
