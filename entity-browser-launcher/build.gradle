@@ -30,5 +30,5 @@ task zipLauncher(type: Zip) {
 }
 
 artifacts {
-    compile file: zipLauncher.archivePath, builtBy: zipLauncher
+    archives zipLauncher
 }

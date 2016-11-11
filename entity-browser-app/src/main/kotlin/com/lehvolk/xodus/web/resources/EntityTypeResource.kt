@@ -5,6 +5,7 @@ import com.lehvolk.xodus.web.ChangeSummary
 import com.lehvolk.xodus.web.EntityView
 import com.lehvolk.xodus.web.SearchPager
 import javax.ws.rs.*
+import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.StreamingOutput
 
 @Path("/type")
@@ -81,6 +82,7 @@ class EntityTypeResource : ApplicationResource() {
 
     @GET
     @Path("{id}/entity/{entityId}/blob/{blobName}")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM + ";charset=utf-8")
     fun getBlob(
             @PathParam("id") id: Int,
             @PathParam("entityId") entityId: Long,
