@@ -16,9 +16,7 @@ angular.module('xodus').directive('storeSetup', ['$http', 'NavigationService', '
                     key: angular.isDefined(scope.key) ? scope.key : null
                 };
                 if (!scope.db.location || !scope.db.key) {
-                    databases.getSummary().then(function (data) {
-                        scope.db = data;
-                    });
+                    scope.db = databases.loadedAppState.current;
                 }
                 scope.error = null;
                 scope.changeDB = function () {
@@ -51,7 +49,7 @@ angular.module('xodus').directive('storeSetup', ['$http', 'NavigationService', '
                 scope.applyKey = function (item) {
                     scope.db.key = item.key;
                 };
-                
+
             }
         };
     }]

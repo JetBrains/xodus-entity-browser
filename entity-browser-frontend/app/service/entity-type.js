@@ -10,21 +10,17 @@ angular.module('xodus').service('EntityTypeService', [
         this.bulkDelete = bulkDelete;
 
         function all() {
-            return database.getSummary().then(function (data) {
-                return data.types;
-            });
+            return database.loadedAppState.current.types;
         }
 
         function byId(id) {
-            return all().then(function (data) {
-                var type = null;
-                angular.forEach(data, function (item) {
-                    if (item.id == id) {
-                        type = item;
-                    }
-                });
-                return type;
+            var type = null;§
+            angular.forEach(all(), function (item) {
+                if (item.id == id) {
+                    type = item;
+                }
             });
+            return type;
         }
 
         function search(typeId, term, offset, pageSize) {

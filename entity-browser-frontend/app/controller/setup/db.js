@@ -11,26 +11,23 @@ angular.module('xodus').controller('DBController', [
 
         var hubKey = 'jetPassServerDb';
         var youtrackKey = 'teamsysstore';
-        
+
         db.predefinedKeys = [
             {name: 'Hub', key: hubKey},
             {name: 'YouTrack', key: youtrackKey}
         ];
-        $scope.dbs = [];
-        databases.getSummary().then(function (summary) {
-            $scope.dbs = summary.recent;
-            angular.forEach($scope.dbs, function (db) {
-                if (!db.title) {
-                    if (db.key === hubKey) {
-                        db.title = 'HUB: ' + db.location;
-                    } else if (db.key === youtrackKey) {
-                        db.title = 'YouTrack: ' + db.location;
-                    } else {
-                        db.title = db.key + ':' + db.location;
-                    }
+        $scope.dbs = databases.loadedAppState.recent;
+        angular.forEach($scope.dbs, function (db) {
+            if (!db.title) {
+                if (db.key === hubKey) {
+                    db.title = 'HUB: ' + db.location;
+                } else if (db.key === youtrackKey) {
+                    db.title = 'YouTrack: ' + db.location;
+                } else {
+                    db.title = db.key + ':' + db.location;
                 }
-                db.isCurrent = (summary.location === db.location && summary.key === db.key)
-            });
+            }
+            db.isCurrent = (summary.location === db.location && summary.key === db.key)
         });
         db.changeDB = function (database) {
             databases.update(database);

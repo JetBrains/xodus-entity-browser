@@ -1,28 +1,25 @@
 angular.module('xodus').controller('LinksController', ['$scope', 'EntitiesService', 'EntityTypeService',
-    function($scope, entities, types) {
+    function ($scope, entities, types) {
         var links = this;
 
         $scope.uiLinks = $scope.state.current.links;
 
-        links.allEntityTypes = [];
         links.entities = [];
-        types.all().then(function(data) {
-            links.allEntityTypes = data;
-            links.newLink = newLink();
-        });
+        links.allEntityTypes = types.all();
+        links.newLink = newLink();
 
-        links.searchEntities = function(searchTerm) {
-            types.search(links.newLink.type.id, searchTerm, 0, 10).then(function(data) {
+        links.searchEntities = function (searchTerm) {
+            types.search(links.newLink.type.id, searchTerm, 0, 10).then(function (data) {
                 links.entities = data.items;
             });
         };
 
-        links.updateEntities = function() {
+        links.updateEntities = function () {
             links.newLink.value = null;
             links.searchEntities(null);
         };
 
-        links.removeLink = function(link) {
+        links.removeLink = function (link) {
             var found = $scope.findByName($scope.uiLinks, link.name);
             if (found) {
                 var index = $scope.uiLinks.indexOf(found);
@@ -30,7 +27,7 @@ angular.module('xodus').controller('LinksController', ['$scope', 'EntitiesServic
             }
         };
 
-        links.addNewLink = function() {
+        links.addNewLink = function () {
             var linksForm = $scope.linksForm;
             $scope.makeDirty(linksForm);
             if (linksForm.$valid) {
@@ -66,7 +63,7 @@ angular.module('xodus').controller('LinksController', ['$scope', 'EntitiesServic
 
         function findSame(name) {
             var founded = null;
-            angular.forEach($scope.uiLinks, function(link) {
+            angular.forEach($scope.uiLinks, function (link) {
                 if (link.name == name) {
                     founded = link;
                 }

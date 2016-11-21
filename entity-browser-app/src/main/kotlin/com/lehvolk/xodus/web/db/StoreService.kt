@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.io.OutputStream
 
-class StoreService(val requisites: XodusStoreRequisites) {
+class StoreService(requisites: XodusStoreRequisites) {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 

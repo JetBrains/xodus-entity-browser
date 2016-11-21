@@ -104,6 +104,9 @@ var webpackConfig = require('webpack-config-merger')(
 
       proxy: [
         {url: '/api', timeout: 9999999},
+        {url: '/type', timeout: 9999999},
+        {url: '/setup', timeout: 9999999},
+        {url: '/empty-store', timeout: 9999999},
         '/webjars'
       ].reduce(function(proxy, proxyItem) {
         var serverUri = url.format({
