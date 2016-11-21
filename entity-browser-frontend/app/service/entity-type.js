@@ -14,7 +14,7 @@ angular.module('xodus').service('EntityTypeService', [
         }
 
         function byId(id) {
-            var type = null;§
+            var type = null;
             angular.forEach(all(), function (item) {
                 if (item.id == id) {
                     type = item;
