@@ -24,8 +24,6 @@ angular.module('xodus').config([
             template: require('./templates/error.html')
         }).when('/empty-store', {
             template: require('./templates/empty-store.html')
-        }).when('/setup', {
-            template: require('./templates/setup.html')
         }).otherwise({
             redirectTo: '/type/0'
         });
@@ -38,7 +36,7 @@ angular.module('xodus').config([
                             $location.path('/setup');
                             return;
                         }
-                        if (!angular.isArray(summary.types) || !summary.types.length) {
+                        if (!angular.isArray(summary.current.types) || !summary.current.types.length) {
                             $location.path('/empty-store');
                         }
                     }).catch(function () {
@@ -58,6 +56,9 @@ angular.module('xodus').config([
         });
         when('/type/:typeId/new', {
             template: require('./templates/entity.html')
+        });
+        when('/setup', {
+            template: require('./templates/setup.html')
         });
     }]);
 
