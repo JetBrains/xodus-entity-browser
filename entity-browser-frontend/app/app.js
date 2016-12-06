@@ -30,7 +30,7 @@ angular.module('xodus').config([
 
         function when(path, route) {
             route.resolve = {
-                'currentDB': function ($location, DatabaseService) {
+                appState: ['$location', 'DatabaseService' ,function ($location, DatabaseService) {
                     return DatabaseService.getAppState().then(function (summary) {
                         if (!summary.current) {
                             $location.path('/setup');
@@ -42,7 +42,7 @@ angular.module('xodus').config([
                     }).catch(function () {
                         $location.path('/error');
                     });
-                }
+                }]
             };
             $routeProvider.when(path, route);
         }
