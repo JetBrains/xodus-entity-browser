@@ -8,7 +8,7 @@ fun Entity.asView(): EntityView {
     val entity = this
     return entity.asLightView().apply {
         blobs = entity.blobNames.map { entity.blobView(it) }
-        links = entity.linkNames.map { entity.linkView(it) }
+        links = entity.linkNames.asSequence().flatMap { entity.linkView(it) }.toList()
     }
 }
 
@@ -26,11 +26,10 @@ fun Entity.asLightView(): EntityView {
     }
 }
 
-fun Entity.linkView(name: String): EntityLink {
+fun Entity.linkView(name: String): Sequence<EntityLink> {
     val entity = this
-    return EntityLink().withName(name).apply {
-        val link = entity.getLink(name)
-        if (link != null) {
+    return entity.getLinks(name).asSequence().take(100).map { link ->
+        EntityLink().withName(name).apply {
             val lightVO = link.asLightView()
             val linkId = link.id
             typeId = linkId.typeId

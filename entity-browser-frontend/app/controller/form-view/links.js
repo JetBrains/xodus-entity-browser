@@ -23,7 +23,7 @@ angular.module('xodus').controller('LinksController', ['$scope', 'EntitiesServic
         };
 
         links.removeLink = function(link) {
-            var found = $scope.findByName($scope.uiLinks, link.name);
+            var found = $scope.find($scope.uiLinks, link);
             if (found) {
                 var index = $scope.uiLinks.indexOf(found);
                 $scope.uiLinks.splice(index, 1);
