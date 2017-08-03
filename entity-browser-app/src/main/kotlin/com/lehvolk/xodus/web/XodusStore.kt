@@ -73,4 +73,4 @@ object XodusStore {
 
 class XodusStoreRequisites(val location: String, val key: String)
 
-fun DB.asRequisites(): XodusStoreRequisites = XodusStoreRequisites(location!!, key!!)
+fun DBSummary.asRequisites(): XodusStoreRequisites = XodusStoreRequisites(location!!, key!!)

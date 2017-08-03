@@ -7,13 +7,12 @@ Application has 2 builds: based on xodus builds from teamcity.jetbrains.com and 
 
 Highly desirable to use entity browser shipped with the same xodus version as used in application which produce database.
 
-That's mean that if your application uses 'x' version of xodus and you modify data with 'y' version of xodus then
-application (with 'x' version of xodus) may not working as expected on this database.
+That's mean that if your application uses 'x' version of xodus and you modify data with 'y' version of xodus shipped with entity browser then application (with 'x' version of xodus) may not working as expected on this database.
 
 ## Run
 
-* get [latest version based on maven repo](https://bintray.com/artifact/download/lehvolk/maven/com/lehvolk/xodus/entity-browser-launcher/1.0.0-20160629/entity-browser-launcher-1.0.0-20160629.zip)
-* get [latest version based on teamcity.jetbrains.com](https://bintray.com/artifact/download/lehvolk/maven/com/lehvolk/xodus/entity-browser-launcher/1.0.2243/entity-browser-launcher-1.0.2243.zip)
+* get [latest version based on maven repo](https://dl.bintray.com/lehvolk/maven/com/lehvolk/xodus/entity-browser-launcher/1.0.0-20161111/entity-browser-launcher-1.0.0-20161111.zip)
+* get [latest version based on teamcity.jetbrains.com](https://dl.bintray.com/lehvolk/maven/com/lehvolk/xodus/entity-browser-launcher/1.0.2395/entity-browser-launcher-1.0.2395.zip)
 * execute run.bat or run.sh
 * open browser http://localhost:8080 (Jetty server binds to all interfaces on port 8080 therefore all interfaces can be
         used to access application)

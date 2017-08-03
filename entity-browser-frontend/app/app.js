@@ -16,24 +16,49 @@ angular.module('xodus', [
 );
 
 angular.module('xodus').config([
-    '$routeProvider',
-    function ($routeProvider) {
-        $routeProvider.when('/type/:typeId', {
-            template: require('./templates/main.html'),
-            reloadOnSearch: false
-        }).when('/type/:typeId/entity/:entityId', {
-            template: require('./templates/entity.html')
-        }).when('/type/:typeId/new', {
-            template: require('./templates/entity.html')
-        }).when('/error', {
+    '$routeProvider', '$locationProvider',
+    function ($routeProvider, $locationProvider) {
+        // $locationProvider.html5Mode(true);
+
+        $routeProvider.when('/error', {
             template: require('./templates/error.html')
         }).when('/empty-store', {
             template: require('./templates/empty-store.html')
-        }).when('/setup', {
+        }).otherwise({
+            redirectTo: '/type/0'
+        });
+
+        function when(path, route) {
+            route.resolve = {
+                appState: ['$location', 'DatabaseService' ,function ($location, DatabaseService) {
+                    return DatabaseService.getAppState().then(function (summary) {
+                        if (!summary.current) {
+                            $location.path('/setup');
+                            return;
+                        }
+                        if (!angular.isArray(summary.current.types) || !summary.current.types.length) {
+                            $location.path('/empty-store');
+                        }
+                    }).catch(function () {
+                        $location.path('/error');
+                    });
+                }]
+            };
+            $routeProvider.when(path, route);
+        }
+
+        when('/type/:typeId', {
+            template: require('./templates/main.html'),
+            reloadOnSearch: false
+        });
+        when('/type/:typeId/entity/:entityId', {
+            template: require('./templates/entity.html')
+        });
+        when('/type/:typeId/new', {
+            template: require('./templates/entity.html')
+        });
+        when('/setup', {
             template: require('./templates/setup.html')
-        }).otherwise({  
-            redirectTo: '/type/0',
-            template: require('./templates/main.html')
         });
     }]);
 

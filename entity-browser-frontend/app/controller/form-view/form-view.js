@@ -1,10 +1,9 @@
 angular.module('xodus').controller('FormViewController', ['$scope', 'EntitiesService', 'EntityTypeService', '$timeout',
-    function($scope, entities, types, $timeout) {
+    function ($scope, entities, types, $timeout) {
         var formView = this;
 
         $scope.find = function(items, link) {
             var found = null;
-            var name = link.name;
             angular.forEach(items, function(item) {
                 if (item.name === link.name && item.typeId === link.typeId && item.entityId === link.entityId) {
                     found = item;
@@ -14,7 +13,7 @@ angular.module('xodus').controller('FormViewController', ['$scope', 'EntitiesSer
         };
         initialize();
 
-        formView.save = function() {
+        formView.save = function () {
             var state = $scope.state;
             var propsForm = $scope.getForm('propsForm');
             $scope.makeDirty(propsForm);
@@ -23,19 +22,19 @@ angular.module('xodus').controller('FormViewController', ['$scope', 'EntitiesSer
             }
             $scope.toggleView();
             var changeSummary = entities.getChangeSummary(state.initial, state.current);
-            entities.save(state.initial, changeSummary).then(function(response) {
+            entities.save(state.initial, changeSummary).then(function (response) {
                 state.update(response.data);
-            }, function(response) {
+            }, function (response) {
                 formView.error = response.data.msg;
                 $scope.toggleView();
             });
         };
 
-        formView.closeError = function() {
+        formView.closeError = function () {
             formView.error = null;
         };
 
-        formView.revert = function() {
+        formView.revert = function () {
             $scope.state.revert();
             if (!formView.isNew) {
                 $scope.toggleView();
@@ -45,22 +44,21 @@ angular.module('xodus').controller('FormViewController', ['$scope', 'EntitiesSer
         function initialize() {
             $scope.state = null;
             if ($scope.entityId) {
-                entities.byId($scope.entityTypeId, $scope.entityId).then(function(entity) {
+                entities.byId($scope.entityTypeId, $scope.entityId).then(function (entity) {
                     $scope.state = newState(entity);
                     formView.error = null;
                     updateContext();
                 });
             } else {
-                types.byId($scope.entityTypeId).then(function(type) {
-                    $scope.state = newState({
-                        typeId: $scope.entityTypeId,
-                        type: type.name,
-                        links: [],
-                        properties: [],
-                        blobs: []
-                    });
-                    updateContext();
+                var type = types.byId($scope.entityTypeId);
+                $scope.state = newState({
+                    typeId: $scope.entityTypeId,
+                    type: type.name,
+                    links: [],
+                    properties: [],
+                    blobs: []
                 });
+                updateContext();
             }
         }
 
@@ -68,11 +66,11 @@ angular.module('xodus').controller('FormViewController', ['$scope', 'EntitiesSer
             return {
                 initial: angular.copy(entity),
                 current: angular.copy(entity),
-                revert: function() {
+                revert: function () {
                     this.current = angular.copy(this.initial);
                     forceReload();
                 },
-                update: function(newOne) {
+                update: function (newOne) {
                     this.initial = angular.copy(newOne);
                     this.current = angular.copy(newOne);
                     forceReload();
@@ -83,7 +81,7 @@ angular.module('xodus').controller('FormViewController', ['$scope', 'EntitiesSer
         function forceReload() {
             var state = $scope.state;
             $scope.state = null;
-            $timeout(function() {
+            $timeout(function () {
                 $scope.state = state;
                 updateContext();
             }, 0);

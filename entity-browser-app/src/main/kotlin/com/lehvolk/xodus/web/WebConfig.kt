@@ -11,6 +11,7 @@ import java.io.InputStreamReader
 import javax.servlet.*
 import javax.servlet.annotation.WebFilter
 import javax.servlet.annotation.WebServlet
+import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -44,6 +45,23 @@ class EntityBrowserServlet : ServletContainer(ApplicationConfig) {
         super.destroy()
         InjectionContexts.destroy()
     }
+}
+
+@WebServlet(urlPatterns = arrayOf("/setup", "/empty-store", "/type/*"), loadOnStartup = 1)
+class IndexHtml: HttpServlet() {
+
+    private lateinit var indexHtml: String
+
+    override fun init(config: ServletConfig) {
+        super.init(config)
+        val inputStream = config.servletContext.getResourceAsStream("/index.html")
+        indexHtml = inputStream.reader().readText()
+    }
+
+    override fun doGet(req: HttpServletRequest?, resp: HttpServletResponse?) {
+        resp!!.writer.write(indexHtml)
+    }
+
 }
 
 @WebFilter(urlPatterns = arrayOf(mapping))

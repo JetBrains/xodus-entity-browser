@@ -4,34 +4,25 @@ angular.module('xodus').service('DatabaseService', [
     '$location',
     'NavigationService',
     function ($http, $q, $location, navigation) {
-        var summary = null;
-        this.getSummary = getSummary;
-        this.update = update;
-        this.deleteDB = deleteDB;
+        var service = this;
+        service.getAppState = getAppState;
+        service.update = update;
+        service.deleteDB = deleteDB;
+        service.loadedAppState = null;
 
-        function getSummary() {
-            if (summary) {
-                return $q.when(summary);
+
+        function getAppState() {
+            if (service.loadedAppState) {
+                return $q.when(service.loadedAppState);
             }
             return $http.get('api/db').then(function (data) {
-                summary = data.data;
-                if (!summary.location || !summary.key) {
-                    $location.path('/setup');
-                    return $q.reject('setup database first');
-                }
-                if (!angular.isArray(summary.types) || !summary.types.length) {
-                    $location.path('/empty-store');
-                    return $q.reject('empty store');
-                }
-                if (angular.isObject(summary)) {
-                    return $q.when(summary);
-                }
-                return $q.reject('something strange with server');
+                service.loadedAppState = data.data;
+                return service.loadedAppState;
             });
         }
 
         function update(db) {
-            return $http.post('/api/db', db).then(function (data, status, headers) {
+            return $http.post('/api/db', db).then(function (data) {
                 navigation.forceReload();
                 return data;
             });
@@ -39,7 +30,7 @@ angular.module('xodus').service('DatabaseService', [
 
         function deleteDB(db) {
             return $http['delete']('/api/db', {data: db}).then(function (data) {
-                var recent = summary.recent;
+                var recent = service.loadedAppState.recent;
                 var index = recent.indexOf(db);
                 if (index > -1) {
                     recent.splice(index, 1);

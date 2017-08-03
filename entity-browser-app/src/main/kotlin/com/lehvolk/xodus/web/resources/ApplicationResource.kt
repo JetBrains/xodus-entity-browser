@@ -59,11 +59,3 @@ abstract class ApplicationResource {
     }
 
 }
-
-@Path("/config")
-class ConfigResource : ApplicationResource() {
-
-    @GET
-    fun getConfig() = AppConfig()
-
-}

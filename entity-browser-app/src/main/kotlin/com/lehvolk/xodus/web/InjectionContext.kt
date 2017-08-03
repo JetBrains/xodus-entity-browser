@@ -31,7 +31,7 @@ object InjectionContexts {
         }
         val requisites = XodusStore.lookupRequisites()
         if (requisites != null) {
-            val db = DB().apply {
+            val db = DBSummary().apply {
                 location = requisites.location
                 key = requisites.key
             }
@@ -47,7 +47,7 @@ object InjectionContexts {
         allContexts.forEach { it.value.destroy() }
     }
 
-    fun start(db: DB) {
+    fun start(db: DBSummary) {
         val opened = Databases.allOpened().find(dbFilter(db))
         if (opened == null) {
             Databases.add(db)
@@ -56,7 +56,7 @@ object InjectionContexts {
         }
     }
 
-    fun stop(db: DB) {
+    fun stop(db: DBSummary) {
         allContexts[db.uuid]?.destroy()
     }
 

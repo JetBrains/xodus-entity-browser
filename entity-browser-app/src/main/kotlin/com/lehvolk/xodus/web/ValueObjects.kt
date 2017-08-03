@@ -1,7 +1,6 @@
 package com.lehvolk.xodus.web
 
 import com.lehvolk.xodus.web.db.Databases
-import com.lehvolk.xodus.web.db.dbFilter
 import java.util.*
 
 class ServerError(val msg: String)
@@ -70,7 +69,7 @@ class ChangeSummary {
 
 }
 
-class DB {
+open class DBSummary {
     var location: String? = null
     var key: String? = null
     var title: String? = null
@@ -78,18 +77,14 @@ class DB {
     var uuid: String = UUID.randomUUID().toString()
 }
 
-class DBSummary {
-    var location: String? = null
-    var key: String? = null
-    var title: String? = null
-    var recent: List<DB> = Databases.allRecent() //TODO: remove this property
+class DB : DBSummary() {
     var types: List<EntityType> = emptyList()
 }
 
-class AppConfig {
-    var opened = Databases.allOpened()
-    var recent = Databases.allRecent()
-    var current: DB? = Databases.current()
+class AppState {
+    var current: DB? = null
+    var recent: List<DBSummary> = emptyList()
+    var opened: List<DBSummary> = emptyList()
 }
 
 fun <T : Named> T.withName(name: String): T {

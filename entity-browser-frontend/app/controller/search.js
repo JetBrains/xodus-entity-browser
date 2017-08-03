@@ -8,17 +8,15 @@ angular.module('xodus').controller('SearchController', [
     'ConfirmationService',
     function (types, $location, $routeParams, $scope, $uibModal, navigation, confirmation) {
         var ctrl = this;
-        $scope.types = [];
         $scope.selectedType = null;
         $scope.searchQuery = $routeParams.q;
         if (!$routeParams.typeId) {
             navigation.toType();
             return;
         }
-        types.all().then(function (data) {
-            $scope.types = data;
-            updateType();
-        });
+        $scope.types = types.all();
+        updateType();
+
         ctrl.onTypeSelect = function (type) {
             navigation.toType(type.id).search('q', null);
         };

@@ -1,6 +1,6 @@
 package com.lehvolk.xodus.web.db
 
-import com.lehvolk.xodus.web.DB
+import com.lehvolk.xodus.web.DBSummary
 import com.lehvolk.xodus.web.InjectionContexts
 import com.lehvolk.xodus.web.JacksonConfigurator
 import java.io.File
@@ -8,19 +8,19 @@ import java.util.*
 
 private val mapper = JacksonConfigurator().mapper
 
-fun dbFilter(db: DB): (DB) -> Boolean {
+fun dbFilter(db: DBSummary): (DBSummary) -> Boolean {
     return { db.location == it.location && db.key == it.key }
 }
 
 object Databases {
 
-    private val current = ThreadLocal<DB>()
+    private val current = ThreadLocal<DBSummary>()
 
-    private val dbs = arrayListOf<DB>()
+    private val dbs = arrayListOf<DBSummary>()
 
     private val recentStore = DBStore("./recent-dbs.json", dbs).load()
 
-    fun add(db: DB) {
+    fun add(db: DBSummary) {
         synchronized(this) {
             db.uuid = UUID.randomUUID().toString()
             dbs.add(db)
@@ -28,7 +28,7 @@ object Databases {
         }
     }
 
-    fun delete(db: DB) {
+    fun delete(db: DBSummary) {
         val predicate = dbFilter(db)
         synchronized(this) {
             dbs.removeAll(predicate)
@@ -39,7 +39,7 @@ object Databases {
         }
     }
 
-    fun open(db: DB) {
+    fun open(db: DBSummary) {
         synchronized(this) {
             db.isOpened = true
             dbs.add(db)
@@ -47,16 +47,16 @@ object Databases {
         }
     }
 
-    fun allRecent(): List<DB> {
+    fun allRecent(): List<DBSummary> {
         return dbs.toList()
     }
 
-    fun allOpened(): List<DB> {
+    fun allOpened(): List<DBSummary> {
         return dbs.filter { it.isOpened }
     }
 
-    fun firstOpened(): DB? {
-        return dbs.find { it.isOpened }
+    fun firstOpened(): DBSummary? {
+        return dbs.find(DBSummary::isOpened)
     }
 
 
@@ -73,7 +73,7 @@ object Databases {
 
 }
 
-private class DBStore(val fileName: String, val dbs: MutableList<DB>) {
+private class DBStore(val fileName: String, val dbs: MutableList<DBSummary>) {
 
     private val file = File(fileName)
 
@@ -94,7 +94,7 @@ private class DBStore(val fileName: String, val dbs: MutableList<DB>) {
             }
         }
         try {
-            val type = mapper.typeFactory.constructCollectionType(List::class.java, DB::class.java)
+            val type = mapper.typeFactory.constructCollectionType(List::class.java, DBSummary::class.java)
             dbs.addAll(mapper.readValue(file, type))
         } catch(e: Exception) {
             // ignore
