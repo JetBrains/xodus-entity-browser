@@ -2,7 +2,7 @@ buildscript {
     ext.xodusBuildTypeId = 'Xodus_BuildBranchYoutrack70hub20'
     ext.xodusTeamcityBuildNumber = '2243'
     ext.xodusMavenVersion = '1.0-SNAPSHOT'
-    ext.kotlinVersion = '1.0.2'
+    ext.kotlinVersion = '1.1.3-2'
 
     repositories {
         mavenCentral()
@@ -39,7 +39,7 @@ allprojects {
     apply plugin: 'maven'
     apply plugin: 'maven-publish'
 
-    sourceCompatibility = 1.7
+    sourceCompatibility = 1.8
 
     repositories {
         mavenCentral()
