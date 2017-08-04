@@ -8,3 +8,4 @@
 /deploy-to-bintray.sh
 /entity-browser-app/src/main/generated/
 /classes
+yarn.lock

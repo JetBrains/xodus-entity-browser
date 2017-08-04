@@ -2,10 +2,10 @@ angular.module('xodus').controller('FormViewController', ['$scope', 'EntitiesSer
     function ($scope, entities, types, $timeout) {
         var formView = this;
 
-        $scope.findByName = function (items, name) {
+        $scope.find = function(items, link) {
             var found = null;
-            angular.forEach(items, function (item) {
-                if (name === item.name) {
+            angular.forEach(items, function(item) {
+                if (item.name === link.name && item.typeId === link.typeId && item.entityId === link.entityId) {
                     found = item;
                 }
             });

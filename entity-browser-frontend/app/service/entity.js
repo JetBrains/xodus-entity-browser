@@ -105,6 +105,14 @@ angular.module('xodus').service('EntitiesService', ['$http', '$q', '$location', 
         }
     }
 
+    function getPropertyItemKey(item) {
+        return item.name;
+    }
+
+    function getLinkItemKey(item) {
+        return item.name + '-' + item.typeId + '-' + item.entityId;
+    }
+
     function getChangeSummary(initial, modified) {
         var changeSummary = {
             properties: {
@@ -118,7 +126,7 @@ angular.module('xodus').service('EntitiesService', ['$http', '$q', '$location', 
                 modified: []
             }
         };
-        processChangeSummary(changeSummary, initial, modified, sectionOf('properties'),
+        processChangeSummary(changeSummary, initial, modified, sectionOf('properties'), getPropertyItemKey,
             function(initialProperty, modifiedProperty) {
                 if (initialProperty.type.clazz === modifiedProperty.type.clazz) {
                     if (initialProperty.value !== modifiedProperty.value) {
@@ -129,7 +137,7 @@ angular.module('xodus').service('EntitiesService', ['$http', '$q', '$location', 
                     changeSummary.properties.added.push(modifiedProperty);
                 }
             });
-        processChangeSummary(changeSummary, initial, modified, sectionOf('links'),
+        processChangeSummary(changeSummary, initial, modified, sectionOf('links'), getLinkItemKey,
             function(initialLink, modifiedLink) {
                 if (initialLink.entityId !== modifiedLink.entityId ||
                     initialLink.typeId !== modifiedLink.typeId) {
@@ -152,19 +160,19 @@ angular.module('xodus').service('EntitiesService', ['$http', '$q', '$location', 
 
     }
 
-    function findByName(array, name) {
-        var result = array.filter(function(named) {
-            return named.name === name;
+    function findByKey(array, key, getKeyFn) {
+        var result = array.filter(function(item) {
+            return getKeyFn(item) === key;
         });
         return result.length ? result[0] : null;
     }
 
-    function join(namedArray1, namedArray2) {
+    function join(namedArray1, namedArray2, getKeyFn) {
         var joined = namedArray1.concat(namedArray2);
         var uniqueNames = {};
         angular.forEach(joined, function(item) {
-            if (!uniqueNames[item.name]) {
-                uniqueNames[item.name] = null;
+            if (!uniqueNames[getKeyFn(item)]) {
+                uniqueNames[getKeyFn(item)] = null;
             }
         });
         return {
@@ -173,14 +181,14 @@ angular.module('xodus').service('EntitiesService', ['$http', '$q', '$location', 
         };
     }
 
-    function processChangeSummary(changeSummary, initial, modified, section, callback) {
+    function processChangeSummary(changeSummary, initial, modified, section, getKeyFn, callback) {
         var initialSection = section(initial);
         var modifiedSection = section(modified);
         var summarySection = section(changeSummary);
-        var joined = join(initialSection, modifiedSection);
+        var joined = join(initialSection, modifiedSection, getKeyFn);
         angular.forEach(joined.uniqueNames, function(name) {
-            var initialProperty = findByName(initialSection, name);
-            var modifiedProperty = findByName(modifiedSection, name);
+            var initialProperty = findByKey(initialSection, name, getKeyFn);
+            var modifiedProperty = findByKey(modifiedSection, name, getKeyFn);
             if (initialProperty && modifiedProperty) {
                 callback(initialProperty, modifiedProperty);
             } else if (initialProperty) {

@@ -122,7 +122,6 @@ class StoreService(requisites: XodusStoreRequisites) {
         transactional {
             val entity = getEntity(id, entityId, it)
             entity.delete()
-            null
         }
     }
 
