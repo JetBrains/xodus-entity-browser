@@ -1,6 +1,5 @@
 package com.lehvolk.xodus.web
 
-import com.lehvolk.xodus.web.db.Databases
 import java.util.*
 
 class ServerError(val msg: String)
@@ -19,19 +18,26 @@ open class PropertyType {
     var displayName: String? = null
 }
 
-class EntityProperty() : Named() {
+class EntityProperty : Named() {
     var type: PropertyType = PropertyType()
     var value: String? = null
 }
 
-class EntityLink() : Named() {
+class EntityLink : Named() {
     var typeId: Int = 0
     var type: String? = null
     var label: String? = null
     var entityId: Long = 0
 }
 
-class EntityBlob() : Named() {
+class LinkPager : Named() {
+    var skip = 0
+    var top = 100
+    var totalSize = 0L
+    var entities: List<EntityLink> = emptyList()
+}
+
+class EntityBlob : Named() {
     var blobSize: Long = 0
 }
 
@@ -40,11 +46,11 @@ class EntityView : BaseVO() {
     var label: String? = null
     var typeId: String? = null
     var properties: List<EntityProperty> = emptyList()
-    var links: List<EntityLink> = emptyList()
+    var links: List<LinkPager> = emptyList()
     var blobs: List<EntityBlob> = emptyList()
 }
 
-open class EntityType() : Named() {
+open class EntityType : Named() {
     var id: String? = null
 }
 

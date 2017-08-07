@@ -1,8 +1,15 @@
 angular.module('xodus').controller('LinksController', ['$scope', 'EntitiesService', 'EntityTypeService',
     function ($scope, entities, types) {
+
+        function flatMap(arr, lambda) {
+            return Array.prototype.concat.apply([], arr.map(lambda));
+        }
+
         var links = this;
 
-        $scope.uiLinks = $scope.state.current.links;
+        $scope.uiLinks = flatMap($scope.state.current.links, function (link) {
+            return link.entities;
+        });
 
         links.entities = [];
         links.allEntityTypes = types.all();
@@ -19,7 +26,7 @@ angular.module('xodus').controller('LinksController', ['$scope', 'EntitiesServic
             links.searchEntities(null);
         };
 
-        links.removeLink = function(link) {
+        links.removeLink = function (link) {
             var found = $scope.find($scope.uiLinks, link);
             if (found) {
                 var index = $scope.uiLinks.indexOf(found);
@@ -31,12 +38,18 @@ angular.module('xodus').controller('LinksController', ['$scope', 'EntitiesServic
             var linksForm = $scope.linksForm;
             $scope.makeDirty(linksForm);
             if (linksForm.$valid) {
-                var founded = findSame(links.newLink.name);
-                if (founded) {
-                    linksForm.name.$setValidity("duplicated", false);
-                    return;
+                var founded = $scope.state.current.links.find(function (link) {
+                    return link.name === links.newLink.name;
+                });
+                if (!founded) {
+                    founded = {
+                        totalSize: 0,
+                        entities: []
+                    };
                 }
-                $scope.state.current.links.push(toBackendLink(links.newLink));
+                founded.push(toBackendLink(links.newLink));
+                founded.totalSize++;
+
                 links.newLink = newLink();
                 links.updateEntities();
                 linksForm.$setPristine(true);
@@ -62,13 +75,9 @@ angular.module('xodus').controller('LinksController', ['$scope', 'EntitiesServic
         }
 
         function findSame(name) {
-            var founded = null;
-            angular.forEach($scope.uiLinks, function (link) {
-                if (link.name == name) {
-                    founded = link;
-                }
+            return $scope.uiLinks.find(function (link) {
+                return link.name === name;
             });
-            return founded;
         }
 
     }]);

@@ -24,6 +24,11 @@ angular.module('xodus').controller('DataViewController', [
         dataView.edit = function (item) {
             navigation.toEntity(item.typeId, item.id);
         };
+        dataView.hasLinksToDisplay = function(entity){
+            return (entity.links || []).find(function (link) {
+                return link.totalSize > 0;
+            }) !== null;
+        };
 
         dataView.deleteItem = function (item) {
             $uibModal.open({

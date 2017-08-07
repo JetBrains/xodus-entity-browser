@@ -4,6 +4,15 @@ plugins {
 }
 
 apply plugin: 'kotlin'
+apply plugin: 'org.akhikhl.gretty'
+
+gretty {
+    servletContainer = 'jetty9'
+    httpEnabled = true
+    httpPort = 18080
+    jvmArgs "-Dserver.port=18080"
+    contextPath = ""
+}
 
 configurations {
     frontend

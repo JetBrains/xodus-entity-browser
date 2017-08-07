@@ -8,7 +8,7 @@ fun Entity.asView(): EntityView {
     val entity = this
     return entity.asLightView().apply {
         blobs = entity.blobNames.map { entity.blobView(it) }
-        links = entity.linkNames.asSequence().flatMap { entity.linkView(it) }.toList()
+        links = entity.linkNames.asSequence().map { entity.linkView(it) }.toList()
     }
 }
 
@@ -26,17 +26,23 @@ fun Entity.asLightView(): EntityView {
     }
 }
 
-fun Entity.linkView(name: String): Sequence<EntityLink> {
+fun Entity.linkView(name: String, skip: Int = 0, top: Int = 100): LinkPager {
     val entity = this
-    return entity.getLinks(name).asSequence().take(100).map { link ->
-        EntityLink().withName(name).apply {
-            val lightVO = link.asLightView()
-            val linkId = link.id
-            typeId = linkId.typeId
-            entityId = linkId.localId
-            label = lightVO.label
-            type = lightVO.type
-        }
+    val links = entity.getLinks(name)
+    return LinkPager().withName(name).apply {
+        this.skip = skip
+        this.top = top
+        this.totalSize = links.size()
+        this.entities = links.asSequence().drop(skip).take(top).map { link ->
+            EntityLink().withName(name).apply {
+                val lightVO = link.asLightView()
+                val linkId = link.id
+                typeId = linkId.typeId
+                entityId = linkId.localId
+                label = lightVO.label
+                type = lightVO.type
+            }
+        }.toList()
     }
 }
 
@@ -59,9 +65,9 @@ private fun Entity.propertyView(name: String): EntityProperty {
         } else {
             String::class.java
         }
-        readonly = !UIPropertyTypes.isSupported(clazz)
+        this.readonly = !UIPropertyTypes.isSupported(clazz)
         this.clazz = clazz.name
-        displayName = clazz.simpleName
+        this.displayName = clazz.simpleName
     }
     return EntityProperty().withName(name).apply {
         this.type = typeVO

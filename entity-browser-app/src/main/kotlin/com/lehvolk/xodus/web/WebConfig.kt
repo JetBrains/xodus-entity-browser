@@ -48,14 +48,11 @@ class EntityBrowserServlet : ServletContainer(ApplicationConfig) {
 }
 
 @WebServlet(urlPatterns = arrayOf("/setup", "/empty-store", "/type/*"), loadOnStartup = 1)
-class IndexHtml: HttpServlet() {
+class IndexHtml : HttpServlet() {
 
-    private lateinit var indexHtml: String
-
-    override fun init(config: ServletConfig) {
-        super.init(config)
-        val inputStream = config.servletContext.getResourceAsStream("/index.html")
-        indexHtml = inputStream.reader().readText()
+    private val indexHtml by lazy {
+        val inputStream = servletConfig.servletContext.getResourceAsStream("/index.html")
+        inputStream.reader().readText()
     }
 
     override fun doGet(req: HttpServletRequest?, resp: HttpServletResponse?) {

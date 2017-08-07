@@ -75,10 +75,10 @@
                                     <li class="list-group-item search-extended-header">Links
                                     </li>
                                     <li class="list-group-item">
-                                        <div data-ng-hide="item.links.length">
+                                        <div data-ng-show="!dataView.hasLinksToDisplay(item)">
                                             No links
                                         </div>
-                                        <div data-ng-show="item.links.length">
+                                        <div data-ng-show="dataView.hasLinksToDisplay(item)">
                                             <table class="table table-striped table-condensed preview-entity-properties">
                                                 <thead>
                                                 <tr style="font-weight: bold">
@@ -87,13 +87,17 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                <tr data-ng-repeat="p in item.links">
+                                                <tr data-ng-repeat="p in item.links ">
                                                     <td>{{p.name}}</td>
-                                                    <td><entity-link
-                                                            title="{{p.label}}"
-                                                            typeid="{{p.typeId}}"
-                                                            entityid="{{p.entityId}}">
-                                                    </entity-link></td>
+                                                    <td>
+                                                        <div data-ng-repeat="link in p.entities">
+                                                        <entity-link
+                                                            title="{{link.label}}"
+                                                            typeid="{{link.typeId}}"
+                                                            entityid="{{link.entityId}}">
+                                                        </entity-link>
+                                                        </div>
+                                                    </td>
                                                 </tr>
                                                 </tbody>
                                             </table>

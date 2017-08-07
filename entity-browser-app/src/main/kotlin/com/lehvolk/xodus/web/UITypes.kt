@@ -39,7 +39,7 @@ object UIPropertyTypes {
                 val realStart = this.type.toValue(start)
                 val realEnd = this.type.toValue(end)
                 if (realStart != null && realEnd != null) {
-                    var result = tr.find(type, property, realStart, realEnd)
+                    val result = tr.find(type, property, realStart, realEnd)
                     if (low != null) {
                         return result.union(low.find(tr, type, property, start, end))
                     }

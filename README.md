@@ -32,3 +32,17 @@ Teamcity build number can be changed in /build.gradle via ext.xodusTeamcityBuild
 
     >./gradlew  -Dxodus-from-maven=true clean build
 
+## Run backend
+
+Command starts rest interfaces on 18080 port
+
+>./gradlew runJetty
+
+debug port by default 5005. To change it check [greety instructions](http://akhikhl.github.io/gretty-doc/Debugger-support.html)   
+
+## Run frontend
+
+Command starts rest interfaces on 19090 port
+
+>npm install
+>npm start
