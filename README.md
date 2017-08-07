@@ -45,4 +45,5 @@ debug port by default 5005. To change it check [greety instructions](http://akhi
 Command starts rest interfaces on 19090 port
 
 >npm install
+
 >npm start
