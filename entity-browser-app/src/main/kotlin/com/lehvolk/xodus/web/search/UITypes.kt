@@ -1,4 +1,4 @@
-package com.lehvolk.xodus.web
+package com.lehvolk.xodus.web.search
 
 
 import jetbrains.exodus.bindings.ComparableSet
@@ -6,6 +6,11 @@ import jetbrains.exodus.entitystore.EntityIterable
 import jetbrains.exodus.entitystore.StoreTransaction
 import jetbrains.exodus.entitystore.iterate.EntityIterableBase
 import org.slf4j.LoggerFactory
+import java.lang.Byte
+import java.lang.Double
+import java.lang.Float
+import java.lang.Long
+import java.lang.Short
 import java.util.concurrent.ConcurrentHashMap
 
 object UIPropertyTypes {
@@ -21,7 +26,7 @@ object UIPropertyTypes {
                     var result = tr.find(type, property, realValue)
                     log.debug("found: {} results", result.size())
                     if (low != null) {
-                        log.debug("searching childs of {}", low.type.clazz)
+                        log.debug("searching children of {}", low.type.clazz)
                         result = result.union(low.find(tr, type, property, value))
                     }
                     result
@@ -59,12 +64,12 @@ object UIPropertyTypes {
     private val STRING = newType { it }
     private val BOOLEAN = newType { java.lang.Boolean.valueOf(it) }
 
-    private val BYTE = newType { java.lang.Byte.valueOf(it) }
-    private val SHORT = newType { java.lang.Short.valueOf(it) }
+    private val BYTE = newType { Byte.valueOf(it) }
+    private val SHORT = newType { Short.valueOf(it) }
     private val INT = newType { Integer.valueOf(it) }
-    private val LONG = newType { java.lang.Long.valueOf(it) }
-    private val FLOAT = newType { java.lang.Float.valueOf(it) }
-    private val DOUBLE = newType { java.lang.Double.valueOf(it) }
+    private val LONG = newType { Long.valueOf(it) }
+    private val FLOAT = newType { Float.valueOf(it) }
+    private val DOUBLE = newType { Double.valueOf(it) }
     private val CMP_SET = newType {
         val matchResult = Regex("ComparableSet\\[(.*)\\]").matchEntire(it)
         if (matchResult != null) {

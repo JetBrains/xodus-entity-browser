@@ -7,5 +7,6 @@
 /entity-browser-frontend/.idea/
 /deploy-to-bintray.sh
 /entity-browser-app/src/main/generated/
+/entity-browser-app/recent-dbs.json
 /classes
 yarn.lock

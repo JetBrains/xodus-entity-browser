@@ -5,7 +5,7 @@ options {
 
 PARSER_BEGIN(SmartSearchQueryParser)
 
-package com.lehvolk.xodus.web;
+package com.lehvolk.xodus.web.search;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -56,6 +56,7 @@ TOKEN:
 | <RANGE_STRING : "[" (~["[","]"])* "]" ("[" (~["[", "]"])* "]")* >
 | <EQUALS : "=">
 | <LIKE : "~">
+| <NULL : "null">
 }
 
 public List<SearchTerm> parse():
@@ -113,7 +114,8 @@ public String value():
 {
     ( token = <SIMPLEVALUE>
     | token = <QUOTED_STRING>
-    | token = <RANGE_STRING>)
+    | token = <RANGE_STRING>
+    | token = <NULL>)
     {
         return prepare(token.image);
     }

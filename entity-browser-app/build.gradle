@@ -78,5 +78,5 @@ clean {
 
 compileJavacc {
     inputDirectory = file('src/main/javacc')
-    outputDirectory = file(javaCCFolder + '/com/lehvolk/xodus/web') // plugin wont create package for generated classes
+    outputDirectory = file(javaCCFolder + '/com/lehvolk/xodus/web/search') // plugin wont create package for generated classes
 }

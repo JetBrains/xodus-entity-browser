@@ -1,8 +1,6 @@
-package com.lehvolk.xodus.web
+package com.lehvolk.xodus.web.search
 
 
-import com.lehvolk.xodus.web.SearchTerm.Range
-import com.lehvolk.xodus.web.SearchTerm.SearchTermType
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -123,7 +121,7 @@ class SmartSearchQueryParserTest {
     @SuppressWarnings("unchecked")
     private fun verifyRangeTerm(term: SearchTerm, property: String, start: Long, end: Long) {
         assertEquals(SearchTermType.RANGE, term.type)
-        val rangedTerm = term.value as Range
+        val rangedTerm = term.value as SearchTerm.Range
         assertEquals(property, term.property)
         assertEquals(start, rangedTerm.start)
         assertEquals(end, rangedTerm.end)
