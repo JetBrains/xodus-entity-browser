@@ -97,6 +97,29 @@ class SmartSearchQueryParserTest {
         verifyRangeTerm(result[1], "age", 30, 40)
     }
 
+    @Test
+    fun testLink() {
+        val result = "@linkName=MyType[3] and firstName~Jo".parse()
+        assertEquals(2, result.size)
+        verifyTerm(result[0], "@linkName", "MyType[3]", SearchTermType.VALUE, SearchType.LINK)
+        verifyTerm(result[1], FIRST_NAME, "Jo", SearchTermType.LIKE)
+    }
+
+    @Test
+    fun testPropNull() {
+        val result = "firstName=null and lastName='null'".parse()
+        assertEquals(2, result.size)
+        verifyTerm(result[0], FIRST_NAME, null, SearchTermType.VALUE)
+        verifyTerm(result[1], LAST_NAME, "null", SearchTermType.VALUE)
+    }
+
+    @Test
+    fun testLinkNull() {
+        val result = "@user=null and @action=MyAction[4]".parse()
+        assertEquals(2, result.size)
+        verifyTerm(result[0], "@user", null, SearchTermType.VALUE, SearchType.LINK)
+        verifyTerm(result[1], "@action", "MyAction[4]", SearchTermType.VALUE, SearchType.LINK)
+    }
 
     @Test(expected = ParseException::class)
     @Throws(ParseException::class)
@@ -112,15 +135,16 @@ class SmartSearchQueryParserTest {
         verifyTerm(result[1], LAST_NAME, "McClane", SearchTermType.VALUE)
     }
 
-    private fun verifyTerm(term: SearchTerm, property: String, value: String, type: SearchTermType) {
+    private fun verifyTerm(term: SearchTerm, property: String, value: String?, type: SearchTermType, searchType: SearchType = SearchType.PROPERTY) {
         assertEquals(property, term.property)
         assertEquals(value, term.value)
-        assertEquals(type, term.type)
+        assertEquals(type, term.termType)
+        assertEquals(searchType, term.searchType)
     }
 
     @SuppressWarnings("unchecked")
     private fun verifyRangeTerm(term: SearchTerm, property: String, start: Long, end: Long) {
-        assertEquals(SearchTermType.RANGE, term.type)
+        assertEquals(SearchTermType.RANGE, term.termType)
         val rangedTerm = term.value as SearchTerm.Range
         assertEquals(property, term.property)
         assertEquals(start, rangedTerm.start)

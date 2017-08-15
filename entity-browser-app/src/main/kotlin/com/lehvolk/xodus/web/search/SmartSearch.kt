@@ -37,9 +37,9 @@ private fun search(tx: StoreTransaction, term: SearchTerm, entityType: String, e
     val entityIdMatcher = ENTITY_ID.matcher(stringValue)
     return when {
         // propertyName~value
-        term.type == SearchTermType.LIKE -> tx.searchByPropertyLike(entityType, term.property, stringValue)
+        term.termType == SearchTermType.LIKE -> tx.searchByPropertyLike(entityType, term.property, stringValue)
         // propertyName=[1,8]
-        term.type == SearchTermType.RANGE -> tx.searchByPropertyRange(entityType, term.property, term.value as SearchTerm.Range)
+        term.termType == SearchTermType.RANGE -> tx.searchByPropertyRange(entityType, term.property, term.value as SearchTerm.Range)
         // id=7
         term.property.isIdProperty && localId != null -> {
             val entityId = PersistentEntityId(entityTypeId, localId)

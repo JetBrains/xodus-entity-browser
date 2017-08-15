@@ -8,7 +8,12 @@ enum class SearchTermType {
     RANGE;
 }
 
-class SearchTerm(val property: String, val value: Any, val type: SearchTermType) {
+enum class SearchType {
+    PROPERTY,
+    LINK;
+}
+
+class SearchTerm(val property: String, val value: Any?, val termType: SearchTermType, val searchType: SearchType) {
     data class Range(val start: Long, val end: Long) {
         override fun toString() = "[$start, $end]"
     }
@@ -17,21 +22,51 @@ class SearchTerm(val property: String, val value: Any, val type: SearchTermType)
         private val RANGE_PATTERN = Pattern.compile("\\[\\s*(\\d*)\\s*,\\s*(\\d*)\\s*\\]")
 
         @JvmStatic
-        fun from(property: String, operand: String, value: String): SearchTerm {
+        fun from(rawProperty: String, rawOperand: String, rawValue: String): SearchTerm {
+            val property = prepare(rawProperty)
+            val operand = prepare(rawOperand)
+            val value = prepare(rawValue)
+
+            val searchType = if (property.startsWith("@")) SearchType.LINK else SearchType.PROPERTY
+            val isNullValue = rawValue == "null"
             val matcher = RANGE_PATTERN.matcher(value)
             return if (matcher.matches()) {
                 SearchTerm(
                         property,
                         Range(matcher.group(1).toLong(), matcher.group(2).toLong()),
-                        SearchTermType.RANGE
+                        SearchTermType.RANGE,
+                        searchType
                 )
             } else {
                 SearchTerm(
                         property,
-                        value,
-                        if (operand == "~") SearchTermType.LIKE else SearchTermType.VALUE
+                        if (isNullValue) null else value,
+                        if (operand == "~") SearchTermType.LIKE else SearchTermType.VALUE,
+                        searchType
                 )
             }
+        }
+
+        private fun prepare(value: String): String {
+            if (value.length <= 1) {
+                return value
+            }
+
+            val first = value[0]
+            val last = value[value.length - 1]
+            return if ((first == '\'' && last == '\'') || (first == '"' && last == '"')) {
+                removeDoubleQuotes(value.substring(1, value.length - 1))
+            } else {
+                removeDoubleQuotes(value)
+            }
+        }
+
+        private fun removeDoubleQuotes(value: String): String {
+            if (value.length <= 1) {
+                return value
+            }
+
+            return value.replace("''", "'")
         }
     }
 }
