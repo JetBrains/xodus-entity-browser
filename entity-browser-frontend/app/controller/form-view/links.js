@@ -26,11 +26,23 @@ angular.module('xodus').controller('LinksController', ['$scope', 'EntitiesServic
             links.searchEntities(null);
         };
 
-        links.removeLink = function (link) {
-            var found = $scope.find($scope.uiLinks, link);
-            if (found) {
-                var index = $scope.uiLinks.indexOf(found);
-                $scope.uiLinks.splice(index, 1);
+        links.removeLink = function (linkEntity) {
+            var foundEntity = $scope.find($scope.uiLinks, linkEntity);
+            if (foundEntity) {
+                var index1 = $scope.uiLinks.indexOf(foundEntity);
+                if (index1 >= 0) {
+                    $scope.uiLinks.splice(index1, 1);
+                }
+            }
+
+            var foundLink = $scope.state.current.links.find(function(l) {
+                return l.name === linkEntity.name;
+            });
+            if (foundLink && foundLink.entities) {
+                var index2 = foundLink.entities.indexOf(linkEntity);
+                if (index2 >= 0) {
+                    foundLink.entities.splice(index2, 1);
+                }
             }
         };
 
@@ -38,17 +50,25 @@ angular.module('xodus').controller('LinksController', ['$scope', 'EntitiesServic
             var linksForm = $scope.linksForm;
             $scope.makeDirty(linksForm);
             if (linksForm.$valid) {
-                var founded = $scope.state.current.links.find(function (link) {
+                var found = $scope.state.current.links.find(function (link) {
                     return link.name === links.newLink.name;
                 });
-                if (!founded) {
-                    founded = {
+                var wasFound = !!found;
+                if (!wasFound) {
+                    found = {
+                        name: links.newLink.name,
                         totalSize: 0,
                         entities: []
                     };
                 }
-                founded.push(toBackendLink(links.newLink));
-                founded.totalSize++;
+                var newEntity = toBackendLink(links.newLink);
+                found.entities.push(newEntity);
+                found.totalSize++;
+
+                if (!wasFound) {
+                    $scope.state.current.links.push(found);
+                }
+                $scope.uiLinks.push(newEntity);
 
                 links.newLink = newLink();
                 links.updateEntities();

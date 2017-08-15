@@ -102,7 +102,7 @@ class StoreService(requisites: XodusStoreRequisites) {
                 val linked = getEntity(it.typeId, it.entityId, t)
                 entity.deleteLink(it.name!!, linked)
             }
-            vo.links.added.filter { !links.contains(it.name) }.forEach {
+            vo.links.added.forEach {
                 val id = PersistentEntityId(it.typeId, it.entityId)
                 val link = t.getEntity(id)
                 entity.addLink(it.name!!, link)

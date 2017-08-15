@@ -126,7 +126,7 @@ angular.module('xodus').service('EntitiesService', ['$http', '$q', '$location', 
                 modified: []
             }
         };
-        processChangeSummary(changeSummary, initial, modified, sectionOf('properties'), getPropertyItemKey,
+        processChangeSummary(changeSummary, initial, modified, 'properties', sectionOf, getPropertyItemKey,
             function(initialProperty, modifiedProperty) {
                 if (initialProperty.type.clazz === modifiedProperty.type.clazz) {
                     if (initialProperty.value !== modifiedProperty.value) {
@@ -137,7 +137,7 @@ angular.module('xodus').service('EntitiesService', ['$http', '$q', '$location', 
                     changeSummary.properties.added.push(modifiedProperty);
                 }
             });
-        processChangeSummary(changeSummary, initial, modified, sectionOf('links'), getLinkItemKey,
+        processChangeSummary(changeSummary, initial, modified, 'links', entitiesOfSection, getLinkItemKey,
             function(initialLink, modifiedLink) {
                 if (initialLink.entityId !== modifiedLink.entityId ||
                     initialLink.typeId !== modifiedLink.typeId) {
@@ -181,20 +181,20 @@ angular.module('xodus').service('EntitiesService', ['$http', '$q', '$location', 
         };
     }
 
-    function processChangeSummary(changeSummary, initial, modified, section, getKeyFn, callback) {
-        var initialSection = section(initial);
-        var modifiedSection = section(modified);
-        var summarySection = section(changeSummary);
-        var joined = join(initialSection, modifiedSection, getKeyFn);
+    function processChangeSummary(changeSummary, initial, modified, sectionName, sectionOf, getKeyFn, callback) {
+        var initialEntities = sectionOf(sectionName)(initial);
+        var modifiedEntities = sectionOf(sectionName)(modified);
+        var summaryEntities = changeSummary[sectionName];
+        var joined = join(initialEntities, modifiedEntities, getKeyFn);
         angular.forEach(joined.uniqueNames, function(name) {
-            var initialProperty = findByKey(initialSection, name, getKeyFn);
-            var modifiedProperty = findByKey(modifiedSection, name, getKeyFn);
+            var initialProperty = findByKey(initialEntities, name, getKeyFn);
+            var modifiedProperty = findByKey(modifiedEntities, name, getKeyFn);
             if (initialProperty && modifiedProperty) {
                 callback(initialProperty, modifiedProperty);
             } else if (initialProperty) {
-                summarySection.deleted.push(initialProperty);
+                summaryEntities.deleted.push(initialProperty);
             } else if (modifiedProperty) {
-                summarySection.added.push(modifiedProperty);
+                summaryEntities.added.push(modifiedProperty);
             }
         });
     }
@@ -203,6 +203,18 @@ angular.module('xodus').service('EntitiesService', ['$http', '$q', '$location', 
         return function(item) {
             return item[name];
         };
+    }
+
+    function entitiesOfSection(name) {
+        return function (item) {
+            return flatMap(item[name], function (l) {
+                return l.entities;
+            })
+        }
+    }
+
+    function flatMap(arr, lambda) {
+        return Array.prototype.concat.apply([], arr.map(lambda));
     }
 
     function byId(typeId, entityId) {

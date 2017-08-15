@@ -25,7 +25,7 @@ angular.module('xodus').controller('FormViewController', ['$scope', 'EntitiesSer
             entities.save(state.initial, changeSummary).then(function (response) {
                 state.update(response.data);
             }, function (response) {
-                formView.error = response.data.msg;
+                formView.error = response.data && response.data.msg || 'Unknown error';
                 $scope.toggleView();
             });
         };
