@@ -9,27 +9,35 @@ import java.io.ByteArrayInputStream
 
 
 fun smartSearch(term: String?, type: String, typeId: Int, t: StoreTransaction): EntityIterable {
-    if (term == null || term.trim { it <= ' ' }.isEmpty()) {
-        return t.getAll(type)
+    return if (term == null || term.trim { it <= ' ' }.isEmpty()) {
+        t.getAll(type)
     } else {
         val entityId = toEntityId(typeId, term)
         if (entityId != null) {
-            return orEmpty {
+            orEmpty {
                 t.getSingletonIterable(t.getEntity(entityId))
             }
         } else {
-            return orEmpty {
-                searchByTerms(term, type, typeId, t)
-            }
+            searchByTerms(term, type, typeId, t)
         }
     }
 }
 
 private fun searchByTerms(term: String, type: String, typeId: Int, t: StoreTransaction): EntityIterable {
-    val termStream = term.parse()
-    return termStream
-            .map { it.search(t, type, typeId) }
-            .reduce { it1, it2 -> it1.intersect(it2) }
+    return try {
+        val termStream = term.parse()
+        termStream
+                .map { it.search(t, type, typeId) }
+                .reduce { it1, it2 -> it1.intersect(it2) }
+    } catch (ex: ParseException) {
+        throw SearchQueryException(ex)
+    } catch (ex: TokenMgrError) {
+        throw SearchQueryException(ex)
+    } catch (ex: SearchQueryException) {
+        throw ex
+    } catch (ex: RuntimeException) {
+        EntityIterableBase.EMPTY
+    }
 }
 
 private fun orEmpty(f: () -> EntityIterable): EntityIterable {

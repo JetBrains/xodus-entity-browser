@@ -2,6 +2,8 @@ package com.lehvolk.xodus.web
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.lehvolk.xodus.web.search.SearchQueryException
+import javax.ws.rs.ClientErrorException
 import javax.ws.rs.InternalServerErrorException
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
@@ -24,14 +26,17 @@ class InvalidFieldException(cause: Throwable, val fieldName: String, val fieldVa
     override val msg: String = "invalid value of property '$fieldName': '$fieldValue'"
 }
 
-class XodusRestException(cause: Throwable) : InternalServerErrorException(cause), WithMessage {
+class XodusRestServerException(cause: Throwable) : InternalServerErrorException(cause), WithMessage {
     override val msg = "Internal server error. Getting " +
             cause.javaClass.name + ": " +
             cause.message + ". Check server log for more details."
 }
 
+class XodusRestClientException(cause: Throwable) : RuntimeException(cause), WithMessage {
+    override val msg = cause.message ?: "UFO error"
+}
 
-abstract class AbstractMapper<T>() : ExceptionMapper<T>
+abstract class AbstractMapper<T> : ExceptionMapper<T>
     where T : WithMessage, T : Throwable {
 
     abstract val status: Response.Status
@@ -44,7 +49,7 @@ abstract class AbstractMapper<T>() : ExceptionMapper<T>
 }
 
 @Provider
-class CommonExceptionMapper : AbstractMapper<XodusRestException>() {
+class ServerExceptionMapper : AbstractMapper<XodusRestServerException>() {
 
     override val status: Response.Status
         get() = Response.Status.INTERNAL_SERVER_ERROR
@@ -77,4 +82,9 @@ class JacksonConfigurator : ContextResolver<ObjectMapper> {
         return mapper
     }
 
+}
+
+@Provider
+class ClientExceptionMapper : AbstractMapper<XodusRestClientException>() {
+    override val status = Response.Status.BAD_REQUEST
 }

@@ -26,7 +26,7 @@ sealed class SearchTerm(val name: String) {
 
         private fun parseAsLink(linkName: String, operand: String, value: String): SearchTerm {
             if (operand != "=") {
-                throw UnsupportedOperationException("The [$operand] operand is not supported for links. Only the equality [=] operand is supported")
+                throw SearchQueryException("The [$operand] operand is not supported for links. Only the equality [=] operand is supported")
             }
 
             if (value == NULL_TOKEN) {
@@ -35,7 +35,7 @@ sealed class SearchTerm(val name: String) {
 
             val entityIdMatcher = ENTITY_ID.matcher(value)
             if (!entityIdMatcher.matches()) {
-                throw UnsupportedOperationException("Link value should have the MyType[15] pattern but was $value")
+                throw SearchQueryException("Link value should have the \"MyType[15]\" pattern but was \"$value\"")
             }
 
             return LinkSearchTerm.value(linkName, entityIdMatcher.group("type"), entityIdMatcher.group("id").toLong())
@@ -45,12 +45,12 @@ sealed class SearchTerm(val name: String) {
             val value = prepare(rawValue)
             val isNullValue = rawValue == NULL_TOKEN
             return if (isNullValue) {
-                if (operand != "=") throw UnsupportedOperationException("Only the equality [=] operand is supported for comparing a property value with null")
+                if (operand != "=") throw SearchQueryException("Only the equality [=] operand is supported for comparing a property value with null")
                 PropertyValueSearchTerm(propertyName, null)
             } else {
                 val rangeMatcher = RANGE_PATTERN.matcher(value)
                 if (rangeMatcher.matches()) {
-                    if (operand != "=") throw UnsupportedOperationException("Only the equality [=] operand is supported for comparing a property value with a range")
+                    if (operand != "=") throw SearchQueryException("Only the equality [=] operand is supported for comparing a property value with a range")
                     PropertyRangeSearchTerm(propertyName, rangeMatcher.group(1).toLong(), rangeMatcher.group(2).toLong())
                 } else {
                     when (operand) {
