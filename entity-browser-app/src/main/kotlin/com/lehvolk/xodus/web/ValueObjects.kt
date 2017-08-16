@@ -57,11 +57,9 @@ open class EntityType : Named() {
 open class SearchPager(val items: Array<EntityView>, val totalCount: Long)
 
 open class ChangeSummarySection<T> {
-
     var added: List<T> = ArrayList()
     var deleted: List<T> = ArrayList()
     var modified: List<T> = ArrayList()
-
 }
 
 class PropertiesSection : ChangeSummarySection<EntityProperty>()
@@ -69,10 +67,8 @@ class LinksSection : ChangeSummarySection<EntityLink>()
 class BlobsSection : ChangeSummarySection<EntityBlob>()
 
 class ChangeSummary {
-
     var properties: PropertiesSection = PropertiesSection()
     var links: LinksSection = LinksSection()
-
 }
 
 open class DBSummary {

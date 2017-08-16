@@ -4,13 +4,12 @@ import com.lehvolk.xodus.web.*
 import com.lehvolk.xodus.web.db.Databases
 import com.lehvolk.xodus.web.db.JobsService
 import com.lehvolk.xodus.web.db.StoreService
+import com.lehvolk.xodus.web.search.SearchQueryException
 import org.slf4j.LoggerFactory
 import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import javax.ws.rs.Consumes
-import javax.ws.rs.GET
-import javax.ws.rs.Path
 import javax.ws.rs.Produces
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
@@ -52,9 +51,12 @@ abstract class ApplicationResource {
         } catch (e: InvalidFieldException) {
             log.error("error updating entity", e)
             throw e
+        } catch (e: SearchQueryException) {
+            log.warn("error executing '${request.method}' request for '${args.absolutePath}'", e)
+            throw XodusRestClientException(e)
         } catch(e: Exception) {
             log.error("error executing '${request.method}' request for '${args.absolutePath}'", e)
-            throw XodusRestException(e)
+            throw XodusRestServerException(e)
         }
     }
 

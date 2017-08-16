@@ -7,7 +7,8 @@
                     <h3 class="text-center">Press search button to find something.</h3>
                 </div>
                 <div data-ng-show="dataView.isSearchExecuted">
-                    <h3 class="text-center" data-ng-show="!dataView.pager.hasResults()">Nothing founded.</h3>
+                    <h3 class="text-center" data-ng-show="!dataView.pager.hasResults() && !dataView.pager.error">Nothing was found</h3>
+                    <h4 class="text-center error" data-ng-show="dataView.pager.error">{{dataView.pager.error}}</h4>
 
                     <div data-ng-show="dataView.pager.hasResults()">
                         <div class="row">
@@ -155,51 +156,46 @@
 
             <div class="modal-body">
                 <section class="search-info-section">
-                    <h4>Search by entity id</h4>
-                    <span>Passing any integer value to search input produces search by id</span>
+                    <h4>Supported cases</h4>
+                    <p>
+                        <code>12</code> Passing any integer value to search input produces search by the id
+                    </p>
+                    <p>
+                        <code>firstName=John</code> You can search by a property value
+                    </p>
+                    <p>
+                        <code>'first!Name'='J()hn'</code> Non alphanumeric characters keys and values should be wrapped with single braces
+                    </p>
+                    <p>
+                        <code>secondName='Mc''Clane'</code> Escape symbol for single brace is double single brace
+                    </p>
+                    <p>
+                        <code>firstName=null</code> Use the <i>null</i> keyword to search by an absent value
+                    </p>
+                    <p>
+                        <code>nickname='null'</code> Wrap the null with single braces to search by the "null" string instead
+                    </p>
+                    <p>
+                        <code>firstName~Jo</code> Use the <i>~</i> operand to search for all entities with the <i>firstName</i> property
+                        that starts with "Jo" string
+                    </p>
+                    <p>
+                        <code>age=[25,50]</code> Use square brackets to search for all entities with the <i>integer</i> property <i>age</i>'s value
+                        inside the specified interval. Wrap the interval with single braces to search by the "[25,50]" string.
+                    </p>
+                    <p>
+                        <code>@user=MyUser[18]</code> Search for all entities that have a link with the name <i>user</i> on an
+                        entity of type <i>MyType</i> with the <i>localId</i> = 18. You can use the <i>null</i> keyword as the value
+                        to search for entities with absent link.
+                    </p>
                 </section>
-                <section class="search-info-section">
-                    <h4>Search by properties</h4>
-                    <code>firstName=John and secondName=McClane</code>
-
-                    <p>Produces search for all entities with property firstName equals to John and
-                        property secondName equals to McClane
-                    </p>
-
-                    <p>Non alphanumeric characters keys and values should be wrapped with single
-                        braces:
-                    </p>
-
-                    <code>'first!Name'=John and secondName='Mc''Clane'</code>
-
-                    <p><strong>Note</strong>: escape symbol for single brace is double single brace
-                    </p>
-                </section>
 
                 <section class="search-info-section">
-                    <h4>'Starts with' search</h4>
-                    <code>firstName~J and secondName=McClane</code>
-
-                    <p>Produces search for all entities with property firstName starts with J symbol
-                        and
-                        secondName equals to McClane
+                    <h4>Combining searches</h4>
+                    <p>
+                        You can use the <i>and</i> keyword to combine all of the cases above to construct a complex condition
                     </p>
-
-                </section>
-
-                <section class="search-info-section">
-                    <h4>Range search</h4>
-                    <code>firstName=John and age=[25,50]</code>
-
-                    <p>Produces search for all entities where property firstName equals to John and
-                        property age placed in range from 35 up to 50
-                    </p>
-
-                    <p><strong>Note</strong>: range search worked only with integer values.
-                        <code>age=[a,b]</code>
-                        produces search for entities with property age equals to '[a,b]'
-                    </p>
-
+                    <code>fistName~Jo and 'last!Name'=null and @profile=Profile[19]</code>
                 </section>
 
             </div>

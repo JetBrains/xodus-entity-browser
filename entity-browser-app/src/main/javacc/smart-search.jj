@@ -5,7 +5,7 @@ options {
 
 PARSER_BEGIN(SmartSearchQueryParser)
 
-package com.lehvolk.xodus.web;
+package com.lehvolk.xodus.web.search;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -18,26 +18,6 @@ public class SmartSearchQueryParser {
          }
          return terms;
     }
-
-     private static String prepare(String value) {
-            if (value == null || value.length() <= 1) {
-                return value;
-            }
-            int first = value.charAt(0);
-            int last = value.charAt(value.length() - 1);
-            boolean trim = (first == '\'' && last == '\'') || (first == '"' && last == '"');
-            if (trim) {
-                return removeDoubleQuotes(value.substring(1, value.length() - 1));
-            }
-            return removeDoubleQuotes(value);
-     }
-
-     private static String removeDoubleQuotes(String value) {
-            if (value == null || value.length() <= 1) {
-                return value;
-            }
-            return value.replaceAll("''", "'");
-     }
 }
 PARSER_END(SmartSearchQueryParser)
 
@@ -51,7 +31,9 @@ SKIP:
 
 TOKEN:
 {
- <SIMPLEVALUE : (["a"-"z", "A"-"Z", "0"-"9", "_", "[", "]", "."])+ >
+ <NULL : "null" >
+| <PROP_NAME : ("@")? (["a"-"z", "A"-"Z"]){1} (["a"-"z", "A"-"Z", "0"-"9", "_"])* >
+| <SIMPLEVALUE : (["a"-"z", "A"-"Z", "0"-"9", "_", "[", "]", "."])* >
 | <QUOTED_STRING : "'" (~["'"])* "'" ("'" (~["'"])* "'")* >
 | <RANGE_STRING : "[" (~["[","]"])* "]" ("[" (~["[", "]"])* "]")* >
 | <EQUALS : "=">
@@ -87,10 +69,10 @@ public String key():
     Token token;
 }
 {
-    ( token = <SIMPLEVALUE>
+    ( token = <PROP_NAME>
     | token = <QUOTED_STRING>)
     {
-        return prepare(token.image);
+        return token.image;
     }
 }
 
@@ -102,7 +84,7 @@ public String operand():
     ( token = <EQUALS>
     | token = <LIKE>)
     {
-        return prepare(token.image);
+        return token.image;
     }
 }
 
@@ -112,9 +94,11 @@ public String value():
 }
 {
     ( token = <SIMPLEVALUE>
+    | token = <PROP_NAME>
     | token = <QUOTED_STRING>
-    | token = <RANGE_STRING>)
+    | token = <RANGE_STRING>
+    | token = <NULL> )
     {
-        return prepare(token.image);
+        return token.image;
     }
 }

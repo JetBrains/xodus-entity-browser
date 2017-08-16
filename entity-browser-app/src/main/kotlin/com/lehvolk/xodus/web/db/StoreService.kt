@@ -2,6 +2,7 @@ package com.lehvolk.xodus.web.db
 
 
 import com.lehvolk.xodus.web.*
+import com.lehvolk.xodus.web.search.smartSearch
 import jetbrains.exodus.entitystore.*
 import jetbrains.exodus.env.Environments
 import org.slf4j.LoggerFactory
@@ -48,7 +49,7 @@ class StoreService(requisites: XodusStoreRequisites) {
     fun searchType(typeId: Int, term: String?, offset: Int, pageSize: Int): SearchPager {
         return readonly { t ->
             val type = store.getEntityType(t, typeId)
-            val result = SmartSearchToolkit.doSmartSearch(term, type, typeId, t)
+            val result = smartSearch(term, type, typeId, t)
             val totalCount = result.size()
             val items = result.skip(offset).take(pageSize).map { it.asView() }
             SearchPager(items.toTypedArray(), totalCount)
@@ -101,7 +102,7 @@ class StoreService(requisites: XodusStoreRequisites) {
                 val linked = getEntity(it.typeId, it.entityId, t)
                 entity.deleteLink(it.name!!, linked)
             }
-            vo.links.added.filter { !links.contains(it.name) }.forEach {
+            vo.links.added.forEach {
                 val id = PersistentEntityId(it.typeId, it.entityId)
                 val link = t.getEntity(id)
                 entity.addLink(it.name!!, link)
@@ -131,7 +132,7 @@ class StoreService(requisites: XodusStoreRequisites) {
             override fun getAffectedEntities(): EntityIterable {
                 return transactional { t ->
                     val type = store.getEntityType(typeId)
-                    SmartSearchToolkit.doSmartSearch(term, type, typeId, t)
+                    smartSearch(term, type, typeId, t)
                 }
             }
 

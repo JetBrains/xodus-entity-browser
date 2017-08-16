@@ -1,4 +1,4 @@
-package com.lehvolk.xodus.web
+package com.lehvolk.xodus.web.search
 
 
 import jetbrains.exodus.bindings.ComparableSet
@@ -21,7 +21,7 @@ object UIPropertyTypes {
                     var result = tr.find(type, property, realValue)
                     log.debug("found: {} results", result.size())
                     if (low != null) {
-                        log.debug("searching childs of {}", low.type.clazz)
+                        log.debug("searching children of {}", low.type.clazz)
                         result = result.union(low.find(tr, type, property, value))
                     }
                     result
@@ -61,7 +61,7 @@ object UIPropertyTypes {
 
     private val BYTE = newType { java.lang.Byte.valueOf(it) }
     private val SHORT = newType { java.lang.Short.valueOf(it) }
-    private val INT = newType { Integer.valueOf(it) }
+    private val INT = newType { java.lang.Integer.valueOf(it) }
     private val LONG = newType { java.lang.Long.valueOf(it) }
     private val FLOAT = newType { java.lang.Float.valueOf(it) }
     private val DOUBLE = newType { java.lang.Double.valueOf(it) }

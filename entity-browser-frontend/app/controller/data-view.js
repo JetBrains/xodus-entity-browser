@@ -24,7 +24,7 @@ angular.module('xodus').controller('DataViewController', [
         dataView.edit = function (item) {
             navigation.toEntity(item.typeId, item.id);
         };
-        dataView.hasLinksToDisplay = function(entity){
+        dataView.hasLinksToDisplay = function (entity) {
             return (entity.links || []).find(function (link) {
                 return link.totalSize > 0;
             }) !== null;
@@ -66,6 +66,7 @@ angular.module('xodus').controller('DataViewController', [
             return {
                 totalCount: 0,
                 items: [],
+                error: null,
                 currentPage: 1,
                 expanded: {},
                 pageChanged: function () {
@@ -73,11 +74,18 @@ angular.module('xodus').controller('DataViewController', [
                     var offset = (pageNo - 1) * dataView.pageSize;
                     var self = this;
                     self.currentPage = pageNo;
-                    types.search($scope.selectedType().id, searchTerm, offset).then(function (data) {
-                        self.items = data.items;
-                        self.totalCount = data.totalCount;
-                        dataView.isSearchExecuted = true;
-                    });
+                    types.search($scope.selectedType().id, searchTerm, offset)
+                        .then(function (data) {
+                            self.items = data.items;
+                            self.totalCount = data.totalCount;
+                            self.error = null;
+                            dataView.isSearchExecuted = true;
+                        }, function (error) {
+                            if (error.data && error.data.msg) {
+                                self.error = error.data.msg;
+                                dataView.isSearchExecuted = true;
+                            }
+                        });
                 },
                 hasPagination: function () {
                     return this.totalCount > dataView.pageSize;
@@ -88,7 +96,7 @@ angular.module('xodus').controller('DataViewController', [
                 expand: function (entity) {
                     this.expanded[entity.id] = true;
                 },
-                isExpanded: function(entity){
+                isExpanded: function (entity) {
                     return angular.isDefined(this.expanded[entity.id]);
                 }
             };

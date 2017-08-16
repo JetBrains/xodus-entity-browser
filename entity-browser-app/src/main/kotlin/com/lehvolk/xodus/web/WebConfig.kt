@@ -22,7 +22,7 @@ object ApplicationConfig : ResourceConfig(
         JacksonConfigurator::class.java,
         ValidationErrorMapper::class.java,
         EntityExceptionMapper::class.java,
-        CommonExceptionMapper::class.java) {
+        ServerExceptionMapper::class.java) {
 
     init {
         packages("com.lehvolk.xodus.web")

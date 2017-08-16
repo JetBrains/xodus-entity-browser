@@ -1,6 +1,7 @@
 package com.lehvolk.xodus.web
 
 
+import com.lehvolk.xodus.web.search.UIPropertyTypes
 import jetbrains.exodus.entitystore.Entity
 import jetbrains.exodus.entitystore.PersistentEntityStoreImpl
 
