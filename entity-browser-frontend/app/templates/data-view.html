@@ -161,32 +161,35 @@
                         <code>12</code> Passing any integer value to search input produces search by the id
                     </p>
                     <p>
-                        <code>firstName=John</code> You can search by a property value
+                        <code>firstName = John</code> You can search by a property value
                     </p>
                     <p>
-                        <code>'first!Name'='J()hn'</code> Non alphanumeric characters keys and values should be wrapped with single braces
+                        <code>firstName != John</code> You can search by a property inequality
                     </p>
                     <p>
-                        <code>secondName='Mc''Clane'</code> Escape symbol for single brace is double single brace
+                        <code>'first!Name' = 'J()hn'</code> Non alphanumeric characters keys and values should be wrapped with single braces
                     </p>
                     <p>
-                        <code>firstName=null</code> Use the <i>null</i> keyword to search by an absent value
+                        <code>secondName = 'Mc''Clane'</code> Escape symbol for single brace is double single brace
                     </p>
                     <p>
-                        <code>nickname='null'</code> Wrap the null with single braces to search by the "null" string instead
+                        <code>firstName = null</code> Use the <i>null</i> keyword to search by an absent value
                     </p>
                     <p>
-                        <code>firstName~Jo</code> Use the <i>~</i> operand to search for all entities with the <i>firstName</i> property
+                        <code>nickname = 'null'</code> Wrap the null with single braces to search by the "null" string instead
+                    </p>
+                    <p>
+                        <code>firstName ~ Jo</code> Use the <i>~</i> operand to search for all entities with the <i>firstName</i> property
                         that starts with "Jo" string
                     </p>
                     <p>
-                        <code>age=[25,50]</code> Use square brackets to search for all entities with the <i>integer</i> property <i>age</i>'s value
+                        <code>age = [25,50]</code> Use square brackets to search for all entities with the <i>integer</i> property <i>age</i>'s value
                         inside the specified interval. Wrap the interval with single braces to search by the "[25,50]" string.
                     </p>
                     <p>
-                        <code>@user=MyUser[18]</code> Search for all entities that have a link with the name <i>user</i> on an
+                        <code>@user = MyUser[18]</code> Search for all entities that have a link with the name <i>user</i> on an
                         entity of type <i>MyType</i> with the <i>localId</i> = 18. You can use the <i>null</i> keyword as the value
-                        to search for entities with absent link.
+                        to search for entities with absent link. The search by the inequality <i>!=</i> is supported also.
                     </p>
                 </section>
 
@@ -195,7 +198,7 @@
                     <p>
                         You can use the <i>and</i> keyword to combine all of the cases above to construct a complex condition
                     </p>
-                    <code>fistName~Jo and 'last!Name'=null and @profile=Profile[19]</code>
+                    <code>fistName ~ Jo and 'last!Name' = null and @profile = Profile[19]</code>
                 </section>
 
             </div>
