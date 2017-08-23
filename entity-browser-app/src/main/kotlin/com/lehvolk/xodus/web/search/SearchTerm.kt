@@ -25,12 +25,12 @@ sealed class SearchTerm(val name: String) {
         }
 
         private fun parseAsLink(linkName: String, operand: String, value: String): SearchTerm {
-            if (operand != "=") {
-                throw SearchQueryException("The [$operand] operand is not supported for links. Only the equality [=] operand is supported")
+            if (!(operand.isEqualsOp || operand.isNotEqualsOp)) {
+                throw SearchQueryException("The [$operand] operand is not supported for links. Only the equality [= !=] operands are supported")
             }
 
             if (value == NULL_TOKEN) {
-                return LinkSearchTerm.nullValue(linkName)
+                return LinkSearchTerm.nullValue(linkName, operand.isEqualsOp)
             }
 
             val entityIdMatcher = ENTITY_ID.matcher(value)
@@ -38,24 +38,26 @@ sealed class SearchTerm(val name: String) {
                 throw SearchQueryException("Link value should have the \"MyType[15]\" pattern but was \"$value\"")
             }
 
-            return LinkSearchTerm.value(linkName, entityIdMatcher.group("type"), entityIdMatcher.group("id").toLong())
+            return LinkSearchTerm.value(linkName, entityIdMatcher.group("type"), entityIdMatcher.group("id").toLong(), operand.isEqualsOp)
         }
 
         private fun parseAsProperty(propertyName: String, operand: String, rawValue: String): SearchTerm {
             val value = prepare(rawValue)
             val isNullValue = rawValue == NULL_TOKEN
             return if (isNullValue) {
-                if (operand != "=") throw SearchQueryException("Only the equality [=] operand is supported for comparing a property value with null")
-                PropertyValueSearchTerm(propertyName, null)
+                if (!(operand.isEqualsOp || operand.isNotEqualsOp))
+                    throw SearchQueryException("Only the equality [= !=] operands are supported for comparing a property value with null")
+                PropertyValueSearchTerm(propertyName, null, operand.isEqualsOp)
             } else {
                 val rangeMatcher = RANGE_PATTERN.matcher(value)
                 if (rangeMatcher.matches()) {
-                    if (operand != "=") throw SearchQueryException("Only the equality [=] operand is supported for comparing a property value with a range")
+                    if (!operand.isEqualsOp)
+                        throw SearchQueryException("Only the equality [=] operand is supported for comparing a property value with a range")
                     PropertyRangeSearchTerm(propertyName, rangeMatcher.group(1).toLong(), rangeMatcher.group(2).toLong())
                 } else {
                     when (operand) {
                         "~" -> PropertyLikeSearchTerm(propertyName, value)
-                        else -> PropertyValueSearchTerm(propertyName, value)
+                        else -> PropertyValueSearchTerm(propertyName, value, operand.isEqualsOp)
                     }
                 }
             }
@@ -82,6 +84,10 @@ sealed class SearchTerm(val name: String) {
 
             return value.replace("''", "'")
         }
+
+
+        private val String.isEqualsOp: Boolean get() = this == "="
+        private val String.isNotEqualsOp: Boolean get() = this == "!="
     }
 
     abstract fun search(txn: StoreTransaction, entityType: String, entityTypeId: Int): EntityIterable
@@ -122,9 +128,9 @@ class PropertyLikeSearchTerm(name: String, val value: String) : SearchTerm(name)
  * - propertyName=John
  * - propertyName=null
  */
-class PropertyValueSearchTerm(name: String, val value: String?) : SearchTerm(name) {
+class PropertyValueSearchTerm(name: String, val value: String?, val equals: Boolean) : SearchTerm(name) {
     override fun search(txn: StoreTransaction, entityType: String, entityTypeId: Int): EntityIterable {
-        return if (value != null) {
+        val equalityResult = if (value != null) {
             val localId = value.toLongOrNull()
             txn.fullSearch(entityType, name, value).let {
                 if (name.isIdProperty && localId != null) {
@@ -137,6 +143,12 @@ class PropertyValueSearchTerm(name: String, val value: String?) : SearchTerm(nam
         } else {
             txn.getAll(entityType).minus(txn.findWithProp(entityType, name))
         }
+
+        return if (equals) {
+            equalityResult
+        } else {
+            txn.getAll(entityType).minus(equalityResult)
+        }
     }
 
     private fun StoreTransaction.fullSearch(type: String, property: String, value: String): EntityIterable {
@@ -148,14 +160,14 @@ class PropertyValueSearchTerm(name: String, val value: String?) : SearchTerm(nam
  * - @linkName=MyType[34]
  * - @linkName=null
  */
-class LinkSearchTerm private constructor(name: String, val oppositeEntityTypeName: String?, val oppositeEntityLocalId: Long?) : SearchTerm(name) {
+class LinkSearchTerm private constructor(name: String, val oppositeEntityTypeName: String?, val oppositeEntityLocalId: Long?, val equals: Boolean) : SearchTerm(name) {
     companion object {
-        fun nullValue(linkName: String) = LinkSearchTerm(linkName, null, null)
-        fun value(linkName: String, oppositeEntityTypeName: String, oppositeEntityLocalId: Long) = LinkSearchTerm(linkName, oppositeEntityTypeName, oppositeEntityLocalId)
+        fun nullValue(linkName: String, equals: Boolean) = LinkSearchTerm(linkName, null, null, equals)
+        fun value(linkName: String, oppositeEntityTypeName: String, oppositeEntityLocalId: Long, equals: Boolean) = LinkSearchTerm(linkName, oppositeEntityTypeName, oppositeEntityLocalId, equals)
     }
 
     override fun search(txn: StoreTransaction, entityType: String, entityTypeId: Int): EntityIterable {
-        return if (oppositeEntityTypeName == null || oppositeEntityLocalId == null) {
+        val equalityResult = if (oppositeEntityTypeName == null || oppositeEntityLocalId == null) {
             txn.getAll(entityType).minus(txn.findWithLinks(entityType, name))
         } else if (txn is PersistentStoreTransaction) {
             val oppositeTypeId = txn.store.getEntityTypeId(txn, oppositeEntityTypeName, false)
@@ -176,6 +188,12 @@ class LinkSearchTerm private constructor(name: String, val oppositeEntityTypeNam
             }
         } else {
             throw RuntimeException("Can't search by a link. The transaction should be persistent")
+        }
+
+        return if (equals) {
+            equalityResult
+        } else {
+            txn.getAll(entityType).minus(equalityResult)
         }
     }
 }
