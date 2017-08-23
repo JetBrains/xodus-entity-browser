@@ -10,3 +10,7 @@
 /entity-browser-app/recent-dbs.json
 /classes
 yarn.lock
+/.gradle
+**/build
+**/out
+**/node_modules
