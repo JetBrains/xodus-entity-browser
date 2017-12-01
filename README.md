@@ -22,21 +22,17 @@ That's mean that if your application uses 'x' version of xodus and you modify da
 
 ## Build from sources
 
-* build based on artifacts from teamcity.jetbrains.com
-
     >./gradlew clean build
-
-Teamcity build number can be changed in /build.gradle via ext.xodusTeamcityBuildNumber value
-
-* build based on maven artifacts
-
-    >./gradlew  -Dxodus-from-maven=true clean build
 
 ## Run backend
 
 Command starts rest interfaces on 18080 port
 
->./gradlew runJetty
+>./gradlew appRun
+
+for debug
+
+>./gradlew appRunDebug
 
 debug port by default 5005. To change it check [greety instructions](http://akhikhl.github.io/gretty-doc/Debugger-support.html)   
 

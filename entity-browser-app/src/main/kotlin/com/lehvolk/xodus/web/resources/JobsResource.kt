@@ -1,17 +1,16 @@
 package com.lehvolk.xodus.web.resources
 
+import com.lehvolk.xodus.web.DBSummary
 import javax.ws.rs.DELETE
 import javax.ws.rs.Path
-import javax.ws.rs.PathParam
 import javax.ws.rs.QueryParam
 
-@Path("/jobs")
-class JobsResource : ApplicationResource() {
+class JobsResource(override val db: DBSummary) : DatabaseAwareResource() {
 
     @DELETE
-    @Path("/type/{id}/entities")
+    @Path("/entities")
     fun deleteEntities(
-            @PathParam("id") id: Int,
+            @QueryParam("id") id: Int,
             @QueryParam("q") term: String?) {
         log.debug("deleting entity for type {} and query {}", id, term)
         safely {

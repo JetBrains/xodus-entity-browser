@@ -4,6 +4,7 @@ import com.lehvolk.xodus.web.db.Databases
 import com.lehvolk.xodus.web.db.JobsService
 import com.lehvolk.xodus.web.db.StoreService
 import com.lehvolk.xodus.web.db.dbFilter
+import javax.ws.rs.NotFoundException
 
 
 class Context(val storeService: StoreService,
@@ -18,27 +19,20 @@ class Context(val storeService: StoreService,
 
 object InjectionContexts {
 
-    val allContexts = hashMapOf<String, Context>()
-
-    val current: Context get() {
-        return allContexts[Databases.current()!!.uuid]!!
-    }
+    private val allContexts = hashMapOf<String, Context>()
 
     fun start() {
-        Databases.allOpened().forEach {
-            val context = Context(StoreService(XodusStoreRequisites(it.location!!, it.key!!)))
-            allContexts.put(it.uuid, context)
-        }
-        val requisites = XodusStore.lookupRequisites()
-        if (requisites != null) {
-            val db = DBSummary().apply {
-                location = requisites.location
-                key = requisites.key
+        Databases.allRecent().forEach {
+            val service = try {
+                StoreService(XodusStoreRequisites(it.location!!, it.key!!))
+            } catch (e: Exception) {
+                null
             }
-            val opened = Databases.allOpened().find(dbFilter(db))
-            if (opened == null) {
-                Databases.open(db)
-                allContexts.put(db.uuid, Context(StoreService(db.asRequisites())))
+            if (service != null) {
+                val context = Context(service)
+                allContexts.put(it.uuid, context)
+            } else {
+                Databases.delete(it)
             }
         }
     }
@@ -48,7 +42,7 @@ object InjectionContexts {
     }
 
     fun start(db: DBSummary) {
-        val opened = Databases.allOpened().find(dbFilter(db))
+        val opened = Databases.allRecent().find(dbFilter(db))
         if (opened == null) {
             Databases.add(db)
             Databases.open(db)
@@ -59,5 +53,7 @@ object InjectionContexts {
     fun stop(db: DBSummary) {
         allContexts[db.uuid]?.destroy()
     }
+
+    fun of(db: DBSummary): Context = allContexts[db.uuid] ?: throw NotFoundException()
 
 }

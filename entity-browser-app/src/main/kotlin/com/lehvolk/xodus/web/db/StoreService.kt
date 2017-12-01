@@ -25,7 +25,6 @@ class StoreService(requisites: XodusStoreRequisites) {
         }
     }
 
-
     fun destroy() {
         var proceed = true
         var count = 1

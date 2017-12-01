@@ -79,16 +79,6 @@ open class DBSummary {
     var uuid: String = UUID.randomUUID().toString()
 }
 
-class DB : DBSummary() {
-    var types: List<EntityType> = emptyList()
-}
-
-class AppState {
-    var current: DB? = null
-    var recent: List<DBSummary> = emptyList()
-    var opened: List<DBSummary> = emptyList()
-}
-
 fun <T : Named> T.withName(name: String): T {
     this.name = name;
     return this;

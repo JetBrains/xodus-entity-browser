@@ -1,8 +1,7 @@
 buildscript {
     ext.xodusBuildTypeId = 'Xodus_Build'
-    ext.xodusTeamcityBuildNumber = '2733'
-    ext.xodusMavenVersion = '1.0.6'
-    ext.kotlinVersion = '1.1.3-2'
+    ext.xodusMavenVersion = '1.1.0'
+    ext.kotlinVersion = '1.2.0'
 
     repositories {
         mavenCentral()
@@ -28,7 +27,7 @@ ext.globalArtifactsBuildDir = buildDir
 def isMavenXodus = Boolean.getBoolean('xodus-from-maven')
 ext.isMavenXodus = isMavenXodus
 
-def buildVersion = isMavenXodus ? "1.0.0-" + (new Date().format('yyyyMMdd')) : "1.0.$xodusTeamcityBuildNumber"
+def buildVersion = "1.0.0-" + (new Date().format('yyyyMMdd'))
 
 group = 'com.lehvolk.xodus'
 version = buildVersion
@@ -44,15 +43,9 @@ allprojects {
 
     repositories {
         mavenCentral()
-        teamcityServer {
-            url = 'https://teamcity.jetbrains.com'
-        }
-        maven {
-            url "https://dl.bintray.com/lehvolk/maven"
-        }
-        maven {
-            url "https://oss.sonatype.org/content/repositories/snapshots"
-        }
+        teamcityServer { url = 'https://teamcity.jetbrains.com' }
+        maven { url "https://dl.bintray.com/lehvolk/maven" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
 
     idea {

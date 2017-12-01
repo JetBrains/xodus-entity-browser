@@ -14,8 +14,6 @@ fun dbFilter(db: DBSummary): (DBSummary) -> Boolean {
 
 object Databases {
 
-    private val current = ThreadLocal<DBSummary>()
-
     private val dbs = arrayListOf<DBSummary>()
 
     private val recentStore = DBStore("./recent-dbs.json", dbs).load()
@@ -51,25 +49,7 @@ object Databases {
         return dbs.toList()
     }
 
-    fun allOpened(): List<DBSummary> {
-        return dbs.filter { it.isOpened }
-    }
-
-    fun firstOpened(): DBSummary? {
-        return dbs.find(DBSummary::isOpened)
-    }
-
-
-    fun current(uuid: String) {
-        val opened = dbs.find { it.uuid == uuid }
-        if (opened != null && opened.isOpened) {
-            current.set(opened)
-        } else {
-            current.set(firstOpened())
-        }
-    }
-
-    fun current() = current.get()
+    fun find(uuid: String) = dbs.find { it.uuid == uuid }
 
 }
 

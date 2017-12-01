@@ -197,3 +197,11 @@ class LinkSearchTerm private constructor(name: String, val oppositeEntityTypeNam
         }
     }
 }
+
+fun String?.toLongOrNull(): Long? {
+    return try {
+        this?.toLong()
+    } catch (e: Exception) {
+        null
+    }
+}

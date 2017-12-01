@@ -1,19 +1,16 @@
 package com.lehvolk.xodus.web
 
-import com.lehvolk.xodus.web.db.Databases
-import com.lehvolk.xodus.web.resources.DB_COOKIE
-import com.lehvolk.xodus.web.resources.switchTo
 import org.glassfish.jersey.server.ResourceConfig
 import org.glassfish.jersey.servlet.ServletContainer
 import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.io.InputStreamReader
-import javax.servlet.*
-import javax.servlet.annotation.WebFilter
+import javax.servlet.ServletConfig
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+
 
 private val log = LoggerFactory.getLogger(ApplicationConfig::class.java)
 private const val mapping = "/api/*"
@@ -29,7 +26,7 @@ object ApplicationConfig : ResourceConfig(
     }
 }
 
-@WebServlet(urlPatterns = arrayOf(mapping), loadOnStartup = 1)
+@WebServlet(urlPatterns = [mapping], loadOnStartup = 1)
 class EntityBrowserServlet : ServletContainer(ApplicationConfig) {
 
     override fun init(config: ServletConfig?) {
@@ -47,7 +44,7 @@ class EntityBrowserServlet : ServletContainer(ApplicationConfig) {
     }
 }
 
-@WebServlet(urlPatterns = arrayOf("/setup", "/empty-store", "/type/*"), loadOnStartup = 1)
+@WebServlet(urlPatterns = ["/databases/*"], loadOnStartup = 1)
 class IndexHtml : HttpServlet() {
 
     private val indexHtml by lazy {
@@ -61,36 +58,8 @@ class IndexHtml : HttpServlet() {
 
 }
 
-@WebFilter(urlPatterns = arrayOf(mapping))
-class EntityBrowserFilter : Filter {
-
-    override fun destroy() {
-    }
-
-    override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
-        var uuid = (request as HttpServletRequest).cookies?.find { it.name == DB_COOKIE }?.value
-        if (uuid == null) {
-            if (Databases.firstOpened() != null) {
-                uuid = Databases.firstOpened()!!.uuid
-                Databases.current(uuid)
-            }
-            if (uuid != null) {
-                (response as HttpServletResponse).switchTo(uuid)
-            }
-        } else {
-            Databases.current(uuid)
-        }
-        chain.doFilter(request, response)
-    }
-
-    override fun init(filterConfig: FilterConfig) {
-    }
-
-}
-
-
 private fun launchBrowser() {
-    val port = Integer.getInteger("server.port", 8080)
+    val port = Integer.getInteger("server.port", 18080)
     val url = "http://${hostName()}:$port"
     log.info("try to open browser for '{}'", url);
     try {
@@ -107,13 +76,7 @@ private fun launchBrowser() {
             // Unix or Linux
             log.info("linux detected");
             val browsers = arrayOf("google-chrome", "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape")
-            var selectedBrowser: String? = null
-            for (browser in browsers) {
-                if (Runtime.getRuntime().exec(arrayOf("which", browser)).waitFor() == 0) {
-                    selectedBrowser = browser
-                    break
-                }
-            }
+            val selectedBrowser: String? = browsers.firstOrNull { Runtime.getRuntime().exec(arrayOf("which", it)).waitFor() == 0 }
             if (selectedBrowser == null) {
                 throw Exception("Couldn't find web browser")
             } else {
