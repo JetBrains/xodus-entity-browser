@@ -29,10 +29,11 @@ object InjectionContexts {
                 null
             }
             if (service != null) {
+                it.isOpened = true
                 val context = Context(service)
                 allContexts.put(it.uuid, context)
             } else {
-                Databases.delete(it)
+                Databases.onStartupFail(it)
             }
         }
     }

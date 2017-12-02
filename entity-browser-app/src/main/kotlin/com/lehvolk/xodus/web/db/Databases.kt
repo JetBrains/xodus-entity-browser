@@ -37,6 +37,14 @@ object Databases {
         }
     }
 
+    fun onStartupFail(db: DBSummary) {
+        val predicate = dbFilter(db)
+        synchronized(this) {
+            dbs.first(predicate).isOpened = false
+            recentStore.doSync()
+        }
+    }
+
     fun open(db: DBSummary) {
         synchronized(this) {
             db.isOpened = true
@@ -76,7 +84,7 @@ private class DBStore(val fileName: String, val dbs: MutableList<DBSummary>) {
         try {
             val type = mapper.typeFactory.constructCollectionType(List::class.java, DBSummary::class.java)
             dbs.addAll(mapper.readValue(file, type))
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             // ignore
         }
         return this

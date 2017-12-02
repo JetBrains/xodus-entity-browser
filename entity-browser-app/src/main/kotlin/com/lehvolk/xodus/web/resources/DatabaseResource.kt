@@ -15,6 +15,10 @@ class DatabaseResource(override val db: DBSummary) : DatabaseAwareResource() {
     @Path("/types")
     fun searchEntities() = storeService.allTypes()
 
+    @POST
+    @Path("/types")
+    fun searchEntities(type: String): Int = storeService.addType(type)
+
     @GET
     @Path("/entities")
     fun searchEntities(

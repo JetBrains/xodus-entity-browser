@@ -41,6 +41,12 @@ class StoreService(requisites: XodusStoreRequisites) {
         }
     }
 
+    fun addType(type: String): Int {
+        return transactional {
+            store.getEntityTypeId(it, type, true)
+        }
+    }
+
     fun allTypes(): Array<EntityType> {
         return readonly { tx -> tx.entityTypes.map { it.asEntityType(tx.store) }.toTypedArray() }
     }
