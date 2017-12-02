@@ -4,30 +4,21 @@ angular.module('xodus').controller('SearchController', [
     '$routeParams',
     '$scope',
     '$uibModal',
-    'NavigationService',
+    'navigationService',
     'ConfirmationService',
     function (types, $location, $routeParams, $scope, $uibModal, navigation, confirmation) {
-        var ctrl = this;
-        $scope.selectedType = null;
-        $scope.searchQuery = $routeParams.q;
-        if (!$routeParams.typeId) {
-            navigation.toType();
-            return;
-        }
-        $scope.types = types.all();
-        updateType();
+        var searchCtrl = this;
 
-        ctrl.onTypeSelect = function (type) {
-            navigation.toType(type.id).search('q', null);
-        };
-        ctrl.onSearch = function () {
-            $location.search('q', $scope.searchQuery);
-        };
-        ctrl.newEntity = function () {
+        syncCtrl();
+
+        searchCtrl.onTypeSelect = syncLocation;
+        searchCtrl.onSearch = syncLocation;
+
+        searchCtrl.newEntity = function () {
             navigation.toEntity($scope.selectedType.id);
         };
 
-        ctrl.deleteSearchResult = function () {
+        searchCtrl.deleteSearchResult = function () {
             types.search($routeParams.typeId, $scope.searchQuery).then(function (result) {
                 confirmation({
                     label: 'You are going to delete "' + result.totalCount + '" entities',
@@ -52,11 +43,24 @@ angular.module('xodus').controller('SearchController', [
             })
         };
 
-        function updateType() {
-            angular.forEach($scope.types, function (type) {
-                if (type.id === $routeParams.typeId) {
-                    $scope.selectedType = type;
-                }
+        function syncLocation() {
+            $location.search({
+                typeId: searchCtrl.selectedType.id,
+                q: searchCtrl.searchQuery
             });
+        }
+
+        function syncCtrl() {
+            var locationTypeId = $location.search().typeId;
+            var result = null;
+            if (!locationTypeId) {
+                result = searchCtrl.fullDatabase.types.find(function (type) {
+                    return type === $location.search().typeId;
+                }) || searchCtrl.fullDatabase.types[0];
+            } else {
+                result = searchCtrl.fullDatabase.types[0];
+            }
+            searchCtrl.selectedType = result;
+            searchCtrl.searchQuery = $location.search().q;
         }
     }]);

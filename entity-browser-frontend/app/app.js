@@ -8,6 +8,8 @@ require('bootstrap');
 require('angular-ui-bootstrap');
 require('ui-select');
 
+require('font-awesome-loader');
+
 angular.module('xodus', [
     'ngRoute',
     'ui.bootstrap',
@@ -18,28 +20,20 @@ angular.module('xodus', [
 angular.module('xodus').config([
     '$routeProvider', '$locationProvider',
     function ($routeProvider, $locationProvider) {
-        // $locationProvider.html5Mode(true);
+        $locationProvider.html5Mode(true);
 
         $routeProvider.when('/error', {
-            template: require('./templates/error.html')
-        }).when('/empty-store', {
-            template: require('./templates/empty-store.html')
+            template: require('./pages/error.html')
+        }).when('/databases', {
+            template: require('./pages/databases.html')
         }).otherwise({
-            redirectTo: '/type/0'
+            redirectTo: '/'
         });
 
         function when(path, route) {
             route.resolve = {
-                appState: ['$location', 'DatabaseService' ,function ($location, DatabaseService) {
-                    return DatabaseService.getAppState().then(function (summary) {
-                        if (!summary.current) {
-                            $location.path('/setup');
-                            return;
-                        }
-                        if (!angular.isArray(summary.current.types) || !summary.current.types.length) {
-                            $location.path('/empty-store');
-                        }
-                    }).catch(function () {
+                databases: ['$location', 'databaseService', function ($location, databaseService) {
+                    return databaseService.getDatabases().catch(function () {
                         $location.path('/error');
                     });
                 }]
@@ -47,18 +41,18 @@ angular.module('xodus').config([
             $routeProvider.when(path, route);
         }
 
-        when('/type/:typeId', {
-            template: require('./templates/main.html'),
+        when('/', {
+            template: require('./pages/databases.html')
+        });
+        when('/databases/:databaseId', {
+            template: require('./pages/database.html'),
             reloadOnSearch: false
         });
-        when('/type/:typeId/entity/:entityId', {
-            template: require('./templates/entity.html')
+        when('/databases/:databaseId/type/:typeId/entity/:entityId', {
+            template: require('./pages/entity.html')
         });
-        when('/type/:typeId/new', {
+        when('/:databaseId/type/:typeId/new', {
             template: require('./templates/entity.html')
-        });
-        when('/setup', {
-            template: require('./templates/setup.html')
         });
     }]);
 
@@ -88,9 +82,11 @@ require('./controller/form-view/entity-view');
 require('./controller/form-view/links');
 require('./controller/form-view/properties');
 require('./controller/setup/db-dialog');
-require('./controller/setup/db');
+require('./controller/databases');
+require('./controller/database');
 
 require('./directive/form-view');
 require('./directive/data-view');
 require('./directive/entity-link');
+require('./directive/search');
 require('./directive/store-setup');

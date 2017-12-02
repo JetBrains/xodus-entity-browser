@@ -1,0 +1,49 @@
+<div>
+    <div class="container-fluid" data-ng-controller="DatabasesController as databasesCtrl">
+
+        <h2>Databases</h2>
+
+        <p>
+            <a class="btn btn-default" data-ng-click="databasesCtrl.openDialog()">
+                <span class="fa fa-plus"></span> New</a>
+        </p>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Summary</th>
+                <th>Status</th>
+                <th>Link</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr data-ng-repeat="database in databasesCtrl.dbs">
+                <td>
+                    <span style="font-weight: bold">{{$index + 1}}</span>
+                </td>
+                <td>
+                    <div>
+                        <span style="font-weight: bold">{{database.description}}:</span>
+                        <span>{{database.location}}</span>
+
+                    </div>
+                </td>
+                <td>
+                    <span ng-show="database.opened" class="label label-success">opened</span>
+                </td>
+                <td>
+                    <a ng-href="/databases/{{database.uuid}}">Inspect</a>
+                </td>
+                <td>
+                    <span class="fa fa-lg fa-trash" title="Remove"></span>
+                    <span class="fa fa-lg fa-pencil" title="Edit"></span>
+                    <span class="fa fa-lg fa-eject" ng-show="database.opened" title="Eject"></span>
+                    <span class="fa fa-lg fa-play" ng-show="!database.opened" title="Play"></span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>

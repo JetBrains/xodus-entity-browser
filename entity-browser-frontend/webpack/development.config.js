@@ -102,11 +102,12 @@ var webpackConfig = require('webpack-config-merger')(
        */
       contentBase: 'app/',
 
+      historyApiFallback: {
+          index: url.resolve(getServerContext(), 'index.html')
+      },
+
       proxy: [
         {url: '/api', timeout: 9999999},
-        {url: '/type', timeout: 9999999},
-        {url: '/setup', timeout: 9999999},
-        {url: '/empty-store', timeout: 9999999},
         '/webjars'
       ].reduce(function(proxy, proxyItem) {
         var serverUri = url.format({

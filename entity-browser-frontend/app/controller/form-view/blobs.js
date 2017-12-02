@@ -1,6 +1,6 @@
 angular.module('xodus').controller('BlobsController', [
     '$scope',
-    'NavigationService',
+    'navigationService',
     function ($scope, navigation) {
         $scope.uiBlobs = $scope.state.current.blobs;
 

@@ -2,7 +2,7 @@ angular.module('xodus').service('EntityTypeService', [
     '$http',
     '$q',
     '$location',
-    'DatabaseService',
+    'databaseService',
     function ($http, $q, $location, database) {
         this.all = all;
         this.byId = byId;
@@ -16,16 +16,17 @@ angular.module('xodus').service('EntityTypeService', [
         function byId(id) {
             var type = null;
             angular.forEach(all(), function (item) {
-                if (item.id == id) {
+                if (item.id === id) {
                     type = item;
                 }
             });
             return type;
         }
 
-        function search(typeId, term, offset, pageSize) {
-            return $http.get('api/type/' + typeId + '/entities', {
+        function search(db, typeId, term, offset, pageSize) {
+            return $http.get('api/dbs/' + db.uuid + '/entities', {
                 params: {
+                    id: typeId,
                     q: term,
                     offset: offset,
                     pageSize: (pageSize ? pageSize : 50)

@@ -1,7 +1,7 @@
 angular.module('xodus').directive('formView', [
     '$uibModal',
     '$location',
-    'NavigationService',
+    'navigationService',
     'ConfirmationService',
     function ($uibModal, $location, navigation, confirmation) {
         return {

@@ -1,10 +1,11 @@
-angular.module('xodus').service('NavigationService', [
+angular.module('xodus').service('navigationService', [
     '$location',
     '$window',
     function ($location, $window) {
         this.toType = toType;
         this.toEntity = toEntity;
         this.forceReload = forceReload;
+
         this.api = {
             blobLink: function (entity, name) {
                 return 'api/type/' + entity.typeId + '/entity/' + entity.id + "/blob/" + name;
@@ -17,6 +18,7 @@ angular.module('xodus').service('NavigationService', [
 
         function toEntity(typeId, entityId) {
             $location.path('/type/' + typeId + (angular.isDefined(entityId) ? '/entity/' + entityId : '/new'));
+
         }
         function forceReload() {
             toType();

@@ -1,0 +1,45 @@
+<div>
+    <div class="row">
+        <form class="form form-horizontal" data-ng-submit="searchCtrl.onSearch()">
+            <div class="form-group col-md-3">
+                <ui-select class="pull-right"
+                           data-ng-model="searchCtrl.selectedType"
+                           data-theme="bootstrap"
+                           data-ng-change="searchCtrl.onTypeSelect(searchCtrl.selectedType)"
+                           style="width: 100%; padding-right: 15px;"
+                >
+                    <ui-select-match placeholder="Select type">
+                        {{$select.selected.name}}
+                    </ui-select-match>
+                    <ui-select-choices
+                            repeat="type in searchCtrl.fullDatabase.types | filter: $select.search track by type.id">
+                        <small data-ng-bind="type.name"></small>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+            <div class="form-group col-md-7">
+                <div class="input-group">
+                    <input id="searchQuery" autofocus type="text"
+                           data-ng-model="searchCtrl.searchQuery"
+                           class="form-control"
+                           placeholder="try <12> or <name != John> or <name ~ Sam and age = [35,40]> or press the (?) icon for details >>>">
+
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" type="submit"><i
+                                class="fa fa-fw fa-search"></i>
+                        </button>
+                        <button class="btn btn-default" data-ng-click="openInfo()">
+                            <i class="fa fa-fw fa-question"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 btn-group">
+                <a class="btn btn-primary pull-left" data-ng-click="searchCtrl.newEntity()">New Entity</a>
+                <a class="btn btn-danger pull-left" data-ng-click="searchCtrl.deleteSearchResult()">Delete
+                    results</a>
+            </div>
+        </form>
+    </div>
+
+</div>

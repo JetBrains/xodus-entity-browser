@@ -1,10 +1,13 @@
-angular.module('xodus').directive('entityTypeView', [function () {
+angular.module('xodus').directive('typeView', [function () {
     return {
         restrict: 'E',
         scope: {
-            selectedType: '&'
+            fullDatabase: '&'
         },
         replace: true,
+        controller: 'DataViewController',
+        controllerAs: 'dataViewCtrl',
+        bindToController: true,
         template: require('../templates/data-view.html')
     };
 }]);

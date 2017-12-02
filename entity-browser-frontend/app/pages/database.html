@@ -1,0 +1,32 @@
+<div class="container-fluid">
+
+    <div ng-controller="DatabaseController as databaseCtrl">
+        <div ng-if="databaseCtrl.loaded">
+            <div ng-if="databaseCtrl.found">
+
+                <div class="row database-title-container">
+                    <div class="col-md-8">
+                        <h2 class="database-description">{{databaseCtrl.fullDB.description}}</h2>
+                        <div class="database-location">{{databaseCtrl.fullDB.location}}</div>
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                </div>
+
+                <div ng-if="databaseCtrl.fullDB.types.length">
+                    <search full-database="databaseCtrl.fullDB"></search>
+                    <type-view full-database="databaseCtrl.fullDB"></type-view>
+                </div>
+
+            </div>
+            <div ng-if="!databaseCtrl.found">
+                There is no such database. Try to <a href="/databases">lookup</a> another database
+            </div>
+        </div>
+
+        <div ng-if="!databaseCtrl.loaded">
+            <h3>loading data...</h3>
+        </div>
+
+    </div>
+</div>

@@ -8,14 +8,14 @@
     <title>Xodus entity browser</title>
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 
-    <link href="webjars/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+
     <link href="webjars/angular-ui-select/0.17.1/select.min.css" rel="stylesheet">
-    <link href="webjars/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+
 </head>
 <body>
 <div>
     <header>
-        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" ng-controller="DBController as db">
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
                     <span class="sr-only">Toggle navigation</span>
@@ -23,43 +23,18 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" data-ng-click="db.forceReload()">Xodus entity browser</a>
+                <a class="navbar-brand" href="/">Xodus entity browser</a>
             </div>
             <ul class="nav navbar-right top-nav">
                 <li uib-dropdown class="dropdown">
                     <a uib-dropdown-toggle class="dropdown-toggle">
-                        <i class="fa fa-fw fa-database"></i>Databases<b class="caret"></b></a>
-                    <ul uib-dropdown-menu class="dropdown-menu">
-                        <li data-ng-repeat="database in dbs" data-ng-class="{'selected-item' : database.isCurrent }">
-                            <div class="database-action">
-                                <i data-ng-show="database.isCurrent" class="fa fa-check"></i>
-                                <i data-ng-show="!database.isCurrent && database.markForDelete"
-                                   class="fa fa-undo with-pointer database-action-item"
-                                   data-ng-click="db.undoDeleteDB(database, $event)"></i>
-                                <i data-ng-show="!database.isCurrent"
-                                   class="fa fa-trash with-pointer database-action-item"
-                                   data-ng-click="db.deleteDB(database, $event)"></i>
-                                <span data-ng-click="db.changeDB(database)"
-                                      ng-class="{'for-delete': database.markForDelete}"
-                                >{{database.title}}</span>
-                            </div>
-                        </li>
-                        <li role="separator" class="divider"></li>
-                        <li>
-                            <div class="database-action">
-                                <i class="fa fa-fw fa-plus"></i>
-                                <a ng-click="db.openDialog()">new connection</a>
-                            </div>
-                        </li>
-                    </ul>
+                        <i class="fa fa-fw fa-database"></i>Databases</a>
                 </li>
             </ul>
         </nav>
     </header>
-    <main>
-        <div data-ng-view>
-        </div>
-    </main>
+    <div data-ng-view id="page-wrapper">
+    </div>
 </div>
 
 

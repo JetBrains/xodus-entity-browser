@@ -1,36 +1,40 @@
 angular.module('xodus').controller('DataViewController', [
     'EntityTypeService',
     'EntitiesService',
-    'NavigationService',
+    'navigationService',
     '$scope',
     '$uibModal',
     '$routeParams',
-    function (types, entities, navigation, $scope, $uibModal, $routeParams) {
-        var dataView = this;
-        dataView.searchQuery = searchQuery();
-        dataView.pageSize = 50;
-        $scope.type = $scope.selectedType();
+    'databaseService',
+    function (typeService, entitiesService, navigation, $scope, $uibModal, $routeParams) {
+        var dataViewCtrl = this;
+        dataViewCtrl.searchQuery = searchQuery();
+        dataViewCtrl.pageSize = 50;
+        dataViewCtrl.type = databaseType();
+
         $scope.$on('$routeUpdate', function () {
-            dataView.searchQuery = searchQuery();
-            dataView.pager = newPager(dataView.searchQuery);
-            dataView.pager.pageChanged(1);
+            dataViewCtrl.searchQuery = searchQuery();
+            dataViewCtrl.type = databaseType();
+            dataViewCtrl.pager = newPager(dataViewCtrl.searchQuery);
+            dataViewCtrl.pager.pageChanged(1);
         });
-        dataView.pager = newPager(dataView.searchQuery);
-        dataView.newInstance = entities.newEntity($scope.type.id, $scope.type.name);
+
+        dataViewCtrl.pager = newPager(dataViewCtrl.searchQuery);
+        dataViewCtrl.newInstance = entitiesService.newEntity(dataViewCtrl.type.id, dataViewCtrl.type.name);
 
         //comment this if you want to load data on view show
-        dataView.pager.pageChanged(1);
+        dataViewCtrl.pager.pageChanged(1);
 
-        dataView.edit = function (item) {
+        dataViewCtrl.edit = function (item) {
             navigation.toEntity(item.typeId, item.id);
         };
-        dataView.hasLinksToDisplay = function (entity) {
+        dataViewCtrl.hasLinksToDisplay = function (entity) {
             return (entity.links || []).find(function (link) {
                 return link.totalSize > 0;
             }) !== null;
         };
 
-        dataView.deleteItem = function (item) {
+        dataViewCtrl.deleteItem = function (item) {
             $uibModal.open({
                 animation: true,
                 template: require('../templates/confirmation-dialog.html'),
@@ -42,23 +46,23 @@ angular.module('xodus').controller('DataViewController', [
                             message: 'Are you sure you want to delete ' + item.label + '?',
                             action: 'Delete',
                             customAction: function () {
-                                return entities.deleteEntity(item.typeId, item.id);
+                                return entitiesService.deleteEntity(item.typeId, item.id);
                             }
                         };
                     }
                 }
             }).result.then(function (result) {
                 if (result) {
-                    dataView.onSearch();
+                    dataViewCtrl.onSearch();
                 }
             });
         };
 
-        dataView.refresh = function () {
-            dataView.pager.pageChanged();
+        dataViewCtrl.refresh = function () {
+            dataViewCtrl.pager.pageChanged();
         };
 
-        dataView.blobLink = function (entity, blob) {
+        dataViewCtrl.blobLink = function (entity, blob) {
             return navigation.api.blobLink(entity, blob.name);
         };
 
@@ -71,24 +75,24 @@ angular.module('xodus').controller('DataViewController', [
                 expanded: {},
                 pageChanged: function () {
                     var pageNo = this.currentPage;
-                    var offset = (pageNo - 1) * dataView.pageSize;
+                    var offset = (pageNo - 1) * dataViewCtrl.pageSize;
                     var self = this;
                     self.currentPage = pageNo;
-                    types.search($scope.selectedType().id, searchTerm, offset)
+                    typeService.search(dataViewCtrl.fullDatabase(), dataViewCtrl.type.id, searchTerm, offset)
                         .then(function (data) {
                             self.items = data.items;
                             self.totalCount = data.totalCount;
                             self.error = null;
-                            dataView.isSearchExecuted = true;
+                            dataViewCtrl.isSearchExecuted = true;
                         }, function (error) {
                             if (error.data && error.data.msg) {
                                 self.error = error.data.msg;
-                                dataView.isSearchExecuted = true;
+                                dataViewCtrl.isSearchExecuted = true;
                             }
                         });
                 },
                 hasPagination: function () {
-                    return this.totalCount > dataView.pageSize;
+                    return this.totalCount > dataViewCtrl.pageSize;
                 },
                 hasResults: function () {
                     return this.items.length > 0;
@@ -104,6 +108,13 @@ angular.module('xodus').controller('DataViewController', [
 
         function searchQuery() {
             return $routeParams.q ? $routeParams.q : null;
+        }
+
+        function databaseType() {
+            var typeId = $routeParams.typeId ? $routeParams.typeId : dataViewCtrl.fullDatabase().types[0].id;
+            return dataViewCtrl.fullDatabase().types.find(function (type) {
+                return type.id === typeId;
+            });
         }
     }]);
 
