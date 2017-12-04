@@ -1,10 +1,13 @@
-angular.module('xodus').controller('FormViewController', ['$scope', 'EntitiesService', 'EntityTypeService', '$timeout',
-    function ($scope, entities, types, $timeout) {
-        var formView = this;
+angular.module('xodus').controller('FormViewController', ['$scope', 'entitiesService', '$timeout', 'navigationService',
+    function ($scope, entitiesService, $timeout, navigationService) {
+        var formViewCtrl = this;
+        var entities = entitiesService($scope.fullDatabase());
+        formViewCtrl.fullDatabase = $scope.fullDatabase();
+        formViewCtrl.navigation = navigationService(formViewCtrl.fullDatabase);
 
-        $scope.find = function(items, link) {
+        formViewCtrl.find = function (items, link) {
             var found = null;
-            angular.forEach(items, function(item) {
+            angular.forEach(items, function (item) {
                 if (item.name === link.name && item.typeId === link.typeId && item.entityId === link.entityId) {
                     found = item;
                 }
@@ -13,7 +16,7 @@ angular.module('xodus').controller('FormViewController', ['$scope', 'EntitiesSer
         };
         initialize();
 
-        formView.save = function () {
+        formViewCtrl.save = function () {
             var state = $scope.state;
             var propsForm = $scope.getForm('propsForm');
             $scope.makeDirty(propsForm);
@@ -25,41 +28,25 @@ angular.module('xodus').controller('FormViewController', ['$scope', 'EntitiesSer
             entities.save(state.initial, changeSummary).then(function (response) {
                 state.update(response.data);
             }, function (response) {
-                formView.error = response.data && response.data.msg || 'Unknown error';
+                formViewCtrl.error = response.data && response.data.msg || 'Unknown error';
                 $scope.toggleView();
             });
         };
 
-        formView.closeError = function () {
-            formView.error = null;
+        formViewCtrl.closeError = function () {
+            formViewCtrl.error = null;
         };
 
-        formView.revert = function () {
+        formViewCtrl.revert = function () {
             $scope.state.revert();
-            if (!formView.isNew) {
+            if (!formViewCtrl.isNew) {
                 $scope.toggleView();
             }
         };
 
         function initialize() {
-            $scope.state = null;
-            if ($scope.entityId) {
-                entities.byId($scope.entityTypeId, $scope.entityId).then(function (entity) {
-                    $scope.state = newState(entity);
-                    formView.error = null;
-                    updateContext();
-                });
-            } else {
-                var type = types.byId($scope.entityTypeId);
-                $scope.state = newState({
-                    typeId: $scope.entityTypeId,
-                    type: type.name,
-                    links: [],
-                    properties: [],
-                    blobs: []
-                });
-                updateContext();
-            }
+            $scope.state = newState($scope.entity());
+            updateContext();
         }
 
         function newState(entity) {
@@ -89,7 +76,7 @@ angular.module('xodus').controller('FormViewController', ['$scope', 'EntitiesSer
 
         function updateContext() {
             var initial = $scope.state.initial;
-            formView.isNew = !angular.isDefined(initial.id);
-            formView.label = (formView.isNew ? 'New ' + initial.type : initial.label);
+            formViewCtrl.isNew = !angular.isDefined(initial.id);
+            formViewCtrl.label = (formViewCtrl.isNew ? 'New ' + initial.type : initial.label);
         }
     }]);

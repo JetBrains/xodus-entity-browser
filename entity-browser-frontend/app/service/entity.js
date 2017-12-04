@@ -1,4 +1,13 @@
-angular.module('xodus').service('EntitiesService', ['$http', '$q', '$location', function($http, $q, $location) {
+angular.module('xodus').factory('entitiesService', ['$http', '$q', '$location', function ($http, $q, $location) {
+
+    function newType(object) {
+        return angular.extend({}, {
+            displayName: null,
+            clazz: null,
+            readonly: false
+        }, object);
+    }
+
     var integerPattern = '^[-+]{0,1}[0-9]*$';
     var decimalPattern = '^[-+]?[0-9]+[.]{0,1}([0-9]+)?([eE][-+]?[0-9]+)?$';
 
@@ -60,183 +69,180 @@ angular.module('xodus').service('EntitiesService', ['$http', '$q', '$location', 
         })
     ];
 
-    this.allTypes = allTypes;
-    this.newProperty = newProperty;
-    this.fromProperty = fromProperty;
-    this.appendValidation = appendValidation;
-    this.newEntity = newEntity;
-    this.getChangeSummary = getChangeSummary;
-    this.save = save;
-    this.byId = byId;
-    this.deleteEntity = deleteEntity;
-
-    function allTypes() {
-        return angular.copy(propertyTypes);
-    }
-
-    function newProperty() {
-        return {
-            name: null,
-            value: null,
-            type: angular.copy(propertyTypes[0])
-        };
-    }
-
-    function fromProperty(property) {
-        return angular.copy(property);
-    }
-
-    function newEntity(typeId) {
-        return {
-            type: propertyTypes[0],
-            typeId: typeId,
-            properties: [],
-            blobs: [],
-            links: []
-        };
-    }
-
-    function appendValidation(property) {
-        var result = propertyTypes.filter(function(p) {
-            return p.clazz === property.type.clazz;
-        });
-        if (result[0]) {
-            property.type.validation = angular.copy(result[0].validation);
+    return function (fullDB) {
+        function allTypes() {
+            return angular.copy(propertyTypes);
         }
-    }
 
-    function getPropertyItemKey(item) {
-        return item.name;
-    }
+        function newProperty() {
+            return {
+                name: null,
+                value: null,
+                type: angular.copy(propertyTypes[0])
+            };
+        }
 
-    function getLinkItemKey(item) {
-        return item.name + '-' + item.typeId + '-' + item.entityId;
-    }
+        function fromProperty(property) {
+            return angular.copy(property);
+        }
 
-    function getChangeSummary(initial, modified) {
-        var changeSummary = {
-            properties: {
-                added: [],
-                deleted: [],
-                modified: []
-            },
-            links: {
-                added: [],
-                deleted: [],
-                modified: []
+        function newEntity(typeId) {
+            return {
+                type: propertyTypes[0],
+                typeId: typeId,
+                properties: [],
+                blobs: [],
+                links: []
+            };
+        }
+
+        function appendValidation(property) {
+            var result = propertyTypes.filter(function (p) {
+                return p.clazz === property.type.clazz;
+            });
+            if (result[0]) {
+                property.type.validation = angular.copy(result[0].validation);
             }
-        };
-        processChangeSummary(changeSummary, initial, modified, 'properties', sectionOf, getPropertyItemKey,
-            function(initialProperty, modifiedProperty) {
-                if (initialProperty.type.clazz === modifiedProperty.type.clazz) {
-                    if (initialProperty.value !== modifiedProperty.value) {
-                        changeSummary.properties.modified.push(modifiedProperty);
+        }
+
+        function getPropertyItemKey(item) {
+            return item.name;
+        }
+
+        function getLinkItemKey(item) {
+            return item.name + '-' + item.typeId + '-' + item.entityId;
+        }
+
+        function getChangeSummary(initial, modified) {
+            var changeSummary = {
+                properties: {
+                    added: [],
+                    deleted: [],
+                    modified: []
+                },
+                links: {
+                    added: [],
+                    deleted: [],
+                    modified: []
+                }
+            };
+            processChangeSummary(changeSummary, initial, modified, 'properties', sectionOf, getPropertyItemKey,
+                function (initialProperty, modifiedProperty) {
+                    if (initialProperty.type.clazz === modifiedProperty.type.clazz) {
+                        if (initialProperty.value !== modifiedProperty.value) {
+                            changeSummary.properties.modified.push(modifiedProperty);
+                        }
+                    } else {
+                        changeSummary.properties.deleted.push(initialProperty);
+                        changeSummary.properties.added.push(modifiedProperty);
                     }
-                } else {
-                    changeSummary.properties.deleted.push(initialProperty);
-                    changeSummary.properties.added.push(modifiedProperty);
-                }
-            });
-        processChangeSummary(changeSummary, initial, modified, 'links', entitiesOfSection, getLinkItemKey,
-            function(initialLink, modifiedLink) {
-                if (initialLink.entityId !== modifiedLink.entityId ||
-                    initialLink.typeId !== modifiedLink.typeId) {
-                    changeSummary.links.modified.push(modifiedLink);
-                }
-            });
-        return changeSummary;
-    }
-
-    function save(entity, changeSummary) {
-        var isNew = !angular.isDefined(entity.id);
-        var path = 'api/type/' + entity.typeId + '/entity';
-        if (!isNew) {
-            path = path + '/' + entity.id
+                });
+            processChangeSummary(changeSummary, initial, modified, 'links', entitiesOfSection, getLinkItemKey,
+                function (initialLink, modifiedLink) {
+                    if (initialLink.entityId !== modifiedLink.entityId ||
+                        initialLink.typeId !== modifiedLink.typeId) {
+                        changeSummary.links.modified.push(modifiedLink);
+                    }
+                });
+            return changeSummary;
         }
-        if (isNew) {
-            return $http.post(path, changeSummary);
-        }
-        return $http.put(path, changeSummary);
 
-    }
-
-    function findByKey(array, key, getKeyFn) {
-        var result = array.filter(function(item) {
-            return getKeyFn(item) === key;
-        });
-        return result.length ? result[0] : null;
-    }
-
-    function join(namedArray1, namedArray2, getKeyFn) {
-        var joined = namedArray1.concat(namedArray2);
-        var uniqueNames = {};
-        angular.forEach(joined, function(item) {
-            if (!uniqueNames[getKeyFn(item)]) {
-                uniqueNames[getKeyFn(item)] = null;
+        function save(entity, changeSummary) {
+            var isNew = !angular.isDefined(entity.id);
+            var path = 'api/type/' + entity.typeId + '/entity';
+            if (!isNew) {
+                path = path + '/' + entity.id
             }
-        });
+            if (isNew) {
+                return $http.post(path, changeSummary);
+            }
+            return $http.put(path, changeSummary);
+
+        }
+
+        function findByKey(array, key, getKeyFn) {
+            var result = array.filter(function (item) {
+                return getKeyFn(item) === key;
+            });
+            return result.length ? result[0] : null;
+        }
+
+        function join(namedArray1, namedArray2, getKeyFn) {
+            var joined = namedArray1.concat(namedArray2);
+            var uniqueNames = {};
+            angular.forEach(joined, function (item) {
+                if (!uniqueNames[getKeyFn(item)]) {
+                    uniqueNames[getKeyFn(item)] = null;
+                }
+            });
+            return {
+                joined: joined,
+                uniqueNames: Object.keys(uniqueNames)
+            };
+        }
+
+        function processChangeSummary(changeSummary, initial, modified, sectionName, sectionOf, getKeyFn, callback) {
+            var initialEntities = sectionOf(sectionName)(initial);
+            var modifiedEntities = sectionOf(sectionName)(modified);
+            var summaryEntities = changeSummary[sectionName];
+            var joined = join(initialEntities, modifiedEntities, getKeyFn);
+            angular.forEach(joined.uniqueNames, function (name) {
+                var initialProperty = findByKey(initialEntities, name, getKeyFn);
+                var modifiedProperty = findByKey(modifiedEntities, name, getKeyFn);
+                if (initialProperty && modifiedProperty) {
+                    callback(initialProperty, modifiedProperty);
+                } else if (initialProperty) {
+                    summaryEntities.deleted.push(initialProperty);
+                } else if (modifiedProperty) {
+                    summaryEntities.added.push(modifiedProperty);
+                }
+            });
+        }
+
+        function sectionOf(name) {
+            return function (item) {
+                return item[name];
+            };
+        }
+
+        function entitiesOfSection(name) {
+            return function (item) {
+                return flatMap(item[name], function (l) {
+                    return l.entities;
+                })
+            }
+        }
+
+        function flatMap(arr, lambda) {
+            return Array.prototype.concat.apply([], arr.map(lambda));
+        }
+
+        function byId(typeId, entityId) {
+            if (!entityId) {
+                return $q.when(newEntity(typeId));
+            }
+            return $http.get('api/dbs/' + fullDB.uuid + '/entities/' + typeId + '-' + entityId).then(function (response) {
+                return response.data;
+            }, function () {
+                $location.path('/error');
+            });
+        }
+
+        function deleteEntity(typeId, entityId) {
+            return $http['delete']('api/dbs/' + fullDB.uuid + '/entities/' + typeId + '-' + entityId);
+        }
+
         return {
-            joined: joined,
-            uniqueNames: Object.keys(uniqueNames)
-        };
-    }
-
-    function processChangeSummary(changeSummary, initial, modified, sectionName, sectionOf, getKeyFn, callback) {
-        var initialEntities = sectionOf(sectionName)(initial);
-        var modifiedEntities = sectionOf(sectionName)(modified);
-        var summaryEntities = changeSummary[sectionName];
-        var joined = join(initialEntities, modifiedEntities, getKeyFn);
-        angular.forEach(joined.uniqueNames, function(name) {
-            var initialProperty = findByKey(initialEntities, name, getKeyFn);
-            var modifiedProperty = findByKey(modifiedEntities, name, getKeyFn);
-            if (initialProperty && modifiedProperty) {
-                callback(initialProperty, modifiedProperty);
-            } else if (initialProperty) {
-                summaryEntities.deleted.push(initialProperty);
-            } else if (modifiedProperty) {
-                summaryEntities.added.push(modifiedProperty);
-            }
-        });
-    }
-
-    function sectionOf(name) {
-        return function(item) {
-            return item[name];
-        };
-    }
-
-    function entitiesOfSection(name) {
-        return function (item) {
-            return flatMap(item[name], function (l) {
-                return l.entities;
-            })
+            allTypes: allTypes,
+            newProperty: newProperty,
+            fromProperty: fromProperty,
+            appendValidation: appendValidation,
+            newEntity: newEntity,
+            getChangeSummary: getChangeSummary,
+            save: save,
+            byId: byId,
+            deleteEntity: deleteEntity
         }
-    }
+    };
 
-    function flatMap(arr, lambda) {
-        return Array.prototype.concat.apply([], arr.map(lambda));
-    }
-
-    function byId(typeId, entityId) {
-        if (!entityId) {
-            return $q.when(newEntity(typeId));
-        }
-        return $http.get('api/type/' + typeId + '/entity/' + entityId).then(function(response) {
-            return response.data;
-        }, function() {
-            $location.path('/error');
-        });
-    }
-
-    function newType(object) {
-        return angular.extend({}, {
-            displayName: null,
-            clazz: null,
-            readonly: false
-        }, object);
-    }
-
-    function deleteEntity(typeId, entityId) {
-        return $http['delete']('api/type/' + typeId + '/entity/' + entityId);
-    }
 }]);

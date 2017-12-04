@@ -1,3 +1,31 @@
-<div>
-asasdasdasdasd
+<div class="container-fluid">
+    <div ng-controller="EntityController as entityCtrl">
+        <div ng-if="entityCtrl.loaded">
+            <div ng-if="entityCtrl.entity">
+
+                <div class="row database-title-container">
+                    <div class="col-md-8">
+                        <h2 class="database-description">{{entityCtrl.isNew ? 'New ' + entityCtrl.entity.type.name : entityCtrl.entity.label}}</h2>
+                        <div class="database-location">in <strong>{{entityCtrl.fullDB.description}}</strong> from <strong>{{entityCtrl.fullDB.location}}</strong></div>
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                </div>
+                <div class="row">
+
+                </div>
+
+                <form-view full-database="entityCtrl.fullDB" entity="entityCtrl.entity"></form-view>
+
+            </div>
+            <div ng-if="!entityCtrl.entity">
+                There is no such entity. Try to <a href="/databases">lookup</a> another database
+            </div>
+        </div>
+
+        <div ng-if="!entityCtrl.loaded">
+            <h3>loading data...</h3>
+        </div>
+
+    </div>
 </div>

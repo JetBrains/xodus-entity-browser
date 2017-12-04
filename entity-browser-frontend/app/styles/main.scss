@@ -231,7 +231,7 @@ ul.alert-dropdown {
 }
 
 .entity-actions {
-  padding: 15px 0 15px 0;
+  padding: 0 15px 15px 15px;
 }
 
 .form-view-link-row {
@@ -330,8 +330,13 @@ a {
   max-height: 600px !important;
 }
 
-.btn-warning {
+.btn-primary {
   color: #ffffff;
   background-color: #1ab394;
   border-color: #1ab394;
+}
+
+.btn-danger {
+  background-color: #f8ac59;
+  border-color: #f8ac59;
 }

@@ -48,11 +48,8 @@ angular.module('xodus').config([
             template: require('./pages/database.html'),
             reloadOnSearch: false
         });
-        when('/databases/:databaseId/type/:typeId/entity/:entityId', {
+        when('/databases/:databaseId/entities/:entityId', {
             template: require('./pages/entity.html')
-        });
-        when('/:databaseId/type/:typeId/new', {
-            template: require('./templates/entity.html')
         });
     }]);
 
@@ -84,6 +81,7 @@ require('./controller/form-view/properties');
 require('./controller/setup/db-dialog');
 require('./controller/databases');
 require('./controller/database');
+require('./controller/entity');
 
 require('./directive/form-view');
 require('./directive/data-view');

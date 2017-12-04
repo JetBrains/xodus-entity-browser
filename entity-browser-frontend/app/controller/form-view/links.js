@@ -1,32 +1,33 @@
-angular.module('xodus').controller('LinksController', ['$scope', 'EntitiesService', 'EntityTypeService',
-    function ($scope, entities, types) {
+angular.module('xodus').controller('LinksController', ['$scope', 'entitiesService', 'EntityTypeService',
+    function ($scope, entitiesService, types) {
 
         function flatMap(arr, lambda) {
             return Array.prototype.concat.apply([], arr.map(lambda));
         }
 
-        var links = this;
+        var linksCtrl = this;
+        var entities = entitiesService($scope.fullDatabase());
 
         $scope.uiLinks = flatMap($scope.state.current.links, function (link) {
             return link.entities;
         });
 
-        links.entities = [];
-        links.allEntityTypes = types.all();
-        links.newLink = newLink();
+        linksCtrl.entities = [];
+        linksCtrl.allEntityTypes = $scope.fullDatabase();
+        linksCtrl.newLink = newLink();
 
-        links.searchEntities = function (searchTerm) {
-            types.search(links.newLink.type.id, searchTerm, 0, 10).then(function (data) {
-                links.entities = data.items;
+        linksCtrl.searchEntities = function (searchTerm) {
+            types.search($scope.fullDatabase(), linksCtrl.newLink.type.id, searchTerm, 0, 10).then(function (data) {
+                linksCtrl.entities = data.items;
             });
         };
 
-        links.updateEntities = function () {
-            links.newLink.value = null;
-            links.searchEntities(null);
+        linksCtrl.updateEntities = function () {
+            linksCtrl.newLink.value = null;
+            linksCtrl.searchEntities(null);
         };
 
-        links.removeLink = function (linkEntity) {
+        linksCtrl.removeLink = function (linkEntity) {
             var foundEntity = $scope.find($scope.uiLinks, linkEntity);
             if (foundEntity) {
                 var index1 = $scope.uiLinks.indexOf(foundEntity);
@@ -46,22 +47,22 @@ angular.module('xodus').controller('LinksController', ['$scope', 'EntitiesServic
             }
         };
 
-        links.addNewLink = function () {
+        linksCtrl.addNewLink = function () {
             var linksForm = $scope.linksForm;
             $scope.makeDirty(linksForm);
             if (linksForm.$valid) {
                 var found = $scope.state.current.links.find(function (link) {
-                    return link.name === links.newLink.name;
+                    return link.name === linksCtrl.newLink.name;
                 });
                 var wasFound = !!found;
                 if (!wasFound) {
                     found = {
-                        name: links.newLink.name,
+                        name: linksCtrl.newLink.name,
                         totalSize: 0,
                         entities: []
                     };
                 }
-                var newEntity = toBackendLink(links.newLink);
+                var newEntity = toBackendLink(linksCtrl.newLink);
                 found.entities.push(newEntity);
                 found.totalSize++;
 
@@ -70,8 +71,8 @@ angular.module('xodus').controller('LinksController', ['$scope', 'EntitiesServic
                 }
                 $scope.uiLinks.push(newEntity);
 
-                links.newLink = newLink();
-                links.updateEntities();
+                linksCtrl.newLink = newLink();
+                linksCtrl.updateEntities();
                 linksForm.$setPristine(true);
             }
         };
@@ -79,7 +80,7 @@ angular.module('xodus').controller('LinksController', ['$scope', 'EntitiesServic
         function newLink() {
             return {
                 name: null,
-                type: links.allEntityTypes[0],
+                type: $scope.fullDatabase().types[0],
                 value: null
             }
         }

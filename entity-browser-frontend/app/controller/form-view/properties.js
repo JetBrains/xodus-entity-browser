@@ -1,6 +1,8 @@
-angular.module('xodus').controller('PropertiesController', ['$scope', 'EntitiesService',
-    function($scope, entities) {
+angular.module('xodus').controller('PropertiesController', ['$scope', 'entitiesService',
+    function($scope, entitiesService) {
         var props = this;
+        var entities = entitiesService($scope.fullDatabase());
+
         $scope.properties = $scope.state.current.properties;
         angular.forEach($scope.properties, entities.appendValidation);
         props.allTypes = entities.allTypes();
@@ -22,7 +24,7 @@ angular.module('xodus').controller('PropertiesController', ['$scope', 'EntitiesS
             var inputName = $scope.properties.indexOf(property) + 'name';
             var propsForm = $scope.propsForm;
             var sameProperties = $scope.properties.filter(function(item) {
-                return property.name == item.name;
+                return property.name === item.name;
             });
             propsForm[inputName].$setValidity("duplicated", sameProperties.length <= 1);
         };

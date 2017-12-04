@@ -33,9 +33,9 @@
                             {{item.label}}</h4>
 
                         <div class="btn-group pull-right">
-                                <button class="btn btn-warning fa fa-lg fa-pencil"
+                                <button class="btn btn-primary fa fa-lg fa-pencil"
                                    data-ng-click="dataViewCtrl.edit(item)"></button>
-                                <button class="btn btn-warning fa fa-lg fa-trash"
+                                <button class="btn btn-danger fa fa-lg fa-trash"
                                    data-ng-click="dataViewCtrl.deleteItem(item)"></button>
                         </div>
                     </div>
@@ -91,6 +91,7 @@
                                             <div data-ng-repeat="link in p.entities">
                                                 <entity-link
                                                         title="{{link.label}}"
+                                                        dbuuid="{{dataViewCtrl.fullDatabase().uuid}}"
                                                         typeid="{{link.typeId}}"
                                                         entityid="{{link.entityId}}">
                                                 </entity-link>

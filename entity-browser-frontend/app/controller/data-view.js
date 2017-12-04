@@ -1,16 +1,19 @@
 angular.module('xodus').controller('DataViewController', [
     'EntityTypeService',
-    'EntitiesService',
+    'entitiesService',
     'navigationService',
     '$scope',
     '$uibModal',
     '$routeParams',
     'databaseService',
-    function (typeService, entitiesService, navigation, $scope, $uibModal, $routeParams) {
+    function (typeService, entitiesService, navigationService, $scope, $uibModal, $routeParams) {
         var dataViewCtrl = this;
+        var navigation = navigationService(dataViewCtrl.fullDatabase());
+
         dataViewCtrl.searchQuery = searchQuery();
         dataViewCtrl.pageSize = 50;
         dataViewCtrl.type = databaseType();
+        var entities = entitiesService(dataViewCtrl.fullDatabase());
 
         $scope.$on('$routeUpdate', function () {
             dataViewCtrl.searchQuery = searchQuery();
@@ -20,7 +23,7 @@ angular.module('xodus').controller('DataViewController', [
         });
 
         dataViewCtrl.pager = newPager(dataViewCtrl.searchQuery);
-        dataViewCtrl.newInstance = entitiesService.newEntity(dataViewCtrl.type.id, dataViewCtrl.type.name);
+        dataViewCtrl.newInstance = entities.newEntity(dataViewCtrl.type.id, dataViewCtrl.type.name);
 
         //comment this if you want to load data on view show
         dataViewCtrl.pager.pageChanged(1);
@@ -46,7 +49,7 @@ angular.module('xodus').controller('DataViewController', [
                             message: 'Are you sure you want to delete ' + item.label + '?',
                             action: 'Delete',
                             customAction: function () {
-                                return entitiesService.deleteEntity(item.typeId, item.id);
+                                return entities.deleteEntity(item.typeId, item.id);
                             }
                         };
                     }

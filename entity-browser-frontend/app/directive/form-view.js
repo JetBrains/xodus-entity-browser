@@ -3,17 +3,19 @@ angular.module('xodus').directive('formView', [
     '$location',
     'navigationService',
     'ConfirmationService',
-    function ($uibModal, $location, navigation, confirmation) {
+    function ($uibModal, $location, navigationService, confirmation) {
         return {
             restrict: 'E',
             scope: {
-                entityId: '=',
-                entityTypeId: '='
+                fullDatabase: '&',
+                entity: '&'
             },
             replace: true,
             template: require('../templates/form-view.html'),
             link: function (scope, element) {
-                scope.editMode = (scope.entityId === null);
+                var navigation = navigationService(scope.fullDatabase());
+
+                scope.editMode = (scope.entity().id === null);
                 scope.toggleView = function () {
                     scope.editMode = !scope.editMode;
                 };
@@ -21,7 +23,7 @@ angular.module('xodus').directive('formView', [
                     if (scope.editMode) {
                         confirmExit(toSearch);
                     } else {
-                        navigation.toType(scope.entityTypeId);
+                        navigation.toType(scope.entity().typeId);
                     }
                 };
                 scope.getMessage = getMessage;
@@ -98,7 +100,7 @@ angular.module('xodus').directive('formView', [
                 }
 
                 function toSearch() {
-                    navigation.toType(scope.entityTypeId);
+                    navigation.toType(scope.entity().typeId);
                 }
             }
         };
