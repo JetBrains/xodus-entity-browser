@@ -1,4 +1,4 @@
-angular.module('xodus').directive('entityLinksView', [
+angular.module('xodus').directive('linkedEntitiesView', [
     'entitiesService',
     function (entitiesService) {
         return {
