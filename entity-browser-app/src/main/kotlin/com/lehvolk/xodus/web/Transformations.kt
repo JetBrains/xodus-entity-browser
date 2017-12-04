@@ -21,7 +21,7 @@ fun Entity.asLightView(): EntityView {
         this.properties = entity.propertyNames.map { entity.propertyView(it) }
         val typeId = entity.id.typeId
         val entityType = store.getEntityType(store.currentTransaction!!, typeId)
-        labeled(entityType)
+        label = "$entityType[$typeId-$id]"
         this.typeId = typeId.toString()
         this.type = entityType
     }
@@ -112,26 +112,6 @@ fun <T : Comparable<*>> value2string(value: T?): String? {
 }
 
 
-private val labelFormat = "{{type}}[{{id}}]"
-
-fun EntityView.labeled(type: String) {
-
-    fun wrap(key: String): String {
-        return "\\{\\{$key\\}\\}"
-    }
-
-    fun doFormat(format: String, entityVO: EntityView): String {
-        var formatted = format.replace(wrap("id").toRegex(), entityVO.id.toString())
-        for (property in entityVO.properties) {
-            formatted = formatted.replace(wrap("entity." + property).toRegex(), property.value.toString())
-            if (!formatted.contains("\\{\\{\\.*\\}\\}")) {
-                return formatted
-            }
-        }
-        return formatted
-    }
-
-    var labelFormat = labelFormat
-    labelFormat = labelFormat.replace(wrap("type").toRegex(), type)
-    label = doFormat(labelFormat, this)
+fun EntityView.withLabel(type: String, typeId: Int) {
+    label = "$type[$typeId-$id]"
 }
