@@ -1,19 +1,13 @@
 angular.module('xodus').controller('LinksController', ['$scope', 'entitiesService', 'EntityTypeService',
     function ($scope, entitiesService, types) {
 
-        function flatMap(arr, lambda) {
-            return Array.prototype.concat.apply([], arr.map(lambda));
-        }
-
         var linksCtrl = this;
         var entities = entitiesService($scope.fullDatabase());
 
-        $scope.uiLinks = flatMap($scope.state.current.links, function (link) {
-            return link.entities;
-        });
+        $scope.uiLinks = $scope.state.current.links;
 
         linksCtrl.entities = [];
-        linksCtrl.allEntityTypes = $scope.fullDatabase();
+        linksCtrl.allEntityTypes = $scope.fullDatabase().types;
         linksCtrl.newLink = newLink();
 
         linksCtrl.searchEntities = function (searchTerm) {

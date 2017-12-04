@@ -115,10 +115,7 @@
                             <div class="col-md-3">
                                 Name
                             </div>
-                            <div class="col-md-2">
-                                Type
-                            </div>
-                            <div class="col-md-7">
+                            <div class="col-md-9">
                                 Value
                             </div>
                         </div>
@@ -134,13 +131,13 @@
                                     </div>
                                 </div>
                                 <div class="col-md-2">
-                                    <ui-select data-ng-model="links.newLink.type"
+                                    <ui-select data-ng-model="linksCtrl.newLink.type"
                                                data-theme="bootstrap"
                                                data-ng-change="linksCtrl.updateEntities()">
                                         <ui-select-match placeholder="Select type">
                                             {{$select.selected.name}}
                                         </ui-select-match>
-                                        <ui-select-choices repeat="type in links.allEntityTypes">
+                                        <ui-select-choices repeat="type in linksCtrl.allEntityTypes">
                                             <small data-ng-bind="type.name"></small>
                                         </ui-select-choices>
                                     </ui-select>
@@ -182,20 +179,15 @@
                             <div class="col-md-3">
                                 {{link.name}}
                             </div>
-                            <div class="col-md-2">
-                                {{link.type}}
-                            </div>
-                            <div class="col-md-7">
+                            <div class="col-md-9">
                                 <div class="col-md-10" style="padding: 0; margin-right: -30px;">
-                                    <entity-link
-                                            title="{{link.label}}"
-                                            typeid="{{link.typeId}}"
-                                            dbuuid="{{formViewCtrl.fullDatabase.uuid}}"
-                                            entityid="{{link.entityId}}">
-                                    </entity-link>
-
+                                    <entity-links-view
+                                            full-database="formViewCtrl.fullDatabase"
+                                            links-pager="link"
+                                            entity="entity()"
+                                    ></entity-links-view>
                                 </div>
-                                <div class="col-md-2" data-ng-show="editMode">
+                                <div class="col-md-2 pull-right" data-ng-show="editMode">
                                     <a class="btn btn-danger" data-ng-click="links.removeLink(link)">
                                         <i class="fa fa-minus"></i>
                                     </a>

@@ -1,5 +1,5 @@
 angular.module('xodus').directive('storeSetup', ['$http', 'navigationService', 'databaseService',
-    function ($http, navigation, databaseService) {
+    function ($http, navigationService, databaseService) {
         return {
             restrict: 'E',
             scope: {
@@ -19,13 +19,11 @@ angular.module('xodus').directive('storeSetup', ['$http', 'navigationService', '
                 scope.changeDB = function () {
                     if (scope.database.$valid) {
                         databaseService.update(scope.db).then(function (data) {
-                            scope.db.location = data.location;
-                            scope.db.key = data.key;
                             var onSuccess = scope.onSuccess();
                             if (onSuccess) {
                                 onSuccess();
                             }
-                            navigation.toType();
+                            navigationService(data).toType();
                         }, function () {
                             scope.error = 'Error while changing database. Changes not applied.';
                         });

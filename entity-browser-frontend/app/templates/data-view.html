@@ -69,7 +69,7 @@
                         </div>
 
                     </div>
-                    <ul data-ng-show="dataViewCtrl.pager.isExpanded(item)" class="list-group">
+                    <ul data-ng-if="dataViewCtrl.pager.isExpanded(item)" class="list-group">
                         <li class="list-group-item search-extended-header">Links
                         </li>
                         <li class="list-group-item">
@@ -88,14 +88,11 @@
                                     <tr data-ng-repeat="p in item.links ">
                                         <td>{{p.name}}</td>
                                         <td>
-                                            <div data-ng-repeat="link in p.entities">
-                                                <entity-link
-                                                        title="{{link.label}}"
-                                                        dbuuid="{{dataViewCtrl.fullDatabase().uuid}}"
-                                                        typeid="{{link.typeId}}"
-                                                        entityid="{{link.entityId}}">
-                                                </entity-link>
-                                            </div>
+                                            <entity-links-view
+                                                    full-database="dataViewCtrl.fullDatabase()"
+                                                    links-pager="p"
+                                                    entity="item"
+                                            ></entity-links-view>
                                         </td>
                                     </tr>
                                     </tbody>

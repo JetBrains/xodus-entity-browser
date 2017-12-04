@@ -1,0 +1,11 @@
+<div>
+    <span data-ng-repeat="itemlink in linkedEntities">
+            <entity-link
+                    title="{{itemlink.label}}"
+                    dbuuid="{{fullDatabase().uuid}}"
+                    typeid="{{itemlink.typeId}}"
+                    entityid="{{itemlink.entityId}}">
+            </entity-link>
+    </span>
+    <a ng-show="hasMore()" title="Load more" data-ng-click="loadMore()">...</a>
+</div>

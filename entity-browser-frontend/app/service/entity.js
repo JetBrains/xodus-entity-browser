@@ -228,6 +228,16 @@ angular.module('xodus').factory('entitiesService', ['$http', '$q', '$location', 
             });
         }
 
+        function linkedEntities(typeId, entityId, linkName, top, skip) {
+            return $http.get('api/dbs/' + fullDB.uuid + '/entities/' + typeId + '-' + entityId + '/links/' + linkName, {
+                params: {pageSize: top, offset: skip}
+            }).then(function (response) {
+                return response.data;
+            }, function () {
+                $location.path('/error');
+            });
+        }
+
         function deleteEntity(typeId, entityId) {
             return $http['delete']('api/dbs/' + fullDB.uuid + '/entities/' + typeId + '-' + entityId);
         }
@@ -241,6 +251,7 @@ angular.module('xodus').factory('entitiesService', ['$http', '$q', '$location', 
             getChangeSummary: getChangeSummary,
             save: save,
             byId: byId,
+            linkedEntities: linkedEntities,
             deleteEntity: deleteEntity
         }
     };

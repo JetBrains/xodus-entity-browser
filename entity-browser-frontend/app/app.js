@@ -88,3 +88,4 @@ require('./directive/data-view');
 require('./directive/entity-link');
 require('./directive/search');
 require('./directive/store-setup');
+require('./directive/entity-links-view');

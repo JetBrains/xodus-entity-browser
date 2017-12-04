@@ -3,8 +3,7 @@ angular.module('xodus')
         '$http',
         '$q',
         '$location',
-        'navigationService',
-        function ($http, $q, $location, navigation) {
+        function ($http, $q, $location) {
             var service = this;
             service.getDatabases = getDatabases;
             service.getTypes = getTypes;
@@ -35,9 +34,8 @@ angular.module('xodus')
             }
 
             function update(db) {
-                return $http.post('/api/dbs', db).then(function (data) {
-                    navigation.forceReload();
-                    return data;
+                return $http.post('/api/dbs', db).then(function () {
+                    $location.forceReload();
                 });
             }
 

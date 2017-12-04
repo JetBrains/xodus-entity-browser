@@ -1,10 +1,7 @@
 package com.lehvolk.xodus.web.resources
 
 import com.fasterxml.jackson.core.JsonProcessingException
-import com.lehvolk.xodus.web.ChangeSummary
-import com.lehvolk.xodus.web.DBSummary
-import com.lehvolk.xodus.web.EntityView
-import com.lehvolk.xodus.web.SearchPager
+import com.lehvolk.xodus.web.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.StreamingOutput
@@ -99,6 +96,24 @@ class DatabaseResource(override val db: DBSummary) : DatabaseAwareResource() {
             safely {
                 storeService.getBlob(id, entityId, blobName, it)
             }
+        }
+    }
+
+    @GET
+    @Path("/entities/{id}-{entityId}/links/{linkName}")
+    fun getLinks(
+            @PathParam("id") id: Int,
+            @PathParam("entityId") entityId: Long,
+            @PathParam("linkName") linkName: String,
+            @QueryParam("offset") offset: Int = 0,
+            @QueryParam("pageSize") pageSize: Int = 0): LinkPager {
+        log.debug("searching entities by typeId: {}, entityId [{}], linkName [{}] with offset = {} and pageSize = {}",
+                id, entityId, linkName, offset, pageSize)
+        if (offset < 0 || pageSize < 0) {
+            throw BadRequestException()
+        }
+        safely {
+            return storeService.searchEntity(id, entityId, linkName, offset, if (pageSize == 0) 100 else Math.min(pageSize, 1000))
         }
     }
 

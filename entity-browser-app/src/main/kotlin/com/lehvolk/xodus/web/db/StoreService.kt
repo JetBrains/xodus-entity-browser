@@ -61,6 +61,12 @@ class StoreService(requisites: XodusStoreRequisites) {
         }
     }
 
+    fun searchEntity(typeId: Int, entityId: Long, linkName: String, offset: Int, pageSize: Int): LinkPager {
+        return readonly { t ->
+            getEntity(typeId, entityId, t).linkView(linkName, offset, pageSize)
+        }
+    }
+
     fun newEntity(typeId: Int, vo: ChangeSummary): EntityView {
         val entityId = transactional { t ->
             val type = store.getEntityType(t, typeId)
