@@ -6,7 +6,8 @@ angular.module('xodus').directive('linkedEntitiesView', [
             scope: {
                 fullDatabase: '&',
                 entity: '&',
-                linksPager: '&'
+                linksPager: '&',
+                isEditMode: '='
             },
             replace: true,
             template: require('../templates/entity-links-view.html'),

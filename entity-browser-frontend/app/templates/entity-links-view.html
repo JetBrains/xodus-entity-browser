@@ -1,6 +1,7 @@
 <div>
     <span data-ng-repeat="itemlink in linkedEntities">
             <entity-link
+                    is-edit-mode="isEditMode"
                     title="{{itemlink.label}}"
                     dbuuid="{{fullDatabase().uuid}}"
                     typeid="{{itemlink.typeId}}"

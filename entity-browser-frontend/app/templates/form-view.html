@@ -86,12 +86,12 @@
                                     <div class="col-md-2" data-ng-show="editMode">
                                         <div data-ng-show="$index + 1 !== properties.length">
                                             <a class="btn btn-danger" data-ng-click="propsCtrl.removeProperty(property)">
-                                                <i class="fa fa-minus"></i>
+                                                <i class="fa fa-trash"></i>
                                             </a>
                                         </div>
                                         <div class="btn-group" data-ng-show="$index + 1 === properties.length">
                                             <a class="btn btn-danger" data-ng-click="props.removeProperty(property)">
-                                                <i class="fa fa-minus"></i>
+                                                <i class="fa fa-trash"></i>
                                             </a>
                                             <a class="btn btn-primary" data-ng-click="propsCtrl.newProperty()">
                                                 <i class="fa fa-plus"></i>
@@ -185,11 +185,12 @@
                                             full-database="formViewCtrl.fullDatabase"
                                             links-pager="link"
                                             entity="entity()"
+                                            is-edit-mode="editMode"
                                     ></linked-entities-view>
                                 </div>
                                 <div class="col-md-2 pull-right" data-ng-show="editMode">
                                     <a class="btn btn-danger" data-ng-click="links.removeLink(link)">
-                                        <i class="fa fa-minus"></i>
+                                        <i class="fa fa-trash"></i>
                                     </a>
                                 </div>
                             </div>
