@@ -71,10 +71,16 @@ class StoreService(requisites: XodusStoreRequisites) {
         val entityId = transactional { t ->
             val type = store.getEntityType(t, typeId)
             val entity = t.newEntity(type)
-            vo.properties.added.forEach { entity.applyValues(it) }
-            vo.links.added.forEach {
-                val link = getEntity(it.typeId, it.entityId, t)
-                entity.addLink(it.name!!, link)
+            vo.properties.forEach {
+                it.newValue?.let {
+                    entity.applyValues(it)
+                }
+            }
+            vo.links.forEach {
+                it.newValue?.let {
+                    val link = getEntity(it.typeId, it.entityId, t)
+                    entity.addLink(it.name!!, link)
+                }
             }
             entity.id.localId
         }
@@ -103,20 +109,29 @@ class StoreService(requisites: XodusStoreRequisites) {
     fun updateEntity(typeId: Int, entityId: Long, vo: ChangeSummary): EntityView {
         val localId = transactional { t ->
             val entity = getEntity(typeId, entityId, t)
-
-            vo.properties.deleted.filter { entity.has(it) }.map { it.name }.forEach { entity.deleteProperty(it!!) }
-            vo.properties.added.filter { !entity.has(it) }.forEach { entity.applyValues(it) }
-            vo.properties.modified.filter { entity.has(it) }.forEach { entity.applyValues(it) }
-
-            val links = entity.linkNames
-            vo.links.deleted.filter { links.contains(it.name) }.forEach {
-                val linked = getEntity(it.typeId, it.entityId, t)
-                entity.deleteLink(it.name!!, linked)
+            vo.properties.forEach {
+                val newValue = it.newValue
+                if (newValue == null) {
+                    entity.deleteProperty(it.name!!)
+                } else {
+                    entity.applyValues(newValue)
+                }
             }
-            vo.links.added.forEach {
-                val id = PersistentEntityId(it.typeId, it.entityId)
-                val link = t.getEntity(id)
-                entity.addLink(it.name!!, link)
+
+            vo.links.forEach {
+                val newValue = it.newValue
+                val oldValue = it.oldValue
+                if (newValue == null) {
+                    if (oldValue != null) {
+                        val linked = getEntity(oldValue.typeId, oldValue.entityId, t)
+                        entity.deleteLink(it.name!!, linked)
+                    } else if (it.totallyRemoved) {
+                        entity.setLink(it.name!!, null)
+                    }
+                } else {
+                    val linked = getEntity(newValue.typeId, newValue.entityId, t)
+                    entity.addLink(it.name!!, linked)
+                }
             }
             entityId
         }

@@ -56,19 +56,21 @@ open class EntityType : Named() {
 
 open class SearchPager(val items: Array<EntityView>, val totalCount: Long)
 
-open class ChangeSummarySection<T> {
-    var added: List<T> = ArrayList()
-    var deleted: List<T> = ArrayList()
-    var modified: List<T> = ArrayList()
+open class ChangeSummaryAction<T> : Named() {
+    var newValue: T? = null
 }
 
-class PropertiesSection : ChangeSummarySection<EntityProperty>()
-class LinksSection : ChangeSummarySection<EntityLink>()
-class BlobsSection : ChangeSummarySection<EntityBlob>()
+open class PropertiesChangeSummaryAction : ChangeSummaryAction<EntityProperty>()
+open class LinkChangeSummaryAction : ChangeSummaryAction<EntityLink>(){
+    var oldValue: EntityLink? = null
+    var totallyRemoved: Boolean = false
+}
+open class BlobChangeSummaryAction : ChangeSummaryAction<EntityBlob>()
 
 class ChangeSummary {
-    var properties: PropertiesSection = PropertiesSection()
-    var links: LinksSection = LinksSection()
+    var properties = listOf<PropertiesChangeSummaryAction>()
+    var links = listOf<LinkChangeSummaryAction>()
+    var blobs = listOf<BlobChangeSummaryAction>()
 }
 
 open class DBSummary {
