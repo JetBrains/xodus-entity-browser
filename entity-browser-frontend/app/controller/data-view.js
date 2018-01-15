@@ -29,12 +29,12 @@ angular.module('xodus').controller('DataViewController', [
         dataViewCtrl.pager.pageChanged(1);
 
         dataViewCtrl.edit = function (item) {
-            navigation.toEntity(item.typeId, item.id);
+            navigation.toEntity(item.typeId, item.id, true);
         };
         dataViewCtrl.hasLinksToDisplay = function (entity) {
             return (entity.links || []).find(function (link) {
                 return link.totalSize > 0;
-            }) !== null;
+            });
         };
 
         dataViewCtrl.deleteItem = function (item) {

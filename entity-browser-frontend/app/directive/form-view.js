@@ -15,7 +15,7 @@ angular.module('xodus').directive('formView', [
             link: function (scope, element) {
                 var navigation = navigationService(scope.fullDatabase());
 
-                scope.editMode = (scope.entity().id === null);
+                scope.editMode = (scope.entity().id === null || $location.search().edit);
                 scope.toggleView = function () {
                     scope.editMode = !scope.editMode;
                 };
