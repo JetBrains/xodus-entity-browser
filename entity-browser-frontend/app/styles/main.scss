@@ -326,8 +326,12 @@ a {
   padding-top: 5px;
 }
 
-.ui-select-choices {
-  max-height: 600px !important;
+.ui-select-choices-form-view {
+  max-height: 300px !important;
+}
+
+.ui-select-choices-search {
+  max-height: 500px !important;
 }
 
 .btn-primary {
@@ -359,5 +363,4 @@ a {
   padding-left: 5px;
   margin: 5px;
   color: black;
-;
 }

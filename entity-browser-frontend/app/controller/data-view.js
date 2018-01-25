@@ -8,65 +8,67 @@ angular.module('xodus').controller('DataViewController', [
     'databaseService',
     function (typeService, entitiesService, navigationService, $scope, $uibModal, $routeParams) {
         var dataViewCtrl = this;
-        var navigation = navigationService(dataViewCtrl.fullDatabase());
+        dataViewCtrl.$onInit = function () {
+            var navigation = navigationService(dataViewCtrl.fullDatabase());
 
-        dataViewCtrl.searchQuery = searchQuery();
-        dataViewCtrl.pageSize = 50;
-        dataViewCtrl.type = databaseType();
-        var entities = entitiesService(dataViewCtrl.fullDatabase());
-
-        $scope.$on('$routeUpdate', function () {
             dataViewCtrl.searchQuery = searchQuery();
+            dataViewCtrl.pageSize = 50;
             dataViewCtrl.type = databaseType();
+            var entities = entitiesService(dataViewCtrl.fullDatabase());
+
+            $scope.$on('$routeUpdate', function () {
+                dataViewCtrl.searchQuery = searchQuery();
+                dataViewCtrl.type = databaseType();
+                dataViewCtrl.pager = newPager(dataViewCtrl.searchQuery);
+                dataViewCtrl.pager.pageChanged(1);
+            });
+
             dataViewCtrl.pager = newPager(dataViewCtrl.searchQuery);
+            dataViewCtrl.newInstance = entities.newEntity(dataViewCtrl.type.id, dataViewCtrl.type.name);
+
+            //comment this if you want to load data on view show
             dataViewCtrl.pager.pageChanged(1);
-        });
 
-        dataViewCtrl.pager = newPager(dataViewCtrl.searchQuery);
-        dataViewCtrl.newInstance = entities.newEntity(dataViewCtrl.type.id, dataViewCtrl.type.name);
+            dataViewCtrl.edit = function (item) {
+                navigation.toEntity(item.typeId, item.id, true);
+            };
+            dataViewCtrl.hasLinksToDisplay = function (entity) {
+                return (entity.links || []).find(function (link) {
+                    return link.totalSize > 0;
+                });
+            };
 
-        //comment this if you want to load data on view show
-        dataViewCtrl.pager.pageChanged(1);
-
-        dataViewCtrl.edit = function (item) {
-            navigation.toEntity(item.typeId, item.id, true);
-        };
-        dataViewCtrl.hasLinksToDisplay = function (entity) {
-            return (entity.links || []).find(function (link) {
-                return link.totalSize > 0;
-            });
-        };
-
-        dataViewCtrl.deleteItem = function (item) {
-            $uibModal.open({
-                animation: true,
-                template: require('../templates/confirmation-dialog.html'),
-                controller: 'ConfirmationController',
-                resolve: {
-                    item: function () {
-                        return {
-                            label: 'Deleting ' + item.label,
-                            message: 'Are you sure you want to delete ' + item.label + '?',
-                            action: 'Delete',
-                            customAction: function () {
-                                return entities.deleteEntity(item.typeId, item.id);
-                            }
-                        };
+            dataViewCtrl.deleteItem = function (item) {
+                $uibModal.open({
+                    animation: true,
+                    template: require('../templates/confirmation-dialog.html'),
+                    controller: 'ConfirmationController',
+                    resolve: {
+                        item: function () {
+                            return {
+                                label: 'Deleting ' + item.label,
+                                message: 'Are you sure you want to delete ' + item.label + '?',
+                                action: 'Delete',
+                                customAction: function () {
+                                    return entities.deleteEntity(item.typeId, item.id);
+                                }
+                            };
+                        }
                     }
-                }
-            }).result.then(function (result) {
-                if (result) {
-                    dataViewCtrl.onSearch();
-                }
-            });
-        };
+                }).result.then(function (result) {
+                    if (result) {
+                        dataViewCtrl.onSearch();
+                    }
+                });
+            };
 
-        dataViewCtrl.refresh = function () {
-            dataViewCtrl.pager.pageChanged();
-        };
+            dataViewCtrl.refresh = function () {
+                dataViewCtrl.pager.pageChanged();
+            };
 
-        dataViewCtrl.blobLink = function (entity, blob) {
-            return navigation.api.blobLink(entity, blob.name);
+            dataViewCtrl.blobLink = function (entity, blob) {
+                return navigation.api.blobLink(entity, blob.name);
+            };
         };
 
         function newPager(searchTerm) {

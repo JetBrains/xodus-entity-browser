@@ -59,10 +59,8 @@
                                                data-theme="bootstrap"
                                                data-ng-disabled="!editMode"
                                                data-ng-change="propsCtrl.removeValue(property)">
-                                        <ui-select-match placeholder="Select type">
-                                            {{$select.selected.displayName}}
-                                        </ui-select-match>
-                                        <ui-select-choices repeat="type in propsCtrl.allTypes">
+                                        <ui-select-match placeholder="Select property type">{{$select.selected.displayName}}</ui-select-match>
+                                        <ui-select-choices repeat="type in propsCtrl.allTypes track by $index">
                                             <small data-ng-bind="type.displayName"></small>
                                         </ui-select-choices>
                                     </ui-select>
@@ -133,11 +131,11 @@
                                 <div class="col-md-2">
                                     <ui-select data-ng-model="linksCtrl.newLink.type"
                                                data-theme="bootstrap"
-                                               data-ng-change="linksCtrl.updateEntities()">
+                                               data-ng-change="linksCtrl.updateEntities()" >
                                         <ui-select-match placeholder="Select type">
                                             {{$select.selected.name}}
                                         </ui-select-match>
-                                        <ui-select-choices repeat="type in linksCtrl.allEntityTypes">
+                                        <ui-select-choices repeat="type in linksCtrl.allEntityTypes"  class="ui-select-choices-form-view">
                                             <small data-ng-bind="type.name"></small>
                                         </ui-select-choices>
                                     </ui-select>

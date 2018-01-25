@@ -12,7 +12,7 @@
                         {{$select.selected.name}}
                     </ui-select-match>
                     <ui-select-choices
-                            repeat="type in searchCtrl.fullDatabase.types | filter: $select.search track by type.id">
+                            repeat="type in searchCtrl.fullDatabase.types | filter: $select.search track by type.id" class="ui-select-choices-search">
                         <small data-ng-bind="type.name"></small>
                     </ui-select-choices>
                 </ui-select>

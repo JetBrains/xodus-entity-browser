@@ -9,7 +9,10 @@ angular.module('xodus').controller('SearchController', [
     function (types, $location, $routeParams, $scope, $uibModal, navigation, confirmation) {
         var searchCtrl = this;
 
-        syncCtrl();
+
+        searchCtrl.$onInit = function () {
+            syncCtrl();
+        };
 
         searchCtrl.onTypeSelect = syncLocation;
         searchCtrl.onSearch = syncLocation;
