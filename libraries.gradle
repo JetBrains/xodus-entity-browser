@@ -8,7 +8,6 @@ ext.libraries = [
         'org.jetbrains.kotlin:kotlin-reflect'                     : kotlinVersion,
 
         'org.webjars:bootstrap'                                   : '3.3.5',
-        'org.webjars:angular-ui-select'                           : '0.19.6',
         'org.webjars:font-awesome'                                : '4.4.0',
 
         'ch.qos.logback:logback-classic'                          : '1.1.3',

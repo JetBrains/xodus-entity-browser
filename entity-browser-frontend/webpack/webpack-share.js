@@ -26,7 +26,8 @@ function getStyleLoaders() {
       test: /\.css$/,
       include: [
         path.resolve(projectDirectory, 'app'),
-        path.resolve(projectDirectory, 'node_modules/jquery-ui')
+        path.resolve(projectDirectory, 'node_modules/jquery-ui'),
+        path.resolve(projectDirectory, 'node_modules/ui-select')
       ],
       loader: 'style-loader!css-loader'
     },

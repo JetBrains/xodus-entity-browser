@@ -3,6 +3,7 @@ require('angular');
 
 require('angular-route/angular-route');
 require('angular-sanitize/angular-sanitize');
+require('ui-select/dist/select.css');
 require('./styles/main.scss');
 require('bootstrap');
 require('angular-ui-bootstrap');

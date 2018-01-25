@@ -35,7 +35,6 @@ dependencies {
     compile lib('javax.servlet:javax.servlet-api')
 
     compile lib('org.webjars:bootstrap')
-    compile lib('org.webjars:angular-ui-select')
     compile lib('org.webjars:font-awesome')
 
     compile lib('ch.qos.logback:logback-classic')
