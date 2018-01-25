@@ -5,6 +5,10 @@ angular.module('xodus').controller('FormViewController', ['$scope', 'entitiesSer
         formViewCtrl.fullDatabase = $scope.fullDatabase();
         formViewCtrl.navigation = navigationService(formViewCtrl.fullDatabase);
 
+        formViewCtrl.changeSummary = {
+
+        };
+
         formViewCtrl.find = function (items, link) {
             var found = null;
             angular.forEach(items, function (item) {

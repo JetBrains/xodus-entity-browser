@@ -60,7 +60,7 @@
                                                data-ng-disabled="!editMode"
                                                data-ng-change="propsCtrl.removeValue(property)">
                                         <ui-select-match placeholder="Select property type">{{$select.selected.displayName}}</ui-select-match>
-                                        <ui-select-choices repeat="type in propsCtrl.allTypes track by $index">
+                                        <ui-select-choices repeat="type in propsCtrl.allTypes track by type.displayName">
                                             <small data-ng-bind="type.displayName"></small>
                                         </ui-select-choices>
                                     </ui-select>
@@ -135,7 +135,7 @@
                                         <ui-select-match placeholder="Select type">
                                             {{$select.selected.name}}
                                         </ui-select-match>
-                                        <ui-select-choices repeat="type in linksCtrl.allEntityTypes"  class="ui-select-choices-form-view">
+                                        <ui-select-choices repeat="type in linksCtrl.allEntityTypes | filter: $select.search track by type.id"  class="ui-select-choices-form-view">
                                             <small data-ng-bind="type.name"></small>
                                         </ui-select-choices>
                                     </ui-select>
