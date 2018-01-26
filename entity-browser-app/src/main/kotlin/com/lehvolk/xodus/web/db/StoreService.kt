@@ -48,7 +48,7 @@ class StoreService(requisites: XodusStoreRequisites) {
     }
 
     fun allTypes(): Array<EntityType> {
-        return readonly { tx -> tx.entityTypes.map { it.asEntityType(tx.store) }.toTypedArray() }
+        return readonly { tx -> tx.entityTypes.map { it.asEntityType(tx.store) }.sortedBy { it.name }.toTypedArray() }
     }
 
     fun searchType(typeId: Int, term: String?, offset: Int, pageSize: Int): SearchPager {
