@@ -13,7 +13,6 @@
                 <th>#</th>
                 <th>Summary</th>
                 <th>Status</th>
-                <th>Link</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -24,19 +23,24 @@
                 </td>
                 <td>
                     <div>
+                        <i ng-show="database.opened" class="fa fa-check-circle available database-status-icon"
+                           aria-hidden="true"></i>
+                        <i ng-show="!database.opened" class="fa fa-minus-circle unavailable database-status-icon"
+                           aria-hidden="true"></i>
                         <span style="font-weight: bold">{{database.description}}:</span>
                         <span>{{database.location}}</span>
-
                     </div>
                 </td>
                 <td>
-                    <span ng-show="database.opened" class="label label-success">opened</span>
+                    <div ng-show="database.opened">
+                        <a ng-href="/databases/{{database.uuid}}">Available</a>
+                    </div>
+                    <div ng-show="!database.opened">
+                        <span>Unavailable</span>
+                    </div>
                 </td>
                 <td>
-                    <a ng-href="/databases/{{database.uuid}}">Inspect</a>
-                </td>
-                <td>
-                    <span class="fa fa-lg fa-trash" title="Remove"></span>
+                    <span class="fa fa-lg fa-trash" title="Remove" ng-click="databasesCtrl.deleteDB(database)"></span>
                     <span class="fa fa-lg fa-eject" ng-show="database.opened" title="Eject"></span>
                     <span class="fa fa-lg fa-play" ng-show="!database.opened" title="Play"></span>
                 </td>

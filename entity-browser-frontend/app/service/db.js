@@ -2,8 +2,8 @@ angular.module('xodus')
     .service('databaseService', [
         '$http',
         '$q',
-        '$location',
-        function ($http, $q, $location) {
+        '$route',
+        function ($http, $q, $route) {
             var service = this;
             service.getDatabases = getDatabases;
             service.getTypes = getTypes;
@@ -34,8 +34,9 @@ angular.module('xodus')
             }
 
             function update(db) {
-                return $http.post('/api/dbs', db).then(function () {
-                    $location.forceReload();
+                return $http.post('/api/dbs', db).then(function (newDB) {
+                    service.databases.push(newDB);
+                    return newDB;
                 });
             }
 
@@ -46,11 +47,10 @@ angular.module('xodus')
             }
 
             function deleteDB(db) {
-                return $http['delete']('/api/dbs', {data: db}).then(function (data) {
-                    var recent = service.loadedAppState.recent;
-                    var index = recent.indexOf(db);
+                return $http['delete']('/api/dbs/' + db.uuid).then(function (data) {
+                    var index = service.databases.indexOf(db);
                     if (index > -1) {
-                        recent.splice(index, 1);
+                        service.databases.splice(index, 1);
                     }
                     return data;
                 });

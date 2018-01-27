@@ -47,11 +47,11 @@ abstract class ApplicationResource {
 
 }
 
-abstract class DatabaseAwareResource() : ApplicationResource() {
+abstract class DatabaseAwareResource : ApplicationResource() {
 
     abstract val db: DBSummary
 
-    val storeService: StoreService get() = InjectionContexts.of(db).storeService
-    val jobsService: JobsService get() = InjectionContexts.of(db).jobsService
+    val storeService: StoreService get() = servicesOf(db).storeService
+    val jobsService: JobsService get() = servicesOf(db).jobsService
 
 }

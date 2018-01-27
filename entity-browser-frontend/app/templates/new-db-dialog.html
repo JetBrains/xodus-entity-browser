@@ -4,14 +4,48 @@
     </div>
     <div class="modal-body">
         <div class="container-fluid">
-            <store-setup show-buttons="false" on-success="onSuccess"></store-setup>
+            <uib-alert type="danger" data-ng-show="dbDialogCtrl.error" close="closeError()">
+                {{error}}
+            </uib-alert>
+            <form class="form-horizontal" novalidate ng-submit="dbDialogCtrl.saveDB()" name="database">
+                <div class="form-group"
+                     data-ng-class="{'has-error':  (database.location.$invalid && database.location.$dirty)}">
+                    <label for="location">location</label>
+                    <input id="location" name="location" data-ng-required="true" ng-model="dbDialogCtrl.db.location"
+                           class="form-control"
+                           placeholder="location"
+                           data-uib-tooltip="{{dbDialogCtrl.getMessage('location')}}"
+                           data-uib-tooltip-trigger="mouseenter">
+                </div>
+                <div class="form-group" data-ng-class="{'has-error':  (database.key.$invalid && database.key.$dirty)}">
+                    <label for="key">key</label>
+                    <div class="input-group">
+                        <input id="key" name="key" data-ng-required="true" ng-model="dbDialogCtrl.db.key" class="form-control"
+                               placeholder="key"
+                               data-uib-tooltip="{{dbDialogCtrl.getMessage('key')}}"
+                               data-uib-tooltip-trigger="mouseenter">
+                        <div class="input-group-btn">
+                            <div class="btn-group" uib-dropdown>
+                                <button id="single-button" type="button" class="btn btn-default" uib-dropdown-toggle>
+                                    Predefined keys <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
+                                    <li role="menuitem" data-ng-repeat="key in dbDialogCtrl.predefinedKeys">
+                                        <a data-ng-click="dbDialogCtrl.applyKey(key)">{{key.name}}</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
     <div class="modal-footer without-top-border">
-        <button class="btn btn-primary mdm-ui-component-confirm-button" data-ng-click="changeDB()">
-            Change database
+        <button class="btn btn-primary mdm-ui-component-confirm-button" data-ng-click="dbDialogCtrl.saveDB()">
+            Add
         </button>
-        <button class="btn btn-default mdm-ui-component-confirm-button" data-ng-click="cancel()">
+        <button class="btn btn-default mdm-ui-component-confirm-button" data-ng-click="dbDialogCtrl.cancel()">
             Cancel
         </button>
     </div>

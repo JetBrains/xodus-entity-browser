@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.io.OutputStream
 
-class StoreService(requisites: XodusStoreRequisites) {
+class StoreService(location: String, key: String) {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -17,7 +17,7 @@ class StoreService(requisites: XodusStoreRequisites) {
 
     init {
         try {
-            store = PersistentEntityStores.newInstance(Environments.newInstance(requisites.location), requisites.key)
+            store = PersistentEntityStores.newInstance(Environments.newInstance(location), key)
         } catch (e: RuntimeException) {
             val msg = "Can't get valid Xodus entity store location and store key. Check the configuration"
             log.error(msg, e)
@@ -25,7 +25,7 @@ class StoreService(requisites: XodusStoreRequisites) {
         }
     }
 
-    fun destroy() {
+    fun stop() {
         var proceed = true
         var count = 1
         while (proceed && count <= 10) {

@@ -9,8 +9,7 @@ class TransformationsTest {
     private val VALUE = "123"
 
     @Test
-    @Throws(Exception::class)
-    fun testString2valueForShort() {
+    fun `should convert string to value for short`() {
         val property = ofType(VALUE, "Short")
         val x = property.string2value()
         assertNotNull(x)
@@ -19,8 +18,7 @@ class TransformationsTest {
     }
 
     @Test
-    @Throws(Exception::class)
-    fun testString2valueForInteger() {
+    fun `should convert string to value for Integer`() {
         val property = ofType(VALUE, "Integer")
         val x = property.string2value()
         assertNotNull(x)
@@ -29,8 +27,7 @@ class TransformationsTest {
     }
 
     @Test
-    @Throws(Exception::class)
-    fun testString2valueForLong() {
+    fun `should convert string to value for Long`() {
         val property = ofType(VALUE, "Long")
         val x = property.string2value()
         assertNotNull(x)
@@ -39,8 +36,7 @@ class TransformationsTest {
     }
 
     @Test
-    @Throws(Exception::class)
-    fun testString2valueForFloat() {
+    fun `should convert string to value for Float`() {
         val property = ofType(VALUE, "Float")
         val x = property.string2value()
         assertNotNull(x)
@@ -49,8 +45,7 @@ class TransformationsTest {
     }
 
     @Test
-    @Throws(Exception::class)
-    fun testString2valueForDouble() {
+    fun `should convert string to value for Double`() {
         val property = ofType(VALUE, "Double")
         val x = property.string2value()
         assertNotNull(x)
@@ -59,8 +54,7 @@ class TransformationsTest {
     }
 
     @Test
-    @Throws(Exception::class)
-    fun testString2valueForString() {
+    fun `should convert string to value for String`() {
         val property = ofType(VALUE, "String")
         val x = property.string2value()
         assertNotNull(x)
@@ -69,15 +63,13 @@ class TransformationsTest {
     }
 
     @Test(expected = InvalidFieldException::class)
-    @Throws(Exception::class)
-    fun testString2valueForIncorrectValue() {
+    fun `should convert string to value for incorrect value`() {
         val property = ofType("123xasadasd", "Double")
         property.string2value()
     }
 
     @Test
-    @Throws(Exception::class)
-    fun testValue2stringForNull() {
+    fun `should convert value to string for null`() {
         val property = ofType(null, "Double")
         assertNull(property.string2value())
     }
@@ -91,7 +83,7 @@ class TransformationsTest {
         return property
     }
 
-    fun javaClass(clazz: String): Class<*> {
+    private fun javaClass(clazz: String): Class<*> {
         return Class.forName("java.lang." + clazz)
     }
 

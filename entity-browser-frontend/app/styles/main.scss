@@ -364,3 +364,20 @@ a {
   margin: 5px;
   color: black;
 }
+
+.database-status {
+  //width: 80px;
+  //position: fixed;
+}
+
+.available {
+  color: #5cb85c;
+}
+
+.unavailable {
+  color: #f8ac59;
+}
+
+.database-status-icon {
+  font-size: 1.4em !important;
+}

@@ -6,7 +6,8 @@ angular.module('xodus').controller('DatabasesController', [
         'EntityTypeService',
         'navigationService',
         'databaseService',
-        function ($scope, http, $uibModal, $route, types, navigation, databaseService) {
+        'ConfirmationService',
+        function ($scope, http, $uibModal, $route, types, navigation, databaseService, confirmationService) {
             var databasesCtrl = this;
             var hubKey = 'jetPassServerDb';
             var youtrackKey = 'teamsysstore';
@@ -37,26 +38,34 @@ angular.module('xodus').controller('DatabasesController', [
                     animation: true,
                     template: require('../templates/new-db-dialog.html'),
                     controller: 'DBDialogController',
-                    controllerAs: 'dbDialog'
+                    controllerAs: 'dbDialogCtrl'
                 }).result.then(function (result) {
                     if (result) {
                         databaseService.databases.push(result.db);
                     }
                 });
             };
-            databasesCtrl.forceReload = navigation.forceReload;
-            databasesCtrl.deleteDB = function (database, $event) {
-                $event.stopPropagation();
-                if (database.markForDelete) {
-                    databaseService.deleteDB(database);
-                    return;
-                }
-                database.markForDelete = true;
+
+            databasesCtrl.deleteDB = function (database) {
+                confirmDelete(database, function () {
+                    databaseService.deleteDB(database).then(function () {
+                        $route.reload();
+                    });
+                });
             };
-            databasesCtrl.undoDeleteDB = function (database, $event) {
-                database.markForDelete = false;
-                $event.stopPropagation();
-            };
+
+            function confirmDelete(db, callback) {
+                return confirmationService({
+                    label: 'Delete database',
+                    message: 'Are you sure you want to delete database ' + db.description + ':' + db.location + ' ?',
+                    action: 'Delete'
+                }, function (result) {
+                    if (result) {
+                        callback();
+                    }
+                });
+            }
+
         }
     ]
 );

@@ -1,10 +1,13 @@
 package com.lehvolk.xodus.web.resources
 
 
+import com.lehvolk.xodus.web.Application
 import com.lehvolk.xodus.web.DBSummary
-import com.lehvolk.xodus.web.InjectionContexts
 import com.lehvolk.xodus.web.db.Databases
-import javax.ws.rs.*
+import javax.ws.rs.GET
+import javax.ws.rs.POST
+import javax.ws.rs.Path
+import javax.ws.rs.PathParam
 
 @Path("/dbs")
 class DatabasesResource : ApplicationResource() {
@@ -13,34 +16,27 @@ class DatabasesResource : ApplicationResource() {
     fun getAll(): List<DBSummary> {
         log.debug("getting database summary")
         safely {
-            return Databases.allRecent()
+            return Databases.all()
         }
     }
 
     @POST
-    fun updateDB(db: DBSummary) {
-        log.debug("update database summary")
+    fun newDB(db: DBSummary): DBSummary {
+        log.debug("save new database")
         safely {
-            InjectionContexts.start(db)
-        }
-    }
-
-    @DELETE
-    fun deleteDB(db: DBSummary) {
-        safely {
-            Databases.delete(db)
+            return Databases.add(db.location!!, db.key!!).also {
+                Application.tryStart(it)
+            }
         }
     }
 
     @Path("/{uuid}")
     fun db(@PathParam("uuid") uuid: String): DatabaseResource {
-        val db = Databases.find(uuid) ?: throw NotFoundException()
-        return DatabaseResource(db)
+        return DatabaseResource(Databases.find(uuid))
     }
 
     @Path("/{uuid}/jobs")
     fun dbJobs(@PathParam("uuid") uuid: String): JobsResource {
-        val db = Databases.find(uuid) ?: throw NotFoundException()
-        return JobsResource(db)
+        return JobsResource(Databases.find(uuid))
     }
 }

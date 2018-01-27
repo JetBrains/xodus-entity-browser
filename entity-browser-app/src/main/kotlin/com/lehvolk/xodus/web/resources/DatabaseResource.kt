@@ -2,11 +2,37 @@ package com.lehvolk.xodus.web.resources
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.lehvolk.xodus.web.*
+import com.lehvolk.xodus.web.db.Databases
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.StreamingOutput
 
 class DatabaseResource(override val db: DBSummary) : DatabaseAwareResource() {
+
+    @DELETE
+    fun deleteDB() {
+        safely {
+            Application.stop(db)
+            Databases.delete(db.uuid)
+        }
+    }
+
+    @POST
+    @Path("/stop")
+    fun stopDB() {
+        safely {
+            Databases.delete(db.uuid)
+            Application.stop(db)
+        }
+    }
+
+    @POST
+    @Path("/tryStart")
+    fun startDB() {
+        safely {
+            Databases.delete(db.uuid)
+        }
+    }
 
     @GET
     @Path("/types")

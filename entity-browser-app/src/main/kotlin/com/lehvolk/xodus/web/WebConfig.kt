@@ -31,7 +31,7 @@ class EntityBrowserServlet : ServletContainer(ApplicationConfig) {
 
     override fun init(config: ServletConfig?) {
         super.init(config)
-        InjectionContexts.start()
+        Application.start()
         Thread(Runnable {
             launchBrowser()
         }).start()
@@ -40,7 +40,7 @@ class EntityBrowserServlet : ServletContainer(ApplicationConfig) {
 
     override fun destroy() {
         super.destroy()
-        InjectionContexts.destroy()
+        Application.stop()
     }
 }
 
@@ -60,10 +60,10 @@ class IndexHtml : HttpServlet() {
 
 private fun launchBrowser() {
     val port = Integer.getInteger("server.port", 18080)
-    val url = "http://${hostName()}:$port"
+    val url = "http://$hostName:$port"
     log.info("try to open browser for '{}'", url);
     try {
-        val osName = System.getProperty("os.name")
+        val osName = "os.name".system()
         if (osName.startsWith("Mac OS")) {
             log.info("mac os detected");
             val fileMgr = Class.forName("com.apple.eio.FileManager")
@@ -89,10 +89,11 @@ private fun launchBrowser() {
     }
 }
 
-private fun hostName(): String {
-    try {
-        return InputStreamReader(Runtime.getRuntime().exec("hostname").inputStream).readLines().first()
-    } catch (ignored: IOException) {
+private val hostName: String
+    get() {
+        try {
+            return InputStreamReader(Runtime.getRuntime().exec("hostname").inputStream).readLines().first()
+        } catch (ignored: IOException) {
+        }
+        return "localhost"
     }
-    return "localhost"
-}

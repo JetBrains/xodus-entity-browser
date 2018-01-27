@@ -17,8 +17,8 @@ class JobsService {
         pool.submit(job)
     }
 
-    fun shutdown() {
-        log.info("shutdown jobs")
+    fun stop() {
+        log.info("stop jobs")
         pool.shutdown()
     }
 
