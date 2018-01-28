@@ -3,7 +3,6 @@ package com.lehvolk.xodus.web
 import com.lehvolk.xodus.web.db.Databases
 import com.lehvolk.xodus.web.db.JobsService
 import com.lehvolk.xodus.web.db.StoreService
-import javax.ws.rs.NotFoundException
 
 
 class Services(val storeService: StoreService,
@@ -55,9 +54,10 @@ object Application {
 }
 
 
-fun servicesOf(db: DBSummary): Services = Application.allServices[db.uuid] ?: throw NotFoundException()
+fun servicesOf(dbUUID: String): Services = Application.allServices[dbUUID]!!
 
 infix fun String.systemOr(default: String): String = System.getProperty(this, default)
+
 fun String.system(): String = System.getProperty(this)
 
 

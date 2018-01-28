@@ -1,8 +1,8 @@
 package com.lehvolk.xodus.web
 
 import com.lehvolk.xodus.web.db.Databases
-import com.lehvolk.xodus.web.resources.DatabaseResource
-import com.lehvolk.xodus.web.resources.DatabasesResource
+import com.lehvolk.xodus.web.resources.DB
+import com.lehvolk.xodus.web.resources.DBs
 import jetbrains.exodus.entitystore.PersistentEntityStoreImpl
 import jetbrains.exodus.entitystore.PersistentEntityStores
 import jetbrains.exodus.env.Environments
@@ -68,10 +68,10 @@ class DatabasesTest {
     }
 
     private fun newDB(location: String): DBSummary {
-        return DatabasesResource().newDB(DBSummary(location, key))
+        return DBs().newDB(DBSummary(location, key))
     }
 
-    private fun dbResource(uuid: String): DatabaseResource {
-        return DatabasesResource().db(uuid)
+    private fun dbResource(uuid: String): DB {
+        return DBs().db(uuid)
     }
 }

@@ -1,26 +1,32 @@
 package com.lehvolk.xodus.web.db
 
 import com.lehvolk.xodus.web.DBSummary
-import com.lehvolk.xodus.web.JacksonConfigurator
+import com.lehvolk.xodus.web.mapper
 import com.lehvolk.xodus.web.systemOr
 import java.io.File
 import java.util.*
 
-private val mapper = JacksonConfigurator().mapper
 
 object Databases {
 
-    internal val file by lazy { File("recent.dbs" systemOr "./recent-dbs.json") }
+    internal val file by lazy {
+        File("recent.dbs" systemOr "./recent-dbs.json")
+    }
     private val dbs by lazy {
         val result = arrayListOf<DBSummary>()
-        if (!file.exists()) {
-            if (!file.parentFile.mkdirs() || !file.createNewFile()) {
-                throw IllegalStateException("can't create file ${file.absolutePath}")
+        val canonicalFile = File(file.canonicalPath)
+        if (!canonicalFile.exists()) {
+            val parent = canonicalFile.parentFile
+            if (!parent.exists() && !parent.mkdirs()) {
+                throw IllegalStateException("can't create folder ${parent.canonicalPath}")
+            }
+            if (!canonicalFile.createNewFile()) {
+                throw IllegalStateException("can't create file ${canonicalFile.absolutePath}")
             }
         }
         try {
             val type = mapper.typeFactory.constructCollectionType(List::class.java, DBSummary::class.java)
-            result.addAll(mapper.readValue(file, type))
+            result.addAll(mapper.readValue(canonicalFile, type))
         } catch (e: Exception) {
             // ignore
         }

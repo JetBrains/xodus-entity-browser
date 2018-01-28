@@ -1,16 +1,10 @@
 dependencies {
     compile project(path: ':entity-browser-app', configuration: 'frontend')
-    compile lib('org.eclipse.jetty:jetty-runner')
 }
 
 task zipLauncher(type: Zip) {
     archiveName 'entity-browser-launcher.zip'
 
-    into('') {
-        from configurations.runtime.files { it.name == 'jetty-runner' }.collect()[0]
-        //collect only runner w/o transitive dependencies
-        rename { "jetty-runner.jar" }
-    }
     into('') {
         from 'src/main/resources', {
             include '*.xml'
@@ -22,7 +16,7 @@ task zipLauncher(type: Zip) {
 
     into('resources') {
         from globalArtifactsBuildDir, {
-            include '*.war'
+            include '*.jar'
         }
     }
 
