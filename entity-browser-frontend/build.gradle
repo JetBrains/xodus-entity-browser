@@ -2,24 +2,28 @@ plugins {
     id "com.moowork.node" version "0.13"
 }
 
-configurations {
-    frontend
-}
-
 node {
     version = '5.4.0'
 }
 
 task runNpm(type: NpmTask, dependsOn: 'npmInstall') { args = ['run', 'build'] }
 
-task zipFrontend(type: Zip, dependsOn: 'runNpm') { from 'dist' }
+task webContent(type: Copy, dependsOn: 'runNpm') {
+    from 'dist'
+    into 'build/content/static'
+}
+
+task jarFrontend(type: Jar, dependsOn: 'webContent') {
+    from 'build/content'
+}
 
 artifacts {
-    compile file: zipFrontend.archivePath, builtBy: zipFrontend
+    compile file: jarFrontend.archivePath, builtBy: jarFrontend
 }
 
 clean {
     delete 'dist'
+    delete 'build'
 }
 
 idea {

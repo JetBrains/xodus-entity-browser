@@ -11,8 +11,7 @@ That's mean that if your application uses 'x' version of xodus and you modify da
 
 * get [latest version based on maven repo](https://bintray.com/lehvolk/maven/download_file?file_path=com%2Flehvolk%2Fxodus%2Fentity-browser-launcher%2F1.0.0-20170804%2Fentity-browser-launcher-1.0.0-20170804.zip)
 * execute run.bat or run.sh
-* open browser http://localhost:8080 (Jetty server binds to all interfaces on port 8080 therefore all interfaces can be
-        used to access application)
+* open browser http://localhost:18080
 
 ## Configuring
 * JVM arguments, server port can be modified in startup script.
@@ -26,12 +25,6 @@ That's mean that if your application uses 'x' version of xodus and you modify da
 Command starts rest interfaces on 18080 port
 
     >./gradlew appRun
-
-for debug
-
-    >./gradlew appRunDebug
-
-debug port by default 5005. To change it check [greety instructions](http://akhikhl.github.io/gretty-doc/Debugger-support.html)   
 
 ## Run frontend
 

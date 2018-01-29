@@ -36,11 +36,7 @@ object Databases {
     fun add(location: String, key: String): DBSummary {
         val uuid = UUID.randomUUID().toString()
         saveWith {
-            dbs.add(DBSummary().also {
-                it.location = location
-                it.key = key
-                it.uuid = uuid
-            })
+            dbs.add(DBSummary(location, key, uuid = uuid))
         }
         return find(uuid)
     }
@@ -73,13 +69,7 @@ object Databases {
         }
     }
 
-    fun find(uuid: String) = dbs.first { it.uuid == uuid }.apply {
-        DBSummary().also {
-            it.location = location
-            it.key = key
-            it.uuid = uuid
-        }
-    }
+    fun find(uuid: String) = dbs.first { it.uuid == uuid }.copy()
 
     private fun saveWith(call: () -> Unit) {
         synchronized(this) {

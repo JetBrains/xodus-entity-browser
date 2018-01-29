@@ -8,7 +8,6 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-        classpath 'org.akhikhl.gretty:gretty:+'
     }
 }
 
@@ -17,6 +16,7 @@ plugins {
     id 'idea'                                         // ide sync fine tuning
     id 'com.github.jk1.tcdeps' version '0.13'        // resolves dependencies from TeamCity
     id "com.jfrog.bintray" version "1.7"
+    id 'com.github.johnrengelman.shadow' version '2.0.2'
 }
 
 apply from: 'libraries.gradle'

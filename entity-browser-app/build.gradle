@@ -3,10 +3,7 @@ plugins {
 }
 
 apply plugin: 'kotlin'
-
-configurations {
-    frontend
-}
+apply plugin: 'com.github.johnrengelman.shadow'
 
 def javaCCFolder = "src/main/generated"
 
@@ -24,8 +21,8 @@ dependencies {
 
     compile lib('ch.qos.logback:logback-classic')
     compile lib('ch.qos.logback:logback-core')
-    
-    frontend project(path: ':entity-browser-frontend', configuration: 'compile')
+
+    compile project(path: ':entity-browser-frontend', configuration: 'compile')
 
     compile lib('org.jetbrains.xodus:xodus-environment')
     compile lib('org.jetbrains.xodus:xodus-entity-store')
@@ -38,14 +35,16 @@ dependencies {
     testCompile lib('junit:junit')
 }
 
-jar {
-    dependsOn configurations.frontend
+shadowJar {
     archiveName = "xodus-entity-browser.jar"
     destinationDir = globalArtifactsBuildDir
-    from {
-        // use of closure defers configuration evaluation until execution time
-        configurations.frontend.collect { zipTree(it) }
+    manifest {
+        attributes 'Main-Class': 'com.lehvolk.xodus.web.MainKt'
     }
+}
+
+artifacts {
+    archives shadowJar
 }
 
 clean {

@@ -2,8 +2,6 @@ package com.lehvolk.xodus.web
 
 import java.util.*
 
-class ServerError(val msg: String)
-
 open class BaseVO {
     var id: String? = null
 }
@@ -16,7 +14,7 @@ open class PropertyType(
         var readonly: Boolean = false,
         var clazz: String? = null,
         var displayName: String? = null
-        )
+)
 
 class EntityProperty(
         var type: PropertyType = PropertyType(),
@@ -72,9 +70,9 @@ class ChangeSummary(
         var blobs: List<BlobChangeSummaryAction> = listOf()
 )
 
-open class DBSummary(
-        var location: String? = null,
-        var key: String? = null,
+data class DBSummary(
+        var location: String,
+        var key: String,
         var isOpened: Boolean = true,
         var uuid: String = UUID.randomUUID().toString()
 )

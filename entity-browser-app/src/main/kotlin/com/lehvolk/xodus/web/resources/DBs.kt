@@ -13,7 +13,7 @@ class DBs : Resource {
         }
 
         http.safePost<DBSummary>("/api/dbs") {
-            Databases.add(it.location!!, it.key!!).also {
+            Databases.add(it.location, it.key).also {
                 Application.tryStart(it)
             }
         }

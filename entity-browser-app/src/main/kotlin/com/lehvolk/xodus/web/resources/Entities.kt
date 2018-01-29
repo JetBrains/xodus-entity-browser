@@ -67,7 +67,7 @@ class Entities : Resource, ResourceSupport {
         http.get(prefixed(":entityId/blob/:blobName")) {
             val entityId = entityId
             logger.debug { "getting entity by entity id '$entityId'" }
-            response.header("Content Type", "application/octet-stream;charset=utf-8")
+            response.header("content-type", "application/octet-stream;charset=utf-8")
             storeService.getBlob(entityId.typeId, entityId.localId, request.params("blobName"),
                     response.raw().outputStream)
         }
