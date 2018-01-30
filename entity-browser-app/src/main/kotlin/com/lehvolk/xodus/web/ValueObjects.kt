@@ -73,7 +73,7 @@ class ChangeSummary(
 data class DBSummary(
         var location: String,
         var key: String,
-        var isOpened: Boolean = true,
+        var isOpened: Boolean = false,
         var uuid: String = UUID.randomUUID().toString()
 )
 

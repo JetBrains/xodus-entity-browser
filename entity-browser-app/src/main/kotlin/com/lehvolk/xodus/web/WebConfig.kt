@@ -11,7 +11,6 @@ import com.lehvolk.xodus.web.search.SearchQueryException
 import mu.KLogging
 import spark.ResponseTransformer
 import spark.Spark.exception
-import spark.Spark.staticFileLocation
 import spark.kotlin.Http
 import spark.kotlin.RouteHandler
 import spark.kotlin.ignite
@@ -35,6 +34,12 @@ inline fun <reified T> Http.safePost(path: String, crossinline executor: RouteHa
     post(path, "application/json") {
         val t = mapper.readValue(request.body(), T::class.java)
         JsonTransformer.render(executor(t))
+    }
+}
+
+fun Http.safePost(path: String, executor: RouteHandler.() -> Any) {
+    post(path, "application/json") {
+        JsonTransformer.render(executor())
     }
 }
 

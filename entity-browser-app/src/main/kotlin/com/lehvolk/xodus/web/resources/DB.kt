@@ -1,30 +1,31 @@
 package com.lehvolk.xodus.web.resources
 
 import com.lehvolk.xodus.web.*
-import com.lehvolk.xodus.web.db.Databases
+import com.lehvolk.xodus.web.db.DatabaseService
 import mu.KLogging
 import spark.kotlin.Http
 
 
 class DB : Resource, ResourceSupport {
 
-    companion object : KLogging()
+    companion object : KLogging() {
+        private val databaseService = DatabaseService()
+    }
 
     override val prefix = "/api/dbs/:uuid"
 
     override fun registerRouting(http: Http) {
         http.safeDelete(prefixed()) {
-            Application.stop(db)
-            Databases.delete(db.uuid)
+            databaseService.delete(db.uuid)
         }
 
-        http.safePost<DBSummary>(prefixed()) {
+        http.safePost(prefixed()) {
             val operation = request.queryParams("op")
             when (operation) {
-                "start" -> Application.tryStart(db)
-                "stop" -> Application.stop(db)
+                "start" -> databaseService.tryStart(db.uuid)
+                "stop" -> databaseService.stop(db.uuid)
+                else -> response.status(404)
             }
-            db
         }
 
         http.safeGet(prefixed("types")) {
@@ -41,7 +42,5 @@ class DB : Resource, ResourceSupport {
             val term = request.queryParams("term")
             jobsService.submit(storeService.deleteEntitiesJob(id, term))
         }
-
-
     }
 }

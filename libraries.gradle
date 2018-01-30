@@ -27,6 +27,8 @@ ext.libraries = [
         'com.sparkjava:spark-core'                                : '2.7.1',
         'com.sparkjava:spark-kotlin'                              : '1.0.0-alpha',
         'io.github.microutils:kotlin-logging'                     : '1.4.9',
-        'com.fasterxml.jackson.module:jackson-module-kotlin'      : '2.9.2'
+        'com.fasterxml.jackson.module:jackson-module-kotlin'      : '2.9.2',
+        'com.squareup.retrofit2:retrofit'                         : '2.3.0',
+        'com.squareup.retrofit2:converter-jackson'                : '2.3.0'
 
 ]

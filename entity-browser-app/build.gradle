@@ -33,6 +33,9 @@ dependencies {
 
     testCompile lib('org.mockito:mockito-all')
     testCompile lib('junit:junit')
+    testCompile lib('junit:junit')
+    testCompile lib('com.squareup.retrofit2:retrofit')
+    testCompile lib('com.squareup.retrofit2:converter-jackson')
 }
 
 shadowJar {

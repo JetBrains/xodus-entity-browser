@@ -1,5 +1,6 @@
 package com.lehvolk.xodus.web
 
+import com.lehvolk.xodus.web.db.DatabaseService
 import com.lehvolk.xodus.web.db.Databases
 import com.lehvolk.xodus.web.db.JobsService
 import com.lehvolk.xodus.web.db.StoreService
@@ -19,25 +20,27 @@ object Application {
 
     internal val allServices = hashMapOf<String, Services>()
 
+    private val databaseService: DatabaseService = DatabaseService()
+
     fun start() {
-        Databases.all().forEach { tryStart(it) }
+        Databases.all().forEach { databaseService.tryStart(it.uuid) }
     }
 
-    fun tryStart(db: DBSummary): DBSummary {
+    fun tryStartServices(db: DBSummary): Boolean {
+        if (allServices.containsKey(db.uuid)) {
+            return true
+        }
         val service = try {
-            val location = db.location ?: throw IllegalStateException("location can't be null")
-            val key = db.key ?: throw IllegalStateException("key can't be null")
+            val location = db.location
+            val key = db.key
             StoreService(location, key)
         } catch (e: Exception) {
             null
         }
-        if (service != null) {
-            db.isOpened = true
-            allServices[db.uuid] = Services(service)
-        } else {
-            Databases.markUnavailable(db.uuid)
+        service?.let {
+            allServices[db.uuid] = Services(it)
         }
-        return db
+        return service != null
     }
 
     fun stop() {

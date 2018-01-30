@@ -12,6 +12,7 @@ object Databases {
     internal val file by lazy {
         File("recent.dbs" systemOr "./recent-dbs.json")
     }
+
     private val dbs by lazy {
         val result = arrayListOf<DBSummary>()
         val canonicalFile = File(file.canonicalPath)
@@ -41,21 +42,17 @@ object Databases {
         return find(uuid)
     }
 
+    fun applyChange(uuid: String, call: DBSummary.() -> Unit): DBSummary {
+        val dbCopy = find(uuid)
+        saveWith {
+            dbCopy.call()
+        }
+        return find(uuid)
+    }
+
     fun delete(uuid: String) {
         saveWith {
             dbs.removeAll { it.uuid == uuid }
-        }
-    }
-
-    fun markUnavailable(uuid: String) {
-        saveWith {
-            dbs.first { it.uuid == uuid }.isOpened = false
-        }
-    }
-
-    fun open(uuid: String) {
-        saveWith {
-            dbs.first { it.uuid == uuid }.isOpened = true
         }
     }
 
@@ -63,13 +60,7 @@ object Databases {
         return dbs.toList()
     }
 
-    fun deleteAll() {
-        saveWith {
-            dbs.clear()
-        }
-    }
-
-    fun find(uuid: String) = dbs.first { it.uuid == uuid }.copy()
+    internal fun find(uuid: String) = dbs.first { it.uuid == uuid }
 
     private fun saveWith(call: () -> Unit) {
         synchronized(this) {
