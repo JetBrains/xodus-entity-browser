@@ -43,10 +43,6 @@ object Application {
         return service != null
     }
 
-    fun stop() {
-        allServices.forEach { it.value.stop() }
-    }
-
     fun stop(db: DBSummary) {
         allServices[db.uuid]?.also {
             it.stop()

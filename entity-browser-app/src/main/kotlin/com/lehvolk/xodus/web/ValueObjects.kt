@@ -46,9 +46,7 @@ class EntityView(
         var blobs: List<EntityBlob> = emptyList()
 ) : BaseVO()
 
-open class EntityType : Named() {
-    var id: String? = null
-}
+data class EntityType(var id: String?, var name: String)
 
 open class SearchPager(val items: Array<EntityView>, val totalCount: Long)
 

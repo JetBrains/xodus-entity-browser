@@ -3,6 +3,7 @@ package com.lehvolk.xodus.web.resources
 import com.lehvolk.xodus.web.*
 import com.lehvolk.xodus.web.db.DatabaseService
 import mu.KLogging
+import spark.Spark
 import spark.kotlin.Http
 
 
@@ -15,32 +16,34 @@ class DB : Resource, ResourceSupport {
     override val prefix = "/api/dbs/:uuid"
 
     override fun registerRouting(http: Http) {
-        http.safeDelete(prefixed()) {
-            databaseService.delete(db.uuid)
-        }
-
-        http.safePost(prefixed()) {
-            val operation = request.queryParams("op")
-            when (operation) {
-                "start" -> databaseService.tryStart(db.uuid)
-                "stop" -> databaseService.stop(db.uuid)
-                else -> response.status(404)
+        http.service.path("/api/dbs/:uuid") {
+            http.safeDelete {
+                databaseService.delete(db.uuid)
             }
-        }
 
-        http.safeGet(prefixed("types")) {
-            storeService.allTypes()
-        }
+            http.safePost {
+                val operation = request.queryParams("op")
+                when (operation) {
+                    "start" -> databaseService.tryStart(db.uuid)
+                    "stop" -> databaseService.stop(db.uuid)
+                    else -> response.status(404)
+                }
+            }
 
-        http.safePost<Any>(prefixed("types")) {
-            val name = request.queryParams("name")
-            storeService.addType(name)
-        }
+            http.safeGet("/types") {
+                storeService.allTypes()
+            }
 
-        http.safeDelete(prefixed("entities")) {
-            val id = request.queryParams("id").toInt()
-            val term = request.queryParams("term")
-            jobsService.submit(storeService.deleteEntitiesJob(id, term))
+            http.safePost<EntityType>("/types") {
+                storeService.addType(it.name)
+                storeService.allTypes()
+            }
+
+            http.safeDelete("/entities") {
+                val id = request.queryParams("id").toInt()
+                val term = request.queryParams("term")
+                jobsService.submit(storeService.deleteEntitiesJob(id, term))
+            }
         }
     }
 }

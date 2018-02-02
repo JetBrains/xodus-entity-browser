@@ -77,11 +77,8 @@ private fun Entity.propertyView(name: String): EntityProperty {
 }
 
 fun String.asEntityType(store: PersistentEntityStoreImpl): EntityType {
-    val name = this
-    return EntityType().withName(name).apply {
-        val typeId = store.getEntityTypeId(store.currentTransaction!!, name, false)
-        id = typeId.toString()
-    }
+    val typeId = store.getEntityTypeId(store.currentTransaction!!, this, false)
+    return EntityType(typeId.toString(), this)
 }
 
 fun EntityProperty.string2value(): Comparable<*>? {

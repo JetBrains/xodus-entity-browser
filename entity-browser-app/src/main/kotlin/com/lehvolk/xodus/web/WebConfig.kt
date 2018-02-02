@@ -30,15 +30,15 @@ object JsonTransformer : ResponseTransformer {
 }
 
 
-inline fun <reified T> Http.safePost(path: String, crossinline executor: RouteHandler.(T) -> Any) {
+inline fun <reified T> Http.safePost(path: String = "", crossinline executor: RouteHandler.(T) -> Any) {
     post(path, "application/json") {
         val t = mapper.readValue(request.body(), T::class.java)
         JsonTransformer.render(executor(t))
     }
 }
 
-fun Http.safePost(path: String, executor: RouteHandler.() -> Any) {
-    post(path, "application/json") {
+fun Http.safePost(path: String = "", executor: RouteHandler.() -> Any) {
+    post(path) {
         JsonTransformer.render(executor())
     }
 }
@@ -51,13 +51,13 @@ inline fun <reified T> Http.safePut(path: String, crossinline executor: RouteHan
 }
 
 
-fun Http.safeGet(path: String, executor: RouteHandler.() -> Any) {
+fun Http.safeGet(path: String = "", executor: RouteHandler.() -> Any) {
     get(path, "application/json") {
         JsonTransformer.render(executor())
     }
 }
 
-fun Http.safeDelete(path: String, executor: RouteHandler.() -> Any) {
+fun Http.safeDelete(path: String = "", executor: RouteHandler.() -> Any) {
     delete(path, "application/json") {
         JsonTransformer.render(executor())
     }
@@ -65,8 +65,9 @@ fun Http.safeDelete(path: String, executor: RouteHandler.() -> Any) {
 
 object HttpServer : KLogging() {
 
-    fun setup(port: Int) {
+    private var http: Http? = null
 
+    fun setup(port: Int) {
         exception(EntityNotFoundException::class.java) { e, _, response ->
             logger.error("getting entity failed", e)
             response.status(HttpURLConnection.HTTP_NOT_FOUND)
@@ -94,10 +95,19 @@ object HttpServer : KLogging() {
                 IndexHtmlPage()
         )
 
-        ignite().port(port).apply {
+        http = ignite().port(port).apply {
             staticFiles.location("/static/")
+            after {
+                logger.info {
+                    "'${request.requestMethod()} ${request.pathInfo()}' - ${response.status()} ${response.type() ?: ""} \n ${response.body()}"
+                }
+            }
             resources.forEach { it.registerRouting(this) }
         }
+    }
+
+    fun stop() {
+        http?.stop()
     }
 }
 

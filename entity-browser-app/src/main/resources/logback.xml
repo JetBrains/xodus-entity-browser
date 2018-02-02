@@ -18,6 +18,9 @@
         </encoder>
     </appender>
 
+    <logger name="org.eclipse.jetty.server" level="INFO"/>
+    <logger name="com.lehvolk.xodus.web" level="INFO"/>
+
     <root level="info">
         <appender-ref ref="FILE" />
         <appender-ref ref="STDOUT" />

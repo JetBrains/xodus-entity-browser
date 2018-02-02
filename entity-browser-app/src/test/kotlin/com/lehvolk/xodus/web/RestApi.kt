@@ -18,10 +18,7 @@ interface DBApi {
     fun allDbTypes(@Path("uuid") uuid: String): Call<List<String>>
 
     @POST("/api/dbs/{uuid}/types")
-    fun addDbType(@Query("name") name: String): Call<List<String>>
-
-    @GET("/api/dbs")
-    fun all(): Call<List<DBSummary>>
+    fun addDbType(@Path("uuid") uuid: String, @Body type: EntityType): Call<List<EntityType>>
 
     @DELETE("/api/dbs/{uuid}")
     fun delete(@Path("uuid") uuid: String): Call<Void>

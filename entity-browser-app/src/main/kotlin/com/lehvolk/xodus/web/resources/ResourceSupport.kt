@@ -11,8 +11,6 @@ interface ResourceSupport {
 
     val prefix: String
 
-    fun prefixed(url: String = "") = if (url.isBlank()) prefix else prefix + "/" + url
-
     val RouteHandler.db: DBSummary
         get() {
             val uuid = request.params("uuid")

@@ -25,65 +25,66 @@ class Entities : Resource, ResourceSupport {
     override val prefix = "/api/dbs/:uuid/entities"
 
     override fun registerRouting(http: Http) {
-
-        http.safeGet(prefixed()) {
-            val id = request.queryParams("id").toInt()
-            val term = request.queryParams("term")
-            val offset = (request.queryParams("offset") ?: "0").toInt()
-            val pageSize = (request.queryParams("pageSize") ?: "0").toInt()
-            logger.debug {
-                "searching entities by typeId: $id, term [$term] with offset = $offset and pageSize = $pageSize"
+        http.service.path("/api/dbs/:uuid/entities") {
+            http.safeGet {
+                val id = request.queryParams("id").toInt()
+                val term = request.queryParams("term")
+                val offset = (request.queryParams("offset") ?: "0").toInt()
+                val pageSize = (request.queryParams("pageSize") ?: "0").toInt()
+                logger.debug {
+                    "searching entities by typeId: $id, term [$term] with offset = $offset and pageSize = $pageSize"
+                }
+                if (offset < 0 || pageSize < 0) {
+                    response.status(400)
+                }
+                storeService.searchType(id, term, offset, if (pageSize == 0) 50 else Math.min(pageSize, 1000))
             }
-            if (offset < 0 || pageSize < 0) {
-                response.status(400)
+
+            http.safeGet("/:entityId") {
+                val entityId = entityId
+                logger.debug { "getting entity by entity id '$entityId'" }
+                storeService.getEntity(entityId.typeId, entityId.localId)
             }
-            storeService.searchType(id, term, offset, if (pageSize == 0) 50 else Math.min(pageSize, 1000))
-        }
 
-        http.safeGet(prefixed(":entityId")) {
-            val entityId = entityId
-            logger.debug { "getting entity by entity id '$entityId'" }
-            storeService.getEntity(entityId.typeId, entityId.localId)
-        }
-
-        http.safePut<ChangeSummary>(prefixed(":entityId")) {
-            val entityId = entityId
-            logger.debug { "updating entity for '$entityId'. ChangeSummary: ${toString(it)}" }
-            storeService.updateEntity(entityId.typeId, entityId.localId, it)
-        }
-
-        http.safePost<ChangeSummary>(prefixed(":typeId")) {
-            val typeId = request.queryParams("typeId").toInt()
-            logger.debug { "creating entity for '$entityId'. ChangeSummary: ${toString(it)}" }
-            storeService.newEntity(typeId, it)
-        }
-
-        http.safeDelete(prefixed(":entityId")) {
-            val entityId = entityId
-            logger.debug { "deleting '$entityId'" }
-            storeService.deleteEntity(entityId.typeId, entityId.localId)
-        }
-
-        http.get(prefixed(":entityId/blob/:blobName")) {
-            val entityId = entityId
-            logger.debug { "getting entity by entity id '$entityId'" }
-            response.header("content-type", "application/octet-stream;charset=utf-8")
-            storeService.getBlob(entityId.typeId, entityId.localId, request.params("blobName"),
-                    response.raw().outputStream)
-        }
-
-        http.safeGet(prefixed(":entityId/links/:linkName")) {
-            val entityId = entityId
-            val linkName = request.params("linkName")
-            val offset = (request.queryParams("offset") ?: "0").toInt()
-            val pageSize = (request.queryParams("pageSize") ?: "0").toInt()
-            logger.debug {
-                "searching entities by typeId: $entityId, linkName [$linkName] with offset = $offset and pageSize = $pageSize"
+            http.safePut<ChangeSummary>("/:entityId") {
+                val entityId = entityId
+                logger.debug { "updating entity for '$entityId'. ChangeSummary: ${toString(it)}" }
+                storeService.updateEntity(entityId.typeId, entityId.localId, it)
             }
-            if (offset < 0 || pageSize < 0) {
-                response.status(400)
+
+            http.safePost<ChangeSummary>("/:typeId") {
+                val typeId = request.queryParams("typeId").toInt()
+                logger.debug { "creating entity for '$entityId'. ChangeSummary: ${toString(it)}" }
+                storeService.newEntity(typeId, it)
             }
-            storeService.searchEntity(entityId.typeId, entityId.localId, linkName, offset, if (pageSize == 0) 100 else Math.min(pageSize, 1000))
+
+            http.safeDelete("/:entityId") {
+                val entityId = entityId
+                logger.debug { "deleting '$entityId'" }
+                storeService.deleteEntity(entityId.typeId, entityId.localId)
+            }
+
+            http.get("/:entityId/blob/:blobName") {
+                val entityId = entityId
+                logger.debug { "getting entity by entity id '$entityId'" }
+                response.header("content-type", "application/octet-stream;charset=utf-8")
+                storeService.getBlob(entityId.typeId, entityId.localId, request.params("blobName"),
+                        response.raw().outputStream)
+            }
+
+            http.safeGet("/:entityId/links/:linkName") {
+                val entityId = entityId
+                val linkName = request.params("linkName")
+                val offset = (request.queryParams("offset") ?: "0").toInt()
+                val pageSize = (request.queryParams("pageSize") ?: "0").toInt()
+                logger.debug {
+                    "searching entities by typeId: $entityId, linkName [$linkName] with offset = $offset and pageSize = $pageSize"
+                }
+                if (offset < 0 || pageSize < 0) {
+                    response.status(400)
+                }
+                storeService.searchEntity(entityId.typeId, entityId.localId, linkName, offset, if (pageSize == 0) 100 else Math.min(pageSize, 1000))
+            }
         }
     }
 
