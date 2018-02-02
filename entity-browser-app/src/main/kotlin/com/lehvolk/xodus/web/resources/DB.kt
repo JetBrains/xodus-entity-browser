@@ -13,8 +13,6 @@ class DB : Resource, ResourceSupport {
         private val databaseService = DatabaseService()
     }
 
-    override val prefix = "/api/dbs/:uuid"
-
     override fun registerRouting(http: Http) {
         http.service.path("/api/dbs/:uuid") {
             http.safeDelete {

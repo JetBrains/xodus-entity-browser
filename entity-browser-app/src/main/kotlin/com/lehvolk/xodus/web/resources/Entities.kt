@@ -22,8 +22,6 @@ class Entities : Resource, ResourceSupport {
             return ApiEntityId(parts[0].toInt(), parts[1].toLong())
         }
 
-    override val prefix = "/api/dbs/:uuid/entities"
-
     override fun registerRouting(http: Http) {
         http.service.path("/api/dbs/:uuid/entities") {
             http.safeGet {

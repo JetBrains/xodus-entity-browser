@@ -13,7 +13,7 @@ import java.io.File
 import java.net.ServerSocket
 import java.util.*
 
-open class DatabasesMixin {
+open class TestSupport {
     protected val key = "teamsysdata"
     protected val lockedDBLocation = newLocation()
     private lateinit var store: PersistentEntityStoreImpl

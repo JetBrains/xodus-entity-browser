@@ -9,8 +9,6 @@ import spark.kotlin.RouteHandler
 
 interface ResourceSupport {
 
-    val prefix: String
-
     val RouteHandler.db: DBSummary
         get() {
             val uuid = request.params("uuid")

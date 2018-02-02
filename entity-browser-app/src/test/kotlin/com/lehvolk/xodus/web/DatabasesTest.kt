@@ -5,7 +5,7 @@ import org.junit.Assert.*
 import org.junit.Test
 
 
-class DatabasesTest : DatabasesMixin() {
+class DatabasesTest : TestSupport() {
 
     @Test
     fun `should be able to add new db which is locked`() {
