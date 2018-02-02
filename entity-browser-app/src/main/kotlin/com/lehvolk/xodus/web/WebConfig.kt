@@ -65,49 +65,53 @@ fun Http.safeDelete(path: String = "", executor: RouteHandler.() -> Any) {
 
 object HttpServer : KLogging() {
 
-    private var http: Http? = null
+    private lateinit var http: Http
+
+    private val resources = listOf(
+            // rest api
+            DBs(),
+            DB(),
+            Entities(),
+
+            // index html
+            IndexHtmlPage()
+    )
 
     fun setup(port: Int) {
-        exception(EntityNotFoundException::class.java) { e, _, response ->
-            logger.error("getting entity failed", e)
-            response.status(HttpURLConnection.HTTP_NOT_FOUND)
-        }
-        exception(InvalidFieldException::class.java) { e, _, response ->
-            logger.error("error updating entity", e)
-            response.status(HttpURLConnection.HTTP_BAD_REQUEST)
-        }
-        exception(SearchQueryException::class.java) { e, request, response ->
-            logger.warn("error executing '${request.requestMethod()}' request for '${request.pathInfo()}'", e)
-            response.status(HttpURLConnection.HTTP_BAD_REQUEST)
-        }
-        exception(NumberFormatException::class.java) { e, _, response ->
-            logger.debug("error parsing request path or query parameter", e)
-            response.status(HttpURLConnection.HTTP_BAD_REQUEST)
-        }
-
-        val resources = listOf(
-                // rest api
-                DBs(),
-                DB(),
-                Entities(),
-
-                // index html
-                IndexHtmlPage()
-        )
-
         http = ignite().port(port).apply {
             staticFiles.location("/static/")
             after {
                 logger.info {
-                    "'${request.requestMethod()} ${request.pathInfo()}' - ${response.status()} ${response.type() ?: ""} \n ${response.body()}"
+                    "'${request.requestMethod()} ${request.pathInfo()}' - ${response.status()} ${response.type()
+                            ?: ""} \n ${response.body()}"
                 }
             }
             resources.forEach { it.registerRouting(this) }
+
+            exception(EntityNotFoundException::class.java) { e, _, response ->
+                logger.error("getting entity failed", e)
+                response.status(HttpURLConnection.HTTP_NOT_FOUND)
+            }
+            exception(InvalidFieldException::class.java) { e, _, response ->
+                logger.error("error updating entity", e)
+                response.status(HttpURLConnection.HTTP_BAD_REQUEST)
+            }
+            exception(SearchQueryException::class.java) { e, request, response ->
+                logger.warn("error executing '${request.requestMethod()}' request for '${request.pathInfo()}'", e)
+                response.status(HttpURLConnection.HTTP_BAD_REQUEST)
+            }
+            exception(NumberFormatException::class.java) { e, _, response ->
+                logger.debug("error parsing request path or query parameter", e)
+                response.status(HttpURLConnection.HTTP_BAD_REQUEST)
+            }
+            internalServerError {
+                "Sorry, something went wrong. Check server logs"
+            }
         }
     }
 
     fun stop() {
-        http?.stop()
+        http.stop()
     }
 }
 

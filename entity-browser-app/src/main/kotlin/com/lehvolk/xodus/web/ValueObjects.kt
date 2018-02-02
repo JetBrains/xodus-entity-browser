@@ -2,67 +2,72 @@ package com.lehvolk.xodus.web
 
 import java.util.*
 
-open class BaseVO {
-    var id: String? = null
+interface Named {
+    var name: String
 }
 
-open class Named {
-    var name: String? = null
-}
-
-open class PropertyType(
+data class PropertyType(
         var readonly: Boolean = false,
-        var clazz: String? = null,
-        var displayName: String? = null
+        var clazz: String,
+        var displayName: String
 )
 
-class EntityProperty(
-        var type: PropertyType = PropertyType(),
+data class EntityProperty(
+        override var name: String,
+        var type: PropertyType,
         var value: String? = null
-) : Named()
+) : Named
 
-class EntityLink(
-        var typeId: Int = 0,
-        var type: String? = null,
-        var label: String? = null,
+data class EntityLink(
+        override var name: String,
+        var typeId: Int,
+        var type: String,
+        var label: String,
         var entityId: Long = 0
-) : Named()
+) : Named
 
-class LinkPager(
+data class LinkPager(
+        override var name: String,
         var skip: Int = 0,
         var top: Int = 100,
         var totalSize: Long = 0L,
         var entities: List<EntityLink> = emptyList()
-) : Named()
+) : Named
 
-class EntityBlob(var blobSize: Long = 0) : Named()
+data class EntityBlob(
+        override var name: String,
+        var blobSize: Long = 0) : Named
 
-class EntityView(
-        var type: String? = null,
-        var label: String? = null,
-        var typeId: String? = null,
+data class EntityView(
+        var id: String,
+        var type: String,
+        var label: String,
+        var typeId: String,
         var properties: List<EntityProperty> = emptyList(),
         var links: List<LinkPager> = emptyList(),
         var blobs: List<EntityBlob> = emptyList()
-) : BaseVO()
+)
 
 data class EntityType(var id: String?, var name: String)
 
-open class SearchPager(val items: Array<EntityView>, val totalCount: Long)
+data class SearchPager(val items: List<EntityView>, val totalCount: Long)
 
 open class ChangeSummaryAction<T>(
+        override var name: String,
         var newValue: T? = null
-) : Named()
+) : Named
 
-open class PropertiesChangeSummaryAction : ChangeSummaryAction<EntityProperty>()
+open class PropertiesChangeSummaryAction(name: String, newValue: EntityProperty) : ChangeSummaryAction<EntityProperty>(name, newValue)
 open class LinkChangeSummaryAction(
+        name: String,
+        newValue: EntityLink,
         var oldValue: EntityLink? = null,
         var totallyRemoved: Boolean = false
-) : ChangeSummaryAction<EntityLink>()
+) : ChangeSummaryAction<EntityLink>(name, newValue)
 
-open class BlobChangeSummaryAction : ChangeSummaryAction<EntityBlob>()
+open class BlobChangeSummaryAction(name: String, newValue: EntityBlob) : ChangeSummaryAction<EntityBlob>(name, newValue)
 
-class ChangeSummary(
+data class ChangeSummary(
         var properties: List<PropertiesChangeSummaryAction> = listOf(),
         var links: List<LinkChangeSummaryAction> = listOf(),
         var blobs: List<BlobChangeSummaryAction> = listOf()
@@ -74,7 +79,3 @@ data class DBSummary(
         var isOpened: Boolean = false,
         var uuid: String = UUID.randomUUID().toString()
 )
-
-fun <T : Named> T.withName(name: String): T = apply {
-    this.name = name
-}

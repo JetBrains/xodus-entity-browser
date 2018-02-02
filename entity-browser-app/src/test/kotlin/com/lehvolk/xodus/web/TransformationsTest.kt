@@ -75,12 +75,14 @@ class TransformationsTest {
     }
 
     private fun ofType(value: String?, clazz: String): EntityProperty {
-        val property = EntityProperty()
-        property.name = "dummy"
-        property.value = value
-        property.type = PropertyType()
-        property.type.clazz = javaClass(clazz).name
-        return property
+        return EntityProperty(
+                name = "dummy",
+                value = value,
+                type = PropertyType(
+                        clazz = javaClass(clazz).name,
+                        displayName = javaClass(clazz).name
+                )
+        )
     }
 
     private fun javaClass(clazz: String): Class<*> {

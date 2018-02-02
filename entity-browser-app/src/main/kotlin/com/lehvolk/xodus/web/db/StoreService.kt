@@ -57,7 +57,7 @@ class StoreService(location: String, key: String) {
             val result = smartSearch(term, type, typeId, t)
             val totalCount = result.size()
             val items = result.skip(offset).take(pageSize).map { it.asView() }
-            SearchPager(items.toTypedArray(), totalCount)
+            SearchPager(items.toList(), totalCount)
         }
     }
 
@@ -79,7 +79,7 @@ class StoreService(location: String, key: String) {
             vo.links.forEach {
                 it.newValue?.let {
                     val link = getEntity(it.typeId, it.entityId, t)
-                    entity.addLink(it.name!!, link)
+                    entity.addLink(it.name, link)
                 }
             }
             entity.id.localId
@@ -102,7 +102,7 @@ class StoreService(location: String, key: String) {
         property.value = safeTrim(property.value)
         val value = property.string2value()
         if (value != null) {
-            this.setProperty(property.name!!, value)
+            this.setProperty(property.name, value)
         }
     }
 
@@ -112,7 +112,7 @@ class StoreService(location: String, key: String) {
             vo.properties.forEach {
                 val newValue = it.newValue
                 if (newValue == null) {
-                    entity.deleteProperty(it.name!!)
+                    entity.deleteProperty(it.name)
                 } else {
                     entity.applyValues(newValue)
                 }
@@ -124,13 +124,13 @@ class StoreService(location: String, key: String) {
                 if (newValue == null) {
                     if (oldValue != null) {
                         val linked = getEntity(oldValue.typeId, oldValue.entityId, t)
-                        entity.deleteLink(it.name!!, linked)
+                        entity.deleteLink(it.name, linked)
                     } else if (it.totallyRemoved) {
-                        entity.setLink(it.name!!, null)
+                        entity.setLink(it.name, null)
                     }
                 } else {
                     val linked = getEntity(newValue.typeId, newValue.entityId, t)
-                    entity.addLink(it.name!!, linked)
+                    entity.addLink(it.name, linked)
                 }
             }
             entityId
