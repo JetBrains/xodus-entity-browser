@@ -28,7 +28,7 @@ angular.module('xodus').directive('linkedEntitiesView', [
                 function loadMore() {
                     var entity = scope.entity();
                     var newSkip = scope.skip + 100;
-                    entities.linkedEntities(entity.typeId, entity.id, scope.linksPager().name, scope.top, newSkip).then(function (linksPager) {
+                    entities.linkedEntities(entity.id, scope.linksPager().name, scope.top, newSkip).then(function (linksPager) {
                         scope.linkedEntities = scope.linkedEntities.concat(linksPager.entities);
                         scope.skip = newSkip;
                     });

@@ -228,8 +228,8 @@ angular.module('xodus').factory('entitiesService', ['$http', '$q', '$location', 
             });
         }
 
-        function linkedEntities(typeId, entityId, linkName, top, skip) {
-            return $http.get('api/dbs/' + fullDB.uuid + '/entities/' + typeId + '-' + entityId + '/links/' + linkName, {
+        function linkedEntities(entityId, linkName, top, skip) {
+            return $http.get('api/dbs/' + fullDB.uuid + '/entities/' + entityId + '/links/' + linkName, {
                 params: {pageSize: top, offset: skip}
             }).then(function (response) {
                 return response.data;

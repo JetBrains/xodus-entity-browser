@@ -26,16 +26,16 @@ class Entities : Resource, ResourceSupport {
         http.service.path("/api/dbs/:uuid/entities") {
             http.safeGet {
                 val id = request.queryParams("id").toInt()
-                val term = request.queryParams("term")
+                val q = request.queryParams("q")
                 val offset = (request.queryParams("offset") ?: "0").toInt()
                 val pageSize = (request.queryParams("pageSize") ?: "0").toInt()
                 logger.debug {
-                    "searching entities by typeId: $id, term [$term] with offset = $offset and pageSize = $pageSize"
+                    "searching entities by typeId: $id, q [$q] with offset = $offset and pageSize = $pageSize"
                 }
                 if (offset < 0 || pageSize < 0) {
                     response.status(400)
                 }
-                storeService.searchType(id, term, offset, if (pageSize == 0) 50 else Math.min(pageSize, 1000))
+                storeService.searchType(id, q, offset, if (pageSize == 0) 50 else Math.min(pageSize, 1000))
             }
 
             http.safeGet("/:entityId") {
