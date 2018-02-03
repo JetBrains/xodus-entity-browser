@@ -41,7 +41,8 @@ angular.module('xodus')
                 });
             }
 
-            function startOrStop(db, isStart) {
+            function startOrStop(db) {
+                var isStart = db.opened;
                 return $http.post('/api/dbs/' + db.uuid, db, {
                     params: {
                         op: isStart ? "start" : "stop"

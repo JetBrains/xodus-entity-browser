@@ -4,7 +4,7 @@ angular.module('xodus')
         function ($rootScope) {
             var alert = this;
             alert.warning = showMessage('warn');
-            alert.success = showMessage('success');
+            alert.success = showMessage('info');
             alert.error = showMessage('danger');
 
             alert.showHttpError = function (data) {

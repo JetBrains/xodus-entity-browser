@@ -8,6 +8,8 @@ require('./styles/main.scss');
 require('bootstrap');
 require('angular-ui-bootstrap');
 require('ui-select');
+require('bootstrap-toggle/css/bootstrap-toggle.css');
+require('bootstrap-toggle/js/bootstrap-toggle.js');
 
 require('font-awesome-loader');
 
@@ -91,3 +93,4 @@ require('./directive/data-view');
 require('./directive/entity-link');
 require('./directive/search');
 require('./directive/linked-entities-view');
+require('./directive/toogle');

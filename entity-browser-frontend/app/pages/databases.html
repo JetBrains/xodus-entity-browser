@@ -1,12 +1,11 @@
 <div>
     <div class="container-fluid" data-ng-controller="DatabasesController as databasesCtrl">
 
-        <h2>Databases</h2>
+        <h2>Databases <a class="btn btn-default" data-ng-click="databasesCtrl.openDialog()">
+            <span class="fa fa-plus"></span> New
+        </a></h2>
 
-        <p>
-            <a class="btn btn-default" data-ng-click="databasesCtrl.openDialog()">
-                <span class="fa fa-plus"></span> New</a>
-        </p>
+
         <table class="table table-hover">
             <thead>
             <tr>
@@ -22,27 +21,18 @@
                     <span style="font-weight: bold">{{$index + 1}}</span>
                 </td>
                 <td>
-                    <div>
-                        <i ng-show="database.opened" class="fa fa-check-circle available database-status-icon"
-                           aria-hidden="true"></i>
-                        <i ng-show="!database.opened" class="fa fa-minus-circle unavailable database-status-icon"
-                           aria-hidden="true"></i>
+                    <div class="database-row">
                         <span style="font-weight: bold">{{database.description}}:</span>
-                        <span>{{database.location}}</span>
+                        <span ng-if="!database.opened">{{database.location}}</span>
+                        <a ng-if="database.opened" ng-href="/databases/{{database.uuid}}">{{database.location}}</a>
                     </div>
                 </td>
                 <td>
-                    <div ng-show="database.opened">
-                        <a ng-href="/databases/{{database.uuid}}">Available</a>
-                    </div>
-                    <div ng-show="!database.opened">
-                        <span>Stopped</span>
-                    </div>
+                    <input type="checkbox" toggle-checkbox ng-model="database.opened" ng-change="databasesCtrl.startOrStop(database)" data-style="animation-disabled">
                 </td>
                 <td>
-                    <span class="fa fa-lg fa-trash" title="Remove" ng-click="databasesCtrl.deleteDB(database)"></span>
-                    <span class="fa fa-lg fa-eject" ng-show="database.opened" ng-click="databasesCtrl.startOrStop(database, false)" title="Stop"></span>
-                    <span class="fa fa-lg fa-play" ng-show="!database.opened" ng-click="databasesCtrl.startOrStop(database, true)" title="Play"></span>
+                    <button style="height: 34px;" class="btn btn-danger fa fa-lg fa-trash" ng-click="databasesCtrl.deleteDB(database)">
+                    </button>
                 </td>
             </tr>
             </tbody>

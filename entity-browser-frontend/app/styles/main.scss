@@ -390,3 +390,12 @@ a {
   width: 50%;
   z-index: 2000;
 }
+
+.database-row {
+  padding-top: 6px;
+}
+
+.animation-disabled .toggle-group {
+  transition: none;
+  -webkit-transition: none;
+}

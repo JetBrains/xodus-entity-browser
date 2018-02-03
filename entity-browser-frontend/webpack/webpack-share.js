@@ -27,6 +27,7 @@ function getStyleLoaders() {
       include: [
         path.resolve(projectDirectory, 'app'),
         path.resolve(projectDirectory, 'node_modules/jquery-ui'),
+        path.resolve(projectDirectory, 'node_modules/bootstrap-toggle'),
         path.resolve(projectDirectory, 'node_modules/ui-select')
       ],
       loader: 'style-loader!css-loader'
