@@ -71,6 +71,7 @@ require('./service/entity-type');
 require('./service/entity');
 require('./service/navigation');
 require('./service/confirmation');
+require('./service/alert');
 require('./controller/confirmation-dialog');
 require('./controller/data-view');
 require('./controller/search');
@@ -83,6 +84,7 @@ require('./controller/setup/db-dialog');
 require('./controller/databases');
 require('./controller/database');
 require('./controller/entity');
+require('./controller/alert');
 
 require('./directive/form-view');
 require('./directive/data-view');

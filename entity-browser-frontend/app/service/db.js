@@ -2,13 +2,14 @@ angular.module('xodus')
     .service('databaseService', [
         '$http',
         '$q',
-        '$route',
-        function ($http, $q, $route) {
+        'alert',
+        function ($http, $q, alert) {
             var service = this;
             service.getDatabases = getDatabases;
             service.getTypes = getTypes;
             service.update = update;
             service.deleteDB = deleteDB;
+            service.startOrStop = startOrStop;
             service.databases = null;
 
             function getDatabases() {
@@ -38,6 +39,29 @@ angular.module('xodus')
                     service.databases.push(newDB);
                     return newDB;
                 });
+            }
+
+            function startOrStop(db, isStart) {
+                return $http.post('/api/dbs/' + db.uuid, db, {
+                    params: {
+                        op: isStart ? "start" : "stop"
+                    }
+                }).then(function (response) {
+                    var msg = isStart ? 'started' : 'stopped';
+                    if (isStart !== response.data.opened) {
+                        alert.error('Database is not ' + msg);
+                    } else {
+                        alert.success('Database is ' + msg);
+                    }
+                    var oldDb = service.databases.find(function (oldDb) {
+                        return oldDb.uuid === db.uuid;
+                    });
+                    angular.extend(oldDb, response.data);
+                    return response;
+                }, function () {
+                    var msg = isStart ? 'started' : 'stopped';
+                    alert.error('Database is not ' + msg);
+                }).catch(alert.showHttpError);
             }
 
             function getTypes(db) {

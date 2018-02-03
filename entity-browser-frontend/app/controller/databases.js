@@ -54,6 +54,12 @@ angular.module('xodus').controller('DatabasesController', [
                 });
             };
 
+            databasesCtrl.startOrStop = function (database, isStart) {
+                databaseService.startOrStop(database, isStart).then(function () {
+                    $route.reload();
+                });
+            };
+
             function confirmDelete(db, callback) {
                 return confirmationService({
                     label: 'Delete database',

@@ -381,3 +381,12 @@ a {
 .database-status-icon {
   font-size: 1.4em !important;
 }
+
+.custom-alerts {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 0);
+  top: 20px;
+  width: 50%;
+  z-index: 2000;
+}

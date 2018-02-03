@@ -36,13 +36,13 @@
                         <a ng-href="/databases/{{database.uuid}}">Available</a>
                     </div>
                     <div ng-show="!database.opened">
-                        <span>Unavailable</span>
+                        <span>Stopped</span>
                     </div>
                 </td>
                 <td>
                     <span class="fa fa-lg fa-trash" title="Remove" ng-click="databasesCtrl.deleteDB(database)"></span>
-                    <span class="fa fa-lg fa-eject" ng-show="database.opened" title="Eject"></span>
-                    <span class="fa fa-lg fa-play" ng-show="!database.opened" title="Play"></span>
+                    <span class="fa fa-lg fa-eject" ng-show="database.opened" ng-click="databasesCtrl.startOrStop(database, false)" title="Stop"></span>
+                    <span class="fa fa-lg fa-play" ng-show="!database.opened" ng-click="databasesCtrl.startOrStop(database, true)" title="Play"></span>
                 </td>
             </tr>
             </tbody>

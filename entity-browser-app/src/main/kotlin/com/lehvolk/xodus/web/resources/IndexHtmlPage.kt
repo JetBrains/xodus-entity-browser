@@ -4,10 +4,9 @@ import spark.kotlin.Http
 
 class IndexHtmlPage : com.lehvolk.xodus.web.Resource {
 
-
     private val indexHtml by lazy {
         val inputStream = javaClass.getResourceAsStream("/static/index.html")
-        inputStream.reader().readText().intern()
+        inputStream.reader().readText()
     }
 
     override fun registerRouting(http: Http) {

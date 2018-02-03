@@ -28,10 +28,11 @@ object JsonTransformer : ResponseTransformer {
         return mapper.writeValueAsString(model)
     }
 }
+const val accepts = "application/json"
 
 
 inline fun <reified T> Http.safePost(path: String = "", crossinline executor: RouteHandler.(T) -> Any) {
-    post(path, "application/json") {
+    post(path, accepts) {
         val t = mapper.readValue(request.body(), T::class.java)
         JsonTransformer.render(executor(t))
     }
@@ -44,7 +45,7 @@ fun Http.safePost(path: String = "", executor: RouteHandler.() -> Any) {
 }
 
 inline fun <reified T> Http.safePut(path: String, crossinline executor: RouteHandler.(T) -> Any) {
-    put(path, "application/json", JsonTransformer) {
+    put(path, accepts, JsonTransformer) {
         val t = mapper.readValue(request.body(), T::class.java)
         JsonTransformer.render(executor(t))
     }
@@ -52,13 +53,13 @@ inline fun <reified T> Http.safePut(path: String, crossinline executor: RouteHan
 
 
 fun Http.safeGet(path: String = "", executor: RouteHandler.() -> Any) {
-    get(path, "application/json") {
+    get(path, accepts) {
         JsonTransformer.render(executor())
     }
 }
 
 fun Http.safeDelete(path: String = "", executor: RouteHandler.() -> Any) {
-    delete(path, "application/json") {
+    delete(path, accepts) {
         JsonTransformer.render(executor())
     }
 }
@@ -104,6 +105,10 @@ object HttpServer : KLogging() {
                 logger.debug("error parsing request path or query parameter", e)
                 response.status(HttpURLConnection.HTTP_BAD_REQUEST)
             }
+            exception(Exception::class.java) { e, _, _ ->
+                logger.error("unexpected exception", e)
+            }
+
             internalServerError {
                 "Sorry, something went wrong. Check server logs"
             }
