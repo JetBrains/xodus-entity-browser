@@ -18,7 +18,7 @@ private object OS : KLogging() {
 
     fun launchBrowser(port: Int) {
         val url = "http://$hostName:$port"
-        logger.info("try to open browser for '{}'", url);
+        logger.info { "try to open browser for '$url'" }
         try {
             val osName = "os.name".system()
             if (osName.startsWith("Mac OS")) {

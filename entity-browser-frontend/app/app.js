@@ -3,13 +3,15 @@ require('angular');
 
 require('angular-route/angular-route');
 require('angular-sanitize/angular-sanitize');
-require('ui-select/dist/select.css');
-require('./styles/main.scss');
 require('bootstrap');
 require('angular-ui-bootstrap');
 require('ui-select');
-require('bootstrap-toggle/css/bootstrap-toggle.css');
 require('bootstrap-toggle/js/bootstrap-toggle.js');
+
+require('bootstrap/dist/css/bootstrap.css');
+require('ui-select/dist/select.css');
+require('bootstrap-toggle/css/bootstrap-toggle.css');
+require('./styles/main.scss');
 
 require('font-awesome-loader');
 

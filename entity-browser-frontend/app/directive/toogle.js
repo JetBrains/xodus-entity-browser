@@ -1,5 +1,5 @@
 angular.module('xodus')
-    .directive('toggleCheckbox', ['$timeout', function ($timeout) {
+    .directive('toggleCheckbox', [function () {
         return {
             restrict: 'A',
             transclude: true,

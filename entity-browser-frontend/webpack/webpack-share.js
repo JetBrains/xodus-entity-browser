@@ -12,36 +12,37 @@ function getJavaScriptLoaders() {
 }
 
 function getStyleLoaders() {
-  return [
-    {
-      test: /\.scss$/,
-      include: [path.resolve(projectDirectory, 'app')],
-      loaders: [
-        'style-loader',
-        'css-loader',
-        'autoprefixer?{browsers:["last 2 version", "safari 5", "ie > 9", "iOS > 7", "Android > 4"]}',
-        'sass-loader?outputStyle=expanded&includePaths[]=' + path.resolve('node_modules/ring-ui/components')
-      ]
-    }, {
-      test: /\.css$/,
-      include: [
-        path.resolve(projectDirectory, 'app'),
-        path.resolve(projectDirectory, 'node_modules/jquery-ui'),
-        path.resolve(projectDirectory, 'node_modules/bootstrap-toggle'),
-        path.resolve(projectDirectory, 'node_modules/ui-select')
-      ],
-      loader: 'style-loader!css-loader'
-    },
-      {
-          test: /\.woff2?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-          // Limiting the size of the woff fonts breaks font-awesome ONLY for the extract text plugin
-          // loader: "url?limit=10000"
-          loader: "url"
-      },
-      {
-          test: /\.(ttf|eot|svg)(\?[\s\S]+)?$/,
-          loader: 'file'
-      }
+    return [
+        {
+            test: /\.scss$/,
+            include: [path.resolve(projectDirectory, 'app')],
+            loaders: [
+                'style-loader',
+                'css-loader',
+                'autoprefixer?{browsers:["last 2 version", "safari 5", "ie > 9", "iOS > 7", "Android > 4"]}',
+                'sass-loader?outputStyle=expanded&includePaths[]=' + path.resolve('node_modules/ring-ui/components')
+            ]
+        }, {
+            test: /\.css$/,
+            include: [
+                path.resolve(projectDirectory, 'app'),
+                path.resolve(projectDirectory, 'node_modules/jquery-ui'),
+                path.resolve(projectDirectory, 'node_modules/bootstrap'),
+                path.resolve(projectDirectory, 'node_modules/bootstrap-toggle'),
+                path.resolve(projectDirectory, 'node_modules/ui-select')
+            ],
+            loader: 'style-loader!css-loader'
+        },
+        {
+            test: /\.woff2?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+            // Limiting the size of the woff fonts breaks font-awesome ONLY for the extract text plugin
+            // loader: "url?limit=10000"
+            loader: "url"
+        },
+        {
+            test: /\.(ttf|eot|svg)(\?[\s\S]+)?$/,
+            loader: 'file'
+        }
     ];
 }
 
