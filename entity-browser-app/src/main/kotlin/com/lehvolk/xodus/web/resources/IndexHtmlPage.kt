@@ -11,9 +11,11 @@ class IndexHtmlPage : com.lehvolk.xodus.web.Resource {
 
     override fun registerRouting(http: Http) {
         http.notFound {
-            response.status(200)
-            response.header("content-type", "text/html")
-            indexHtml
+            if (!request.pathInfo().startsWith("/api")) {
+                response.status(200)
+                response.header("content-type", "text/html")
+                indexHtml
+            }
         }
     }
 }

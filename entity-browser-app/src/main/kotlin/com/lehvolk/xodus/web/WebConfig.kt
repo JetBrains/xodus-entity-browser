@@ -46,7 +46,7 @@ fun Http.safePost(path: String = "", executor: RouteHandler.() -> Any) {
 }
 
 inline fun <reified T> Http.safePut(path: String, crossinline executor: RouteHandler.(T) -> Any) {
-    put(path, json, JsonTransformer) {
+    put(path, json) {
         val t = mapper.readValue(request.body(), T::class.java)
         response.type(json)
         JsonTransformer.render(executor(t))

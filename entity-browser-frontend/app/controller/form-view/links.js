@@ -1,8 +1,6 @@
 angular.module('xodus').controller('LinksController', ['$scope', 'entitiesService', 'EntityTypeService',
     function ($scope, entitiesService, types) {
-
         var linksCtrl = this;
-        var entities = entitiesService($scope.fullDatabase());
 
         $scope.uiLinks = $scope.state.current.links;
 
@@ -10,8 +8,8 @@ angular.module('xodus').controller('LinksController', ['$scope', 'entitiesServic
         linksCtrl.allEntityTypes = $scope.fullDatabase().types;
         linksCtrl.newLink = newLink();
 
-        linksCtrl.searchEntities = function (searchTerm) {
-            types.search($scope.fullDatabase(), linksCtrl.newLink.type.id, searchTerm, 0, 10).then(function (data) {
+        linksCtrl.searchEntities = function (q) {
+            types.search($scope.fullDatabase(), linksCtrl.newLink.type.id, q, 0, 10).then(function (data) {
                 linksCtrl.entities = data.items;
             });
         };
@@ -52,17 +50,18 @@ angular.module('xodus').controller('LinksController', ['$scope', 'entitiesServic
                 if (!wasFound) {
                     found = {
                         name: linksCtrl.newLink.name,
-                        totalSize: 0,
+                        totalCount: 0,
                         entities: []
                     };
                 }
                 var newEntity = toBackendLink(linksCtrl.newLink);
                 found.entities.push(newEntity);
-                found.totalSize++;
+                found.totalCount++;
 
                 if (!wasFound) {
                     $scope.state.current.links.push(found);
                 }
+
                 $scope.uiLinks.push(newEntity);
 
                 linksCtrl.newLink = newLink();
@@ -82,17 +81,11 @@ angular.module('xodus').controller('LinksController', ['$scope', 'entitiesServic
         function toBackendLink(link) {
             return {
                 name: link.name,
+                id: link.value.id,
                 typeId: link.type.id,
                 type: link.type.name,
-                entityId: link.value.id,
                 label: link.value.label
             }
-        }
-
-        function findSame(name) {
-            return $scope.uiLinks.find(function (link) {
-                return link.name === name;
-            });
         }
 
     }]);

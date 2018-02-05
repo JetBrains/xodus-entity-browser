@@ -34,7 +34,7 @@ interface EntitiesApi {
     fun get(@Path("uuid") uuid: String, @Path("id") id: String): Call<EntityView>
 
     @GET("/api/dbs/{uuid}/entities")
-    fun search(@Path("uuid") uuid: String, @Query("id") typeId: String, @Query("q") q: String?): Call<SearchPager>
+    fun search(@Path("uuid") uuid: String, @Query("id") typeId: Int, @Query("q") q: String?): Call<SearchPager>
 
     @GET("/api/dbs/{uuid}/entities/{id}/links/{linkName}")
     fun links(

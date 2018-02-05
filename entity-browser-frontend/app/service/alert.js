@@ -8,8 +8,7 @@ angular.module('xodus')
             alert.error = showMessage('danger');
 
             alert.showHttpError = function (data) {
-                var message = data;
-                alert.error(message);
+                alert.error('Server respond with: ' + data.status + ' - ' + data.statusText);
             };
 
             function showMessage(type) {

@@ -1,259 +1,228 @@
-angular.module('xodus').factory('entitiesService', ['$http', '$q', '$location', function ($http, $q, $location) {
+angular.module('xodus').factory('entitiesService', [
+    '$http',
+    '$q',
+    '$location',
+    function ($http, $q, $location) {
 
-    function newType(object) {
-        return angular.extend({}, {
-            displayName: null,
-            clazz: null,
-            readonly: false
-        }, object);
-    }
-
-    var integerPattern = '^[-+]{0,1}[0-9]*$';
-    var decimalPattern = '^[-+]?[0-9]+[.]{0,1}([0-9]+)?([eE][-+]?[0-9]+)?$';
-
-    var propertyTypes = [
-        newType({
-            displayName: 'String',
-            clazz: 'java.lang.String',
-            validation: {
-                pattern: null
-            }
-        }), newType({
-            displayName: 'Boolean',
-            clazz: 'java.lang.Boolean',
-            validation: {
-                pattern: null
-            }
-        }), newType({
-            displayName: 'Byte',
-            clazz: 'java.lang.Byte',
-            validation: {
-                pattern: integerPattern,
-                minValue: -128,
-                maxValue: 127
-            }
-        }), newType({
-            displayName: 'Short',
-            clazz: 'java.lang.Short',
-            validation: {
-                pattern: integerPattern,
-                minValue: -32768,
-                maxValue: 32767
-            }
-        }), newType({
-            displayName: 'Integer',
-            clazz: 'java.lang.Integer',
-            validation: {
-                pattern: integerPattern,
-                minValue: -2147483648,
-                maxValue: 2147483647
-            }
-        }), newType({
-            displayName: 'Long',
-            clazz: 'java.lang.Long',
-            validation: {
-                pattern: integerPattern
-            }
-        }), newType({
-            displayName: 'Double',
-            clazz: 'java.lang.Double',
-            validation: {
-                pattern: decimalPattern
-            }
-        }), newType({
-            displayName: 'Float',
-            clazz: 'java.lang.Float',
-            validation: {
-                pattern: decimalPattern
-            }
-        })
-    ];
-
-    return function (fullDB) {
-        function allTypes() {
-            return angular.copy(propertyTypes);
+        function newType(object) {
+            return angular.extend({}, {
+                displayName: null,
+                clazz: null,
+                readonly: false
+            }, object);
         }
 
-        function newProperty() {
-            return {
-                name: null,
-                value: null,
-                type: angular.copy(propertyTypes[0])
-            };
-        }
+        var integerPattern = /^[-+]{0,1}[0-9]*$/;
+        var decimalPattern = /^[-+]?[0-9]+[.]{0,1}([0-9]+)?([eE][-+]?[0-9]+)?$/;
 
-        function fromProperty(property) {
-            return angular.copy(property);
-        }
-
-        function newEntity(typeId) {
-            return {
-                type: propertyTypes[0],
-                typeId: typeId,
-                properties: [],
-                blobs: [],
-                links: []
-            };
-        }
-
-        function appendValidation(property) {
-            var result = propertyTypes.filter(function (p) {
-                return p.clazz === property.type.clazz;
-            });
-            if (result[0]) {
-                property.type.validation = angular.copy(result[0].validation);
-            }
-        }
-
-        function getPropertyItemKey(item) {
-            return item.name;
-        }
-
-        function getLinkItemKey(item) {
-            return item.name + '-' + item.typeId + '-' + item.entityId;
-        }
-
-        function getChangeSummary(initial, modified) {
-            var changeSummary = {
-                properties: {
-                    added: [],
-                    deleted: [],
-                    modified: []
-                },
-                links: {
-                    added: [],
-                    deleted: [],
-                    modified: []
+        var propertyTypes = [
+            newType({
+                displayName: 'String',
+                clazz: 'java.lang.String',
+                validation: {
+                    pattern: null
                 }
-            };
-            processChangeSummary(changeSummary, initial, modified, 'properties', sectionOf, getPropertyItemKey,
-                function (initialProperty, modifiedProperty) {
-                    if (initialProperty.type.clazz === modifiedProperty.type.clazz) {
-                        if (initialProperty.value !== modifiedProperty.value) {
-                            changeSummary.properties.modified.push(modifiedProperty);
+            }), newType({
+                displayName: 'Boolean',
+                clazz: 'java.lang.Boolean',
+                validation: {
+                    pattern: null
+                }
+            }), newType({
+                displayName: 'Byte',
+                clazz: 'java.lang.Byte',
+                validation: {
+                    pattern: integerPattern,
+                    minValue: -128,
+                    maxValue: 127
+                }
+            }), newType({
+                displayName: 'Short',
+                clazz: 'java.lang.Short',
+                validation: {
+                    pattern: integerPattern,
+                    minValue: -32768,
+                    maxValue: 32767
+                }
+            }), newType({
+                displayName: 'Integer',
+                clazz: 'java.lang.Integer',
+                validation: {
+                    pattern: integerPattern,
+                    minValue: -2147483648,
+                    maxValue: 2147483647
+                }
+            }), newType({
+                displayName: 'Long',
+                clazz: 'java.lang.Long',
+                validation: {
+                    pattern: integerPattern
+                }
+            }), newType({
+                displayName: 'Double',
+                clazz: 'java.lang.Double',
+                validation: {
+                    pattern: decimalPattern
+                }
+            }), newType({
+                displayName: 'Float',
+                clazz: 'java.lang.Float',
+                validation: {
+                    pattern: decimalPattern
+                }
+            })
+        ];
+
+        return function (fullDB) {
+            function allPropertyTypes() {
+                return angular.copy(propertyTypes);
+            }
+
+            function newProperty() {
+                return {
+                    name: null,
+                    value: null,
+                    type: angular.copy(propertyTypes[0])
+                };
+            }
+
+            function fromProperty(property) {
+                return angular.copy(property);
+            }
+
+            function newEntity(typeId) {
+                return {
+                    type: propertyTypes[0],
+                    typeId: typeId,
+                    properties: [],
+                    blobs: [],
+                    links: []
+                };
+            }
+
+            function appendValidation(property) {
+                var result = propertyTypes.filter(function (p) {
+                    return p.clazz === property.type.clazz;
+                });
+                if (result[0]) {
+                    property.type.validation = angular.copy(result[0].validation);
+                }
+            }
+
+            function getChangeSummary(propertiesBefore, propertiesAfter, linksChanges) {
+                return {
+                    properties: getPropertiesChanges(propertiesBefore, propertiesAfter),
+                    links: linksChanges,
+                    blobs: []
+                };
+            }
+
+            function save(entity, changeSummary) {
+                var isNew = !angular.isDefined(entity.id);
+                var path = 'api/dbs/' + fullDB.uuid + '/entities';
+                if (!isNew) {
+                    path = path + '/' + entity.id
+                }
+                if (isNew) {
+                    return $http.post(path, changeSummary, {
+                        typeId: entity.typeId
+                    });
+                }
+                return $http.put(path, changeSummary);
+
+            }
+
+            function findByKey(array, key, getKeyFn) {
+                var result = array.filter(function (item) {
+                    return getKeyFn(item) === key;
+                });
+                return result.length ? result[0] : null;
+            }
+
+            function join(namedArray1, namedArray2, getKeyFn) {
+                var joined = namedArray1.concat(namedArray2);
+                var uniqueNames = {};
+                angular.forEach(joined, function (item) {
+                    if (!uniqueNames[getKeyFn(item)]) {
+                        uniqueNames[getKeyFn(item)] = null;
+                    }
+                });
+                return {
+                    joined: joined,
+                    uniqueNames: Object.keys(uniqueNames)
+                };
+            }
+
+            function getPropertiesChanges(propertiesBefore, propertiesAfter) {
+                function getPropertyItemKey(item) {
+                    return item.name;
+                }
+
+                var result = [];
+                var joined = join(propertiesBefore, propertiesAfter, getPropertyItemKey);
+                angular.forEach(joined.uniqueNames, function (name) {
+                    var initialProperty = findByKey(propertiesBefore, name, getPropertyItemKey);
+                    var currentProperty = findByKey(propertiesAfter, name, getPropertyItemKey);
+                    if (initialProperty && currentProperty) {
+                        if (initialProperty.value !== currentProperty.value || initialProperty.type.clazz !== currentProperty.type.clazz) {
+                            result.push({
+                                name: currentProperty.name,
+                                newValue: currentProperty
+                            });
                         }
-                    } else {
-                        changeSummary.properties.deleted.push(initialProperty);
-                        changeSummary.properties.added.push(modifiedProperty);
+                    } else if (initialProperty) {
+                        result.push({
+                            name: initialProperty.name,
+                            newValue: null
+                        });
+                    } else if (currentProperty) {
+                        result.push({
+                            name: currentProperty.name,
+                            newValue: currentProperty
+                        });
                     }
                 });
-            processChangeSummary(changeSummary, initial, modified, 'links', entitiesOfSection, getLinkItemKey,
-                function (initialLink, modifiedLink) {
-                    if (initialLink.entityId !== modifiedLink.entityId ||
-                        initialLink.typeId !== modifiedLink.typeId) {
-                        changeSummary.links.modified.push(modifiedLink);
-                    }
-                });
-            return changeSummary;
-        }
-
-        function save(entity, changeSummary) {
-            var isNew = !angular.isDefined(entity.id);
-            var path = 'api/type/' + entity.typeId + '/entity';
-            if (!isNew) {
-                path = path + '/' + entity.id
+                return result;
             }
-            if (isNew) {
-                return $http.post(path, changeSummary);
-            }
-            return $http.put(path, changeSummary);
 
-        }
-
-        function findByKey(array, key, getKeyFn) {
-            var result = array.filter(function (item) {
-                return getKeyFn(item) === key;
-            });
-            return result.length ? result[0] : null;
-        }
-
-        function join(namedArray1, namedArray2, getKeyFn) {
-            var joined = namedArray1.concat(namedArray2);
-            var uniqueNames = {};
-            angular.forEach(joined, function (item) {
-                if (!uniqueNames[getKeyFn(item)]) {
-                    uniqueNames[getKeyFn(item)] = null;
+            function byId(typeId, entityId) {
+                if (!entityId) {
+                    return $q.when(newEntity(typeId));
                 }
-            });
+                return $http.get('api/dbs/' + fullDB.uuid + '/entities/' + typeId + '-' + entityId).then(function (response) {
+                    return response.data;
+                }, function () {
+                    $location.path('/error');
+                });
+            }
+
+            function linkedEntities(entityId, linkName, top, skip) {
+                return $http.get('api/dbs/' + fullDB.uuid + '/entities/' + entityId + '/links/' + linkName, {
+                    params: {pageSize: top, offset: skip}
+                }).then(function (response) {
+                    return response.data;
+                }, function () {
+                    $location.path('/error');
+                });
+            }
+
+            function deleteEntity(typeId, entityId) {
+                return $http['delete']('api/dbs/' + fullDB.uuid + '/entities/' + typeId + '-' + entityId);
+            }
+
             return {
-                joined: joined,
-                uniqueNames: Object.keys(uniqueNames)
-            };
-        }
-
-        function processChangeSummary(changeSummary, initial, modified, sectionName, sectionOf, getKeyFn, callback) {
-            var initialEntities = sectionOf(sectionName)(initial);
-            var modifiedEntities = sectionOf(sectionName)(modified);
-            var summaryEntities = changeSummary[sectionName];
-            var joined = join(initialEntities, modifiedEntities, getKeyFn);
-            angular.forEach(joined.uniqueNames, function (name) {
-                var initialProperty = findByKey(initialEntities, name, getKeyFn);
-                var modifiedProperty = findByKey(modifiedEntities, name, getKeyFn);
-                if (initialProperty && modifiedProperty) {
-                    callback(initialProperty, modifiedProperty);
-                } else if (initialProperty) {
-                    summaryEntities.deleted.push(initialProperty);
-                } else if (modifiedProperty) {
-                    summaryEntities.added.push(modifiedProperty);
-                }
-            });
-        }
-
-        function sectionOf(name) {
-            return function (item) {
-                return item[name];
-            };
-        }
-
-        function entitiesOfSection(name) {
-            return function (item) {
-                return flatMap(item[name], function (l) {
-                    return l.entities;
-                })
+                allPropertyTypes: allPropertyTypes,
+                newProperty: newProperty,
+                fromProperty: fromProperty,
+                appendValidation: appendValidation,
+                newEntity: newEntity,
+                getChangeSummary: getChangeSummary,
+                save: save,
+                byId: byId,
+                linkedEntities: linkedEntities,
+                deleteEntity: deleteEntity
             }
-        }
+        };
 
-        function flatMap(arr, lambda) {
-            return Array.prototype.concat.apply([], arr.map(lambda));
-        }
-
-        function byId(typeId, entityId) {
-            if (!entityId) {
-                return $q.when(newEntity(typeId));
-            }
-            return $http.get('api/dbs/' + fullDB.uuid + '/entities/' + typeId + '-' + entityId).then(function (response) {
-                return response.data;
-            }, function () {
-                $location.path('/error');
-            });
-        }
-
-        function linkedEntities(entityId, linkName, top, skip) {
-            return $http.get('api/dbs/' + fullDB.uuid + '/entities/' + entityId + '/links/' + linkName, {
-                params: {pageSize: top, offset: skip}
-            }).then(function (response) {
-                return response.data;
-            }, function () {
-                $location.path('/error');
-            });
-        }
-
-        function deleteEntity(typeId, entityId) {
-            return $http['delete']('api/dbs/' + fullDB.uuid + '/entities/' + typeId + '-' + entityId);
-        }
-
-        return {
-            allTypes: allTypes,
-            newProperty: newProperty,
-            fromProperty: fromProperty,
-            appendValidation: appendValidation,
-            newEntity: newEntity,
-            getChangeSummary: getChangeSummary,
-            save: save,
-            byId: byId,
-            linkedEntities: linkedEntities,
-            deleteEntity: deleteEntity
-        }
-    };
-
-}]);
+    }]
+);

@@ -18,17 +18,17 @@
                 <uib-alert type="danger" data-ng-show="formViewCtrl.error" close="formViewCtrl.closeError()">
                     {{formViewCtrl.error}}
                 </uib-alert>
-                <div class="panel panel-default" data-ng-controller="PropertiesController as propsCtrl">
+                <div class="panel panel-default" data-ng-controller="PropertiesController as propertiesCtrl">
                     <div class="panel-heading clearfix">
                         <h4 class="panel-title pull-left">Properties</h4>
                     </div>
                     <div class="panel-body">
-                        <div ng-show="properties.length === 0">
+                        <div ng-show="propertiesCtrl.properties.length === 0">
                             No properties
                         </div>
 
                         <form class="form-horizontal" name="propsForm" novalidate>
-                            <div class="row" style="font-weight: bold" data-ng-show="properties.length">
+                            <div class="row" style="font-weight: bold" data-ng-show="propertiesCtrl.properties.length">
                                 <div class="col-md-3">
                                     Name
                                 </div>
@@ -39,7 +39,7 @@
                                     Value
                                 </div>
                             </div>
-                            <div class="row" data-ng-repeat="property in properties">
+                            <div class="row" data-ng-repeat="property in propertiesCtrl.properties">
                                 <div class="col-md-3">
                                     <div data-ng-class="{'has-error':  hasError('propsForm', $index + 'name' )}">
                                         <input name="{{$index + 'name'}}"
@@ -48,7 +48,7 @@
                                                data-ng-required="true"
                                                data-ng-model="property.name"
                                                data-ng-disabled="!editMode"
-                                               data-ng-change="propsCtrl.checkDuplicates(property)"
+                                               data-ng-change="propertiesCtrl.checkDuplicates(property)"
                                                placeholder="Enter name"
                                                data-uib-tooltip="{{getMessage('propsForm', $index + 'name')}}"
                                                data-uib-tooltip-trigger="mouseenter">
@@ -58,9 +58,9 @@
                                     <ui-select data-ng-model="property.type"
                                                data-theme="bootstrap"
                                                data-ng-disabled="!editMode"
-                                               data-ng-change="propsCtrl.removeValue(property)">
+                                               data-ng-change="propertiesCtrl.removeValue(property)">
                                         <ui-select-match placeholder="Select property type">{{$select.selected.displayName}}</ui-select-match>
-                                        <ui-select-choices repeat="type in propsCtrl.allTypes track by type.displayName">
+                                        <ui-select-choices repeat="type in propertiesCtrl.allPropertyTypes track by type.displayName">
                                             <small data-ng-bind="type.displayName"></small>
                                         </ui-select-choices>
                                     </ui-select>
@@ -71,27 +71,27 @@
                                         <div>
                                             <input name="{{$index + 'value'}}"
                                                    class="form-control"
-                                                   data-ng-pattern="{{property.type.validation.pattern}}"
+                                                   data-ng-pattern="property.type.validation.pattern"
                                                    data-ng-model="property.value"
                                                    data-ng-required="true"
                                                    placeholder="Enter value"
-                                                   data-ng-change="propsCtrl.validateType(property)"
+                                                   data-ng-change="propertiesCtrl.validateType(property)"
                                                    data-ng-disabled="!editMode || property.type.readonly"
                                                    data-uib-tooltip="{{getMessage('propsForm', $index + 'value')}}"
                                                    data-uib-tooltip-trigger="mouseenter">
                                         </div>
                                     </div>
                                     <div class="col-md-2" data-ng-show="editMode">
-                                        <div data-ng-show="$index + 1 !== properties.length">
-                                            <a class="btn btn-danger" data-ng-click="propsCtrl.removeProperty(property)">
+                                        <div data-ng-show="$index + 1 !== propertiesCtrl.properties.length">
+                                            <a class="btn btn-danger" data-ng-click="propertiesCtrl.removeProperty(property)">
                                                 <i class="fa fa-trash"></i>
                                             </a>
                                         </div>
-                                        <div class="btn-group" data-ng-show="$index + 1 === properties.length">
-                                            <a class="btn btn-danger" data-ng-click="props.removeProperty(property)">
+                                        <div class="btn-group" data-ng-show="$index + 1 === propertiesCtrl.properties.length">
+                                            <a class="btn btn-danger" data-ng-click="propertiesCtrl.removeProperty(property)">
                                                 <i class="fa fa-trash"></i>
                                             </a>
-                                            <a class="btn btn-primary" data-ng-click="propsCtrl.newProperty()">
+                                            <a class="btn btn-primary" data-ng-click="propertiesCtrl.newProperty()">
                                                 <i class="fa fa-plus"></i>
                                             </a>
                                         </div>

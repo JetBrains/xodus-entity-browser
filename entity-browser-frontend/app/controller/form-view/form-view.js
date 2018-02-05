@@ -1,40 +1,33 @@
-angular.module('xodus').controller('FormViewController', ['$scope', 'entitiesService', '$timeout', 'navigationService',
-    function ($scope, entitiesService, $timeout, navigationService) {
+angular.module('xodus').controller('FormViewController', ['$scope', 'entitiesService', '$timeout', 'navigationService', 'alert',
+    function ($scope, entitiesService, $timeout, navigationService, alert) {
         var formViewCtrl = this;
         var entities = entitiesService($scope.fullDatabase());
         formViewCtrl.fullDatabase = $scope.fullDatabase();
         formViewCtrl.navigation = navigationService(formViewCtrl.fullDatabase);
 
-        formViewCtrl.changeSummary = {
-
-        };
-
         formViewCtrl.find = function (items, link) {
-            var found = null;
-            angular.forEach(items, function (item) {
-                if (item.name === link.name && item.typeId === link.typeId && item.entityId === link.entityId) {
-                    found = item;
-                }
+            return items.find(function (item) {
+                return item.name === link.name && item.id === link.id
             });
-            return found;
         };
+
         initialize();
 
         formViewCtrl.save = function () {
-            var state = $scope.state;
+            // var state = $scope.state;
             var propsForm = $scope.getForm('propsForm');
             $scope.makeDirty(propsForm);
             if (propsForm.$invalid) {
                 return;
             }
-            $scope.toggleView();
-            var changeSummary = entities.getChangeSummary(state.initial, state.current);
-            entities.save(state.initial, changeSummary).then(function (response) {
-                state.update(response.data);
-            }, function (response) {
-                formViewCtrl.error = response.data && response.data.msg || 'Unknown error';
+            var changeSummary = entities.getChangeSummary($scope.state.initial.properties, $scope.state.current.properties, []);
+
+            entities.save($scope.state.initial, changeSummary).then(function (response) {
+                alert.success($scope.state.initial.label + ' updated');
                 $scope.toggleView();
-            });
+                $scope.state.update(response.data);
+                return response;
+            }, alert.showHttpError);
         };
 
         formViewCtrl.closeError = function () {

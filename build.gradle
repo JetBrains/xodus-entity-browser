@@ -1,6 +1,6 @@
 buildscript {
     ext.xodusBuildTypeId = 'Xodus_Build'
-    ext.xodusMavenVersion = '1.1.0'
+    ext.xodusVersion = '1.1.0'
     ext.kotlinVersion = '1.2.21'
 
     repositories {

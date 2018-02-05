@@ -16,11 +16,9 @@ ext.libraries = [
         'org.glassfish.jersey.media:jersey-media-json-jackson'    : '2.22.1',
         'org.glassfish.jersey.containers:jersey-container-servlet': '2.22.1',
 
-//        'org.eclipse.jetty:jetty-runner'                          : '9.2.10.v20150310',
-
-        'org.jetbrains.xodus:xodus-environment'                   : xodusMavenVersion,
-        'org.jetbrains.xodus:xodus-entity-store'                  : xodusMavenVersion,
-        'org.jetbrains.xodus:xodus-openAPI'                       : xodusMavenVersion,
+        'org.jetbrains.xodus:xodus-environment'                   : xodusVersion,
+        'org.jetbrains.xodus:xodus-entity-store'                  : xodusVersion,
+        'org.jetbrains.xodus:xodus-openAPI'                       : xodusVersion,
 
         'org.mockito:mockito-all'                                 : '1.9.5',
         'junit:junit'                                             : '4.11',

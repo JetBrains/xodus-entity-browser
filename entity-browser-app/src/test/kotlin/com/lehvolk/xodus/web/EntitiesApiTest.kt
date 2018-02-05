@@ -57,8 +57,8 @@ class EntitiesApiTest : TestSupport() {
     fun cleanup() {
         try {
             File(location).delete()
-        }catch (e: Exception){
-            println("can't delete file" )
+        } catch (e: Exception) {
+            println("can't delete file")
             e.printStackTrace()
         }
     }
@@ -85,7 +85,7 @@ class EntitiesApiTest : TestSupport() {
 
     @Test
     fun `search entities`() {
-        val pager = entitiesResource.search(db.uuid, "0", null).execute().body()!!
+        val pager = entitiesResource.search(db.uuid, 0, null).execute().body()!!
         with(pager) {
             assertEquals(2, items.size)
 

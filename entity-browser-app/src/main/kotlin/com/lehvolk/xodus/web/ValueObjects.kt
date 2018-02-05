@@ -57,7 +57,7 @@ open class ChangeSummaryAction<T>(
         var newValue: T? = null
 ) : Named
 
-open class PropertiesChangeSummaryAction(name: String, newValue: EntityProperty) : ChangeSummaryAction<EntityProperty>(name, newValue)
+open class PropertiesChangeSummaryAction(name: String, newValue: EntityProperty?) : ChangeSummaryAction<EntityProperty>(name, newValue)
 open class LinkChangeSummaryAction(
         name: String,
         newValue: EntityLink,
@@ -73,9 +73,19 @@ data class ChangeSummary(
         var blobs: List<BlobChangeSummaryAction> = listOf()
 )
 
+//enum class EncryptionProvider {
+//    SALSA()
+//}
+
 data class DBSummary(
         var location: String,
         var key: String,
         var isOpened: Boolean = false,
         var uuid: String = UUID.randomUUID().toString()
+//        var encrypted: Boolean = false,
+//        var encryptionProvider: EncryptionProvider? = null,
+//        @Transient
+//        var encryptionKey: String? = null
+//        @Transient
+//        var initialization: Long? = null
 )
