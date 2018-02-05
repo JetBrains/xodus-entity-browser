@@ -3,9 +3,8 @@
             <entity-link
                     is-edit-mode="isEditMode"
                     title="{{itemlink.label}}"
-                    dbuuid="{{fullDatabase().uuid}}"
-                    typeid="{{itemlink.typeId}}"
-                    entityid="{{itemlink.entityId}}">
+                    db-uuid="fullDatabase().uuid"
+                    link="itemlink">
             </entity-link>
     </span>
     <a ng-show="hasMore()" title="Load more" data-ng-click="loadMore()">...</a>

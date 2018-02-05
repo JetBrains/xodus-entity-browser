@@ -11,15 +11,9 @@ class Entities : Resource, ResourceSupport {
 
     companion object : KLogging()
 
-    private val RouteHandler.entityId: ApiEntityId
+    private val RouteHandler.entityId: String
         get() {
-            val id = request.params("entityId")
-            val parts = id.split("-").also {
-                if (it.size != 2) {
-                    throw IllegalArgumentException()
-                }
-            }
-            return ApiEntityId(parts[0].toInt(), parts[1].toLong())
+            return request.params("entityId")
         }
 
     override fun registerRouting(http: Http) {
@@ -39,15 +33,13 @@ class Entities : Resource, ResourceSupport {
             }
 
             http.safeGet("/:entityId") {
-                val entityId = entityId
                 logger.debug { "getting entity by entity id '$entityId'" }
-                storeService.getEntity(entityId.typeId, entityId.localId)
+                storeService.getEntity(entityId)
             }
 
             http.safePut<ChangeSummary>("/:entityId") {
-                val entityId = entityId
                 logger.debug { "updating entity for '$entityId'. ChangeSummary: ${toString(it)}" }
-                storeService.updateEntity(entityId.typeId, entityId.localId, it)
+                storeService.updateEntity(entityId, it)
             }
 
             http.safePost<ChangeSummary>("/:typeId") {
@@ -57,21 +49,18 @@ class Entities : Resource, ResourceSupport {
             }
 
             http.safeDelete("/:entityId") {
-                val entityId = entityId
                 logger.debug { "deleting '$entityId'" }
-                storeService.deleteEntity(entityId.typeId, entityId.localId)
+                storeService.deleteEntity(entityId)
             }
 
             http.get("/:entityId/blob/:blobName") {
-                val entityId = entityId
                 logger.debug { "getting entity by entity id '$entityId'" }
                 response.header("content-type", "application/octet-stream;charset=utf-8")
-                storeService.getBlob(entityId.typeId, entityId.localId, request.params("blobName"),
+                storeService.getBlob(entityId, request.params("blobName"),
                         response.raw().outputStream)
             }
 
             http.safeGet("/:entityId/links/:linkName") {
-                val entityId = entityId
                 val linkName = request.params("linkName")
                 val offset = (request.queryParams("offset") ?: "0").toInt()
                 val pageSize = (request.queryParams("pageSize") ?: "0").toInt()
@@ -81,7 +70,7 @@ class Entities : Resource, ResourceSupport {
                 if (offset < 0 || pageSize < 0) {
                     response.status(400)
                 }
-                storeService.searchEntity(entityId.typeId, entityId.localId, linkName, offset, if (pageSize == 0) 100 else Math.min(pageSize, 1000))
+                storeService.searchEntity(entityId, linkName, offset, if (pageSize == 0) 100 else Math.min(pageSize, 1000))
             }
         }
     }
@@ -95,5 +84,3 @@ class Entities : Resource, ResourceSupport {
     }
 
 }
-
-data class ApiEntityId(val typeId: Int, val localId: Long)

@@ -15,7 +15,7 @@ fun Entity.asView(): EntityView {
 fun Entity.asLightView(): EntityView {
     return EntityView(
             id = id.toString(),
-            typeId = id.typeId.toString(),
+            typeId = id.typeId,
             label = label,
             type = type,
 
@@ -29,16 +29,15 @@ fun Entity.linkView(name: String, skip: Int = 0, top: Int = 100): LinkPager {
             name = name,
             skip = skip,
             top = top,
-            totalSize = links.size(),
+            totalCount = links.size(),
             entities = links.asSequence().drop(skip).take(top).map { link ->
-                val lightVO = link.asLightView()
                 val linkId = link.id
                 EntityLink(
+                        id = link.id.toString(),
                         name = name,
                         typeId = linkId.typeId,
-                        entityId = linkId.localId,
-                        label = lightVO.label,
-                        type = lightVO.type
+                        label = link.label,
+                        type = link.type
                 )
             }.toList()
     )

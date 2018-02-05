@@ -2,12 +2,14 @@ angular.module('xodus').directive('entityLink', function () {
     return {
         restrict: 'E',
         scope: {
+            link: '=',
+            dbUuid: '=',
             isEditMode: '=',
             onRemove: '&'
         },
         template: require('../templates/entity-link.html'),
         link: function (scope, element, attrs) {
-            scope.linkToSearch = '/databases/' + attrs.dbuuid + '/entities/' + attrs.typeid + '-' + attrs.entityid;
+            scope.linkToEntity = '/databases/' + scope.dbUuid + '/entities/' + scope.link.id;
             scope.title = attrs.title;
         }
     }

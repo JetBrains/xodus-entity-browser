@@ -17,12 +17,12 @@ angular.module('xodus').directive('linkedEntitiesView', [
                 scope.skip = 0;
 
                 scope.linkedEntities = scope.linksPager().entities;
-                scope.totalSize = scope.linksPager().totalSize;
+                scope.totalCount = scope.linksPager().totalCount;
                 scope.loadMore = loadMore;
                 scope.hasMore = hasMore;
 
                 function hasMore() {
-                    return scope.linkedEntities.length !== scope.totalSize;
+                    return scope.linkedEntities.length !== scope.totalCount;
                 }
 
                 function loadMore() {

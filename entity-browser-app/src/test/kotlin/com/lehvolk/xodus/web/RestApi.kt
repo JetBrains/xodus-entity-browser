@@ -26,3 +26,20 @@ interface DBApi {
     @POST("/api/dbs/{uuid}")
     fun startOrStop(@Path("uuid") uuid: String, @Query("op") operation: String): Call<DBSummary>
 }
+
+
+interface EntitiesApi {
+
+    @GET("/api/dbs/{uuid}/entities/{id}")
+    fun get(@Path("uuid") uuid: String, @Path("id") id: String): Call<EntityView>
+
+    @GET("/api/dbs/{uuid}/entities")
+    fun search(@Path("uuid") uuid: String, @Query("id") typeId: String, @Query("q") q: String?): Call<SearchPager>
+
+    @GET("/api/dbs/{uuid}/entities/{id}/links/{linkName}")
+    fun links(
+            @Path("uuid") uuid: String,
+            @Path("id") id: String,
+            @Path("linkName") linkName: String): Call<LinkPager>
+
+}

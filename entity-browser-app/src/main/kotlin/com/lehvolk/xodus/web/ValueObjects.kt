@@ -19,18 +19,18 @@ data class EntityProperty(
 ) : Named
 
 data class EntityLink(
+        var id: String,
         override var name: String,
         var typeId: Int,
         var type: String,
-        var label: String,
-        var entityId: Long = 0
+        var label: String
 ) : Named
 
 data class LinkPager(
         override var name: String,
         var skip: Int = 0,
         var top: Int = 100,
-        var totalSize: Long = 0L,
+        var totalCount: Long = 0L,
         var entities: List<EntityLink> = emptyList()
 ) : Named
 
@@ -42,7 +42,7 @@ data class EntityView(
         var id: String,
         var type: String,
         var label: String,
-        var typeId: String,
+        var typeId: Int,
         var properties: List<EntityProperty> = emptyList(),
         var links: List<LinkPager> = emptyList(),
         var blobs: List<EntityBlob> = emptyList()

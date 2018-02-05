@@ -51,19 +51,19 @@ class StoreService(location: String, key: String) {
         return readonly { tx -> tx.entityTypes.map { it.asEntityType(tx.store) }.sortedBy { it.name }.toTypedArray() }
     }
 
-    fun searchType(typeId: Int, term: String?, offset: Int, pageSize: Int): SearchPager {
+    fun searchType(typeId: Int, q: String?, offset: Int, pageSize: Int): SearchPager {
         return readonly { t ->
             val type = store.getEntityType(t, typeId)
-            val result = smartSearch(term, type, typeId, t)
+            val result = smartSearch(q, type, typeId, t)
             val totalCount = result.size()
             val items = result.skip(offset).take(pageSize).map { it.asView() }
             SearchPager(items.toList(), totalCount)
         }
     }
 
-    fun searchEntity(typeId: Int, entityId: Long, linkName: String, offset: Int, pageSize: Int): LinkPager {
+    fun searchEntity(id: String, linkName: String, offset: Int, pageSize: Int): LinkPager {
         return readonly { t ->
-            getEntity(typeId, entityId, t).linkView(linkName, offset, pageSize)
+            getEntity(id, t).linkView(linkName, offset, pageSize)
         }
     }
 
@@ -78,20 +78,20 @@ class StoreService(location: String, key: String) {
             }
             vo.links.forEach {
                 it.newValue?.let {
-                    val link = getEntity(it.typeId, it.entityId, t)
+                    val link = getEntity(it.id, t)
                     entity.addLink(it.name, link)
                 }
             }
-            entity.id.localId
+            entity.id.toString()
         }
-        return getEntity(typeId, entityId)
+        return getEntity(entityId)
     }
 
     @Throws(IOException::class)
-    fun getBlob(typeId: Int, entityId: Long, blobName: String, out: OutputStream) {
+    fun getBlob(id: String, blobName: String, out: OutputStream) {
         val tx = store.beginReadonlyTransaction()
         try {
-            val entity = getEntity(typeId, entityId, tx)
+            val entity = getEntity(id, tx)
             entity.getBlob(blobName)?.copyTo(out, bufferSize = 4096)
         } finally {
             tx.commit()
@@ -106,9 +106,9 @@ class StoreService(location: String, key: String) {
         }
     }
 
-    fun updateEntity(typeId: Int, entityId: Long, vo: ChangeSummary): EntityView {
-        val localId = transactional { t ->
-            val entity = getEntity(typeId, entityId, t)
+    fun updateEntity(id: String, vo: ChangeSummary): EntityView {
+        transactional { t ->
+            val entity = getEntity(id, t)
             vo.properties.forEach {
                 val newValue = it.newValue
                 if (newValue == null) {
@@ -123,31 +123,31 @@ class StoreService(location: String, key: String) {
                 val oldValue = it.oldValue
                 if (newValue == null) {
                     if (oldValue != null) {
-                        val linked = getEntity(oldValue.typeId, oldValue.entityId, t)
+                        val linked = getEntity(oldValue.id, t)
                         entity.deleteLink(it.name, linked)
                     } else if (it.totallyRemoved) {
                         entity.setLink(it.name, null)
                     }
                 } else {
-                    val linked = getEntity(newValue.typeId, newValue.entityId, t)
+                    val linked = getEntity(newValue.id, t)
                     entity.addLink(it.name, linked)
                 }
             }
-            entityId
+            id
         }
-        return getEntity(typeId, localId)
+        return getEntity(id)
     }
 
-    fun getEntity(typeId: Int, entityId: Long): EntityView {
+    fun getEntity(id: String): EntityView {
         return transactional { t ->
-            val entity: PersistentEntity = getEntity(typeId, entityId, t)
+            val entity: PersistentEntity = getEntity(id, t)
             entity.asView()
         }
     }
 
-    fun deleteEntity(id: Int, entityId: Long) {
+    fun deleteEntity(id: String) {
         transactional {
-            val entity = getEntity(id, entityId, it)
+            val entity = getEntity(id, it)
             entity.delete()
         }
     }
@@ -179,12 +179,12 @@ class StoreService(location: String, key: String) {
         }
     }
 
-    private fun getEntity(typeId: Int, entityId: Long, t: PersistentStoreTransaction): PersistentEntity {
+    private fun getEntity(id: String, t: PersistentStoreTransaction): PersistentEntity {
         try {
-            return t.getEntity(PersistentEntityId(typeId, entityId))
+            return t.getEntity(PersistentEntityId.toEntityId(id))
         } catch (e: RuntimeException) {
-            log.error("entity not found by type '$typeId' and entityId '$entityId'", e)
-            throw EntityNotFoundException(e, typeId, entityId)
+            log.error("entity not found by '$id'", e)
+            throw EntityNotFoundException(e, id)
         }
 
     }
@@ -195,10 +195,6 @@ class StoreService(location: String, key: String) {
         }
         val trimmed = value.trim { it <= ' ' }
         return if (trimmed.isEmpty()) null else trimmed
-    }
-
-    private fun Entity.has(named: Named): Boolean {
-        return this.propertyNames.contains(named.name)
     }
 
     private fun <T> transactional(call: (PersistentStoreTransaction) -> T): T {

@@ -24,7 +24,8 @@ open class TestSupport {
             it.localPort
         }
     }
-    private var retrofit = Retrofit.Builder().baseUrl("http://localhost:$port/").addConverterFactory(JacksonConverterFactory.create(mapper)).build()
+
+    protected val retrofit: Retrofit = Retrofit.Builder().baseUrl("http://localhost:$port/").addConverterFactory(JacksonConverterFactory.create(mapper)).build()
 
     protected val dbsResource by lazy {
         retrofit.create(DBsApi::class.java)

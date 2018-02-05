@@ -34,7 +34,7 @@ angular.module('xodus').controller('DataViewController', [
             };
             dataViewCtrl.hasLinksToDisplay = function (entity) {
                 return (entity.links || []).find(function (link) {
-                    return link.totalSize > 0;
+                    return link.totalCount > 0;
                 });
             };
 

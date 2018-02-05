@@ -86,6 +86,10 @@ class DatabasesTest : TestSupport() {
 
             types = dbResource.addDbType(uuid, EntityType(id = null, name = "NewType1")).execute()
             assertEquals(2, types.body()!!.size)
+
+            with(dbResource.allDbTypes(uuid)) {
+                assertEquals(2, types.body()!!.size)
+            }
         }
     }
 

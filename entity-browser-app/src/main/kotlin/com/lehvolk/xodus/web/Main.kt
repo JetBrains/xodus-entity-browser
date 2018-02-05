@@ -22,22 +22,22 @@ private object OS : KLogging() {
         try {
             val osName = "os.name".system()
             if (osName.startsWith("Mac OS")) {
-                logger.info("mac os detected");
+                logger.info("mac os detected")
                 val fileMgr = Class.forName("com.apple.eio.FileManager")
                 val openURL = fileMgr.getDeclaredMethod("openURL", String::class.java)
                 openURL.invoke(null, url)
             } else if (osName.startsWith("Windows")) {
-                logger.info("windows detected");
+                logger.info("windows detected")
                 Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url)
             } else {
                 // Unix or Linux
-                logger.info("linux detected");
+                logger.info("linux detected")
                 val browsers = arrayOf("google-chrome", "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape")
                 val selectedBrowser: String? = browsers.firstOrNull { Runtime.getRuntime().exec(arrayOf("which", it)).waitFor() == 0 }
                 if (selectedBrowser == null) {
                     throw Exception("Couldn't find web browser")
                 } else {
-                    logger.info("open url using browser {}", selectedBrowser);
+                    logger.info { "open url using browser $selectedBrowser" }
                     Runtime.getRuntime().exec(arrayOf(selectedBrowser, url))
                 }
             }

@@ -17,10 +17,9 @@ import spark.kotlin.ignite
 import java.net.HttpURLConnection
 
 
-val mapper: ObjectMapper = ObjectMapper().apply {
-    configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-    registerModule(KotlinModule())
-}
+val mapper: ObjectMapper = ObjectMapper()
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .registerModule(KotlinModule())
 
 object JsonTransformer : ResponseTransformer {
 
@@ -28,38 +27,43 @@ object JsonTransformer : ResponseTransformer {
         return mapper.writeValueAsString(model)
     }
 }
-const val accepts = "application/json"
 
+const val json = "application/json"
 
 inline fun <reified T> Http.safePost(path: String = "", crossinline executor: RouteHandler.(T) -> Any) {
-    post(path, accepts) {
+    post(path, json) {
         val t = mapper.readValue(request.body(), T::class.java)
+        response.type(json)
         JsonTransformer.render(executor(t))
     }
 }
 
 fun Http.safePost(path: String = "", executor: RouteHandler.() -> Any) {
     post(path) {
+        response.type(json)
         JsonTransformer.render(executor())
     }
 }
 
 inline fun <reified T> Http.safePut(path: String, crossinline executor: RouteHandler.(T) -> Any) {
-    put(path, accepts, JsonTransformer) {
+    put(path, json, JsonTransformer) {
         val t = mapper.readValue(request.body(), T::class.java)
+        response.type(json)
         JsonTransformer.render(executor(t))
     }
 }
 
 
 fun Http.safeGet(path: String = "", executor: RouteHandler.() -> Any) {
-    get(path, accepts) {
+    get(path, json) {
+        response.type(json)
         JsonTransformer.render(executor())
     }
 }
 
 fun Http.safeDelete(path: String = "", executor: RouteHandler.() -> Any) {
-    delete(path, accepts) {
+    delete(path, json) {
+        response.type(json)
         JsonTransformer.render(executor())
     }
 }
@@ -131,9 +135,9 @@ interface WithMessage {
     val msg: String
 }
 
-class EntityNotFoundException(cause: Throwable? = null, typeId: Int, entityId: Long) : RuntimeException(cause), WithMessage {
+class EntityNotFoundException(cause: Throwable? = null, id: String) : RuntimeException(cause), WithMessage {
 
-    override val msg: String = "Error getting entity by type '$typeId' and id='$entityId'"
+    override val msg: String = "Error getting entity by type '$id'"
 }
 
 class InvalidFieldException(cause: Throwable, fieldName: String, fieldValue: String) : RuntimeException(cause), WithMessage {
