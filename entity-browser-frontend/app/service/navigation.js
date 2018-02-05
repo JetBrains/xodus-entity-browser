@@ -15,7 +15,7 @@ angular.module('xodus').factory('navigationService', [
 
             function toEntity(typeId, entityId, edit) {
                 if (entityId) {
-                    $location.path(prefix + 'entities/' + typeId + '-' + entityId);
+                    $location.path(prefix + 'entities/' + entityId);
                     var params = {
                         typeId: null
                     };

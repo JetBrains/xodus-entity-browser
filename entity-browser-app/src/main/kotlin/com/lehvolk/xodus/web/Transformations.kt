@@ -75,7 +75,7 @@ private fun Entity.propertyView(name: String): EntityProperty {
 
 fun String.asEntityType(store: PersistentEntityStoreImpl): EntityType {
     val typeId = store.getEntityTypeId(store.currentTransaction!!, this, false)
-    return EntityType(typeId.toString(), this)
+    return EntityType(typeId, this)
 }
 
 fun EntityProperty.string2value(): Comparable<*>? {

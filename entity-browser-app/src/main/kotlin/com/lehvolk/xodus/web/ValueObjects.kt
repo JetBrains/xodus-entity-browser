@@ -48,7 +48,7 @@ data class EntityView(
         var blobs: List<EntityBlob> = emptyList()
 )
 
-data class EntityType(var id: String?, var name: String)
+data class EntityType(var id: Int?, var name: String)
 
 data class SearchPager(val items: List<EntityView>, val totalCount: Long)
 

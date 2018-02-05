@@ -116,7 +116,7 @@ angular.module('xodus').controller('DataViewController', [
         }
 
         function databaseType() {
-            var typeId = $routeParams.typeId ? $routeParams.typeId : dataViewCtrl.fullDatabase().types[0].id;
+            var typeId = $routeParams.typeId ? parseInt($routeParams.typeId) : dataViewCtrl.fullDatabase().types[0].id;
             return dataViewCtrl.fullDatabase().types.find(function (type) {
                 return type.id === typeId;
             });
