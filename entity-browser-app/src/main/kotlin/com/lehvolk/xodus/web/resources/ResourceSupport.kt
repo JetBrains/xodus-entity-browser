@@ -1,6 +1,7 @@
 package com.lehvolk.xodus.web.resources
 
 import com.lehvolk.xodus.web.DBSummary
+import com.lehvolk.xodus.web.DatabaseNotFoundException
 import com.lehvolk.xodus.web.db.Databases
 import com.lehvolk.xodus.web.db.JobsService
 import com.lehvolk.xodus.web.db.StoreService

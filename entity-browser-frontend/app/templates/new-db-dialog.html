@@ -4,9 +4,6 @@
     </div>
     <div class="modal-body">
         <div class="container-fluid">
-            <uib-alert type="danger" data-ng-show="dbDialogCtrl.error" close="closeError()">
-                {{error}}
-            </uib-alert>
             <form class="form-horizontal" novalidate ng-submit="dbDialogCtrl.saveDB()" name="database">
                 <div class="form-group"
                      data-ng-class="{'has-error':  (database.location.$invalid && database.location.$dirty)}">

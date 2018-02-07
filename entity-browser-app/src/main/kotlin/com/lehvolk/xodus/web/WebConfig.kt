@@ -96,21 +96,32 @@ object HttpServer : KLogging() {
             exception(EntityNotFoundException::class.java) { e, _, response ->
                 logger.error("getting entity failed", e)
                 response.status(HttpURLConnection.HTTP_NOT_FOUND)
+                response.body(JsonTransformer.render(e.toVO()))
             }
             exception(InvalidFieldException::class.java) { e, _, response ->
                 logger.error("error updating entity", e)
                 response.status(HttpURLConnection.HTTP_BAD_REQUEST)
+                response.body(JsonTransformer.render(e.toVO()))
             }
             exception(SearchQueryException::class.java) { e, request, response ->
                 logger.warn("error executing '${request.requestMethod()}' request for '${request.pathInfo()}'", e)
                 response.status(HttpURLConnection.HTTP_BAD_REQUEST)
+                response.body(JsonTransformer.render(e.toVO()))
             }
             exception(NumberFormatException::class.java) { e, _, response ->
                 logger.debug("error parsing request path or query parameter", e)
                 response.status(HttpURLConnection.HTTP_BAD_REQUEST)
+                response.body(JsonTransformer.render(e.toVO()))
             }
-            exception(Exception::class.java) { e, _, _ ->
+            exception(DatabaseNotFoundException::class.java) { e, _, response ->
+                logger.debug("can't handle database", e)
+                response.status(HttpURLConnection.HTTP_BAD_REQUEST)
+                response.body(JsonTransformer.render(e.toVO()))
+            }
+            exception(Exception::class.java) { e, _, response ->
                 logger.error("unexpected exception", e)
+                response.status(HttpURLConnection.HTTP_INTERNAL_ERROR)
+                response.body(JsonTransformer.render(e.toVO()))
             }
 
             internalServerError {
@@ -133,6 +144,8 @@ interface Resource {
 
 interface WithMessage {
     val msg: String
+
+    fun toVO() = RestError(msg)
 }
 
 class EntityNotFoundException(cause: Throwable? = null, id: String) : RuntimeException(cause), WithMessage {
@@ -144,3 +157,9 @@ class InvalidFieldException(cause: Throwable, fieldName: String, fieldValue: Str
 
     override val msg: String = "invalid value of property '$fieldName': '$fieldValue'"
 }
+
+class DatabaseNotFoundException(override val msg: String) : RuntimeException(), WithMessage
+
+data class RestError(val errorMessage: String)
+
+fun Exception.toVO() = RestError(message ?: "unknown error")

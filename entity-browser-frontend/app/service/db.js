@@ -7,7 +7,7 @@ angular.module('xodus')
             var service = this;
             service.getDatabases = getDatabases;
             service.getTypes = getTypes;
-            service.update = update;
+            service.add = add;
             service.deleteDB = deleteDB;
             service.startOrStop = startOrStop;
             service.databases = null;
@@ -34,11 +34,11 @@ angular.module('xodus')
                 });
             }
 
-            function update(db) {
-                return $http.post('/api/dbs', db).then(function (newDB) {
-                    service.databases.push(newDB);
-                    return newDB;
-                });
+            function add(db) {
+                return $http.post('/api/dbs', db).then(function (data) {
+                    service.databases.push(data.data);
+                    return data.data;
+                }).catch(alert.showHttpError);
             }
 
             function startOrStop(db) {

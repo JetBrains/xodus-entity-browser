@@ -3,14 +3,10 @@ angular.module('xodus').controller('DBDialogController', [
     '$http',
     '$uibModalInstance',
     'databaseService',
-    '$route',
-    function ($scope, $http, $modalInstance, databaseService, $route) {
+    'alert',
+    function ($scope, $http, $modalInstance, databaseService, alert) {
         var dbDialogCtrl = this;
         dbDialogCtrl.error = null;
-
-        dbDialogCtrl.onSuccess = function () {
-            $modalInstance.dismiss(true);
-        };
 
         dbDialogCtrl.cancel = function () {
             $modalInstance.dismiss('cancel');
@@ -37,15 +33,12 @@ angular.module('xodus').controller('DBDialogController', [
 
         dbDialogCtrl.saveDB = function () {
             if ($scope.database.$valid) {
-                databaseService.update(dbDialogCtrl.db).then(function (data) {
-                    $route.reload();
-                }, function () {
-                    dbDialogCtrl.error = 'Error while changing database. Changes not applied.';
+                databaseService.add(dbDialogCtrl.db).then(function (db) {
+                    if (db) {
+                        $modalInstance.close(db);
+                    }
                 });
             }
-        };
-        dbDialogCtrl.closeError = function () {
-            dbDialogCtrl.error = null;
         };
 
         var hubKey = 'jetPassServerDb';

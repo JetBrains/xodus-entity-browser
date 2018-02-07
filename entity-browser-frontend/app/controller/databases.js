@@ -7,7 +7,8 @@ angular.module('xodus').controller('DatabasesController', [
         'navigationService',
         'databaseService',
         'ConfirmationService',
-        function ($scope, http, $uibModal, $route, types, navigation, databaseService, confirmationService) {
+        'alert',
+        function ($scope, http, $uibModal, $route, types, navigation, databaseService, confirmationService, alert) {
             var databasesCtrl = this;
             var hubKey = 'jetPassServerDb';
             var youtrackKey = 'teamsysstore';
@@ -29,20 +30,16 @@ angular.module('xodus').controller('DatabasesController', [
                 return db;
             });
 
-            databasesCtrl.changeDB = function (database) {
-                databaseService.update(database);
-            };
-
             databasesCtrl.openDialog = function () {
                 $uibModal.open({
                     animation: true,
                     template: require('../templates/new-db-dialog.html'),
                     controller: 'DBDialogController',
                     controllerAs: 'dbDialogCtrl'
-                }).result.then(function (result) {
-                    if (result) {
-                        databaseService.databases.push(result.db);
-                    }
+                }).result.then(function (db) {
+                    alert.success('Database added: ' + db.location);
+                    $route.reload();
+                    return db;
                 });
             };
 
