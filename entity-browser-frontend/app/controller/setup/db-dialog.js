@@ -3,8 +3,7 @@ angular.module('xodus').controller('DBDialogController', [
     '$http',
     '$uibModalInstance',
     'databaseService',
-    'alert',
-    function ($scope, $http, $modalInstance, databaseService, alert) {
+    function ($scope, $http, $modalInstance, databaseService) {
         var dbDialogCtrl = this;
         dbDialogCtrl.error = null;
 
@@ -34,9 +33,7 @@ angular.module('xodus').controller('DBDialogController', [
         dbDialogCtrl.saveDB = function () {
             if ($scope.database.$valid) {
                 databaseService.add(dbDialogCtrl.db).then(function (db) {
-                    if (db) {
-                        $modalInstance.close(db);
-                    }
+                    return $modalInstance.close(db);
                 });
             }
         };

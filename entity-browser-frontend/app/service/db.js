@@ -35,9 +35,9 @@ angular.module('xodus')
             }
 
             function add(db) {
-                return $http.post('/api/dbs', db).then(function (data) {
-                    service.databases.push(data.data);
-                    return data.data;
+                return $http.post('/api/dbs', db).then(function (response) {
+                    service.databases.push(response.data);
+                    return response.data;
                 }).catch(alert.showHttpError);
             }
 

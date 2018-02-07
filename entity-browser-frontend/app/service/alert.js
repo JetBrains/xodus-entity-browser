@@ -1,18 +1,20 @@
 angular.module('xodus')
     .service('alert', [
         '$rootScope',
-        function ($rootScope) {
+        '$q',
+        function ($rootScope, $q) {
             var alert = this;
             alert.warning = showMessage('warn');
             alert.success = showMessage('info');
             alert.error = showMessage('danger');
 
-            alert.showHttpError = function (data) {
-                if ((data.data || {}).errorMessage) {
-                    alert.error(data.data.errorMessage);
+            alert.showHttpError = function (response) {
+                if ((response.data || {}).errorMessage) {
+                    alert.error(response.data.errorMessage);
                 } else {
-                    alert.error('Server respond with: ' + data.status + ' - ' + data.statusText);
+                    alert.error('Server respond with: ' + response.status + ' - ' + response.statusText);
                 }
+                return $q.reject(response);
             };
 
             function showMessage(type) {
