@@ -39,7 +39,7 @@ class DB : Resource, ResourceSupport {
 
             http.safeDelete("/entities") {
                 val id = request.queryParams("id").toInt()
-                val term = request.queryParams("term")
+                val term = request.queryParams("q")
                 jobsService.submit(storeService.deleteEntitiesJob(id, term))
             }
         }

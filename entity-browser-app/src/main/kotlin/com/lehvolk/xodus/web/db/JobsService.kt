@@ -1,24 +1,25 @@
 package com.lehvolk.xodus.web.db
 
+import jetbrains.exodus.entitystore.Entity
 import jetbrains.exodus.entitystore.EntityIterable
 import jetbrains.exodus.entitystore.PersistentEntityStore
-import org.slf4j.LoggerFactory
+import mu.KLogging
 import java.util.concurrent.Executors
 
 
-private val log = LoggerFactory.getLogger(JobsService::class.java)
-
 class JobsService {
+
+    companion object : KLogging()
 
     private val pool = Executors.newSingleThreadExecutor()
 
     fun submit(job: Job) {
-        log.info("submitting {} for execution", job)
+        logger.info { "submitting $job for execution" }
         pool.submit(job)
     }
 
     fun stop() {
-        log.info("stop jobs")
+        logger.info("stop jobs")
         pool.shutdown()
     }
 
@@ -26,58 +27,27 @@ class JobsService {
 
 abstract class Job : Runnable
 
-abstract class BulkJob : Job() {
+abstract class EntityBulkJob(private val store: PersistentEntityStore) : Job() {
 
-    var iteration = 1
-
-    override fun run() {
-        log.info("running {}", this)
-        var isFirst = true
-        while (shouldContinue() || isFirst) {
-            if (isFirst) {
-                isFirst = !isFirst
-            }
-            log.info("iteration {} of ", iteration, this)
-            newSubJob().run()
-            iteration++
-        }
-    }
-
-    abstract fun shouldContinue(): Boolean
-
-    abstract fun newSubJob(): Job
-
-}
-
-abstract class EntityBulkJob(internal val store: PersistentEntityStore) : BulkJob() {
+    companion object : KLogging()
 
     open val bulkSize = 1000
+    private var step = 1
 
-    var size = 0L
+    abstract val affectedEntities: EntityIterable
 
-    init {
-        resolveEntities()
-    }
+    abstract fun Entity.doAction()
 
-    abstract fun getAffectedEntities(): EntityIterable
-
-    private fun resolveEntities(): EntityIterable {
-        return getAffectedEntities().apply {
-            size = readonly(store) {
-                size()
+    override fun run() {
+        logger.info { "step $step of $this" }
+        try {
+            store.transactional {
+                affectedEntities.take(bulkSize).asSequence().forEach { it.doAction() }
             }
+        } catch (e: Exception) {
+            logger.error(e) { "error executing $step of $this" }
         }
+        step++
     }
-
-    override fun shouldContinue(): Boolean {
-        return size >= bulkSize
-    }
-
-    override fun newSubJob(): Job = newEntitySubJob(transactional(store) {
-        resolveEntities().take(bulkSize)
-    })
-
-    abstract fun newEntitySubJob(entities: EntityIterable): Job
-
 
 }

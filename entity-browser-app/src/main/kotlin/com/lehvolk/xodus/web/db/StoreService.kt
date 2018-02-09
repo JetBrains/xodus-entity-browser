@@ -155,23 +155,15 @@ class StoreService(location: String, key: String) {
     fun deleteEntitiesJob(typeId: Int, term: String?): Job {
         return object : EntityBulkJob(store) {
 
-            override fun getAffectedEntities(): EntityIterable {
-                return transactional { t ->
+            override fun Entity.doAction() {
+                delete()
+            }
+
+            override val affectedEntities: EntityIterable
+                get() = store.transactional {
                     val type = store.getEntityType(typeId)
-                    smartSearch(term, type, typeId, t)
+                    smartSearch(term, type, typeId, it)
                 }
-            }
-
-            override fun newEntitySubJob(entities: EntityIterable): Job {
-                return object : Job() {
-
-                    override fun run() {
-                        transactional { t ->
-                            entities.forEach { it.delete() }
-                        }
-                    }
-                }
-            }
 
             override fun toString(): String {
                 return "Bulk delete entities job for type $typeId and query '$term'"
@@ -198,20 +190,20 @@ class StoreService(location: String, key: String) {
     }
 
     private fun <T> transactional(call: (PersistentStoreTransaction) -> T): T {
-        return transactional(store, call)
+        return store.transactional(call)
     }
 
     private fun <T> readonly(call: (PersistentStoreTransaction) -> T): T {
-        return readonly(store, call)
+        return store.readonly(call)
     }
 
 }
 
 
-fun <T> transactional(store: PersistentEntityStore, call: (PersistentStoreTransaction) -> T): T {
-    return store.computeInTransaction { call(it as PersistentStoreTransaction) }
+fun <T> PersistentEntityStore.transactional(call: (PersistentStoreTransaction) -> T): T {
+    return computeInTransaction { call(it as PersistentStoreTransaction) }
 }
 
-fun <T> readonly(store: PersistentEntityStore, call: (PersistentStoreTransaction) -> T): T {
-    return store.computeInReadonlyTransaction { call(it as PersistentStoreTransaction) }
+fun <T> PersistentEntityStore.readonly(call: (PersistentStoreTransaction) -> T): T {
+    return computeInReadonlyTransaction { call(it as PersistentStoreTransaction) }
 }

@@ -6,7 +6,8 @@ angular.module('xodus').controller('SearchController', [
     '$uibModal',
     'navigationService',
     'ConfirmationService',
-    function (types, $location, $routeParams, $scope, $uibModal, navigation, confirmation) {
+    'alert',
+    function (types, $location, $routeParams, $scope, $uibModal, navigation, confirmation, alert) {
         var searchCtrl = this;
 
         searchCtrl.$onInit = function () {
@@ -22,13 +23,17 @@ angular.module('xodus').controller('SearchController', [
 
         searchCtrl.deleteSearchResult = function () {
             var locationTypeId = searchCtrl.selectedType.id;
-            types.search(locationTypeId, $scope.searchQuery).then(function (result) {
+            types.search(searchCtrl.fullDatabase, locationTypeId, searchCtrl.searchQuery).then(function (result) {
                 confirmation({
                     label: 'You are going to delete "' + result.totalCount + '" entities',
                     message: 'Are you sure to proceed?',
                     action: 'Proceed'
                 }, function () {
-                    types.bulkDelete(locationTypeId, $scope.searchQuery).catch()
+                    types.bulkDelete(searchCtrl.fullDatabase, locationTypeId, searchCtrl.searchQuery)
+                        .catch(alert.showHttpError)
+                        .then(function () {
+                            searchCtrl.onSearch();
+                        });
                 });
             })
         };

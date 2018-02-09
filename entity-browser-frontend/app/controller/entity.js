@@ -35,8 +35,7 @@ angular.module('xodus').controller('EntityController', [
                         id: null
                     });
                 } else {
-                    var id = entityId.split('-');
-                    return entitiesService(entityCtrl.fullDB).byId(id[0], id[1]);
+                    return entitiesService(entityCtrl.fullDB).byId(null, entityId);
                 }
             }).then(function (data) {
                 entityCtrl.entity = data;
