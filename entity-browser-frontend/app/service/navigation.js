@@ -24,7 +24,9 @@ angular.module('xodus').factory('navigationService', [
                     }
                     $location.search(params);
                 } else {
-                    $location.path(prefix + '/entities/new');
+                    $location.path(prefix + 'entities/new').search({
+                        typeId: typeId
+                    });
                 }
             }
 

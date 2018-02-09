@@ -2,7 +2,8 @@ angular.module('xodus')
     .controller('AlertCtrl', [
         '$scope',
         '$timeout',
-        function ($scope, $timeout) {
+        '$window',
+        function ($scope, $timeout, $window) {
             var alertCtrl = this;
             alertCtrl.closed = true;
             alertCtrl.type = 'error';
@@ -14,6 +15,7 @@ angular.module('xodus')
                 alertCtrl.type = args.type;
                 alertCtrl.message = args.message;
                 alertCtrl.closed = false;
+                alertCtrl.top = $window.scrollY + 20;
                 if (args.timeout) {
                     $timeout(alertCtrl.close, 3000);
                 }

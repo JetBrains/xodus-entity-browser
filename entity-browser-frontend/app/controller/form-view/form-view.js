@@ -56,10 +56,15 @@ angular.module('xodus').controller('FormViewController', ['$scope', 'entitiesSer
             var changeSummary = entities.getChanges($scope.state.initial.properties, $scope.state.current.properties, formViewCtrl.linkChanges);
 
             entities.save($scope.state.initial, changeSummary).then(function (response) {
-                alert.success($scope.state.initial.label + ' updated');
+                var savedEntity = response.data;
+                alert.success(savedEntity.label + ' updated');
                 $scope.toggleView();
-                $scope.state.update(response.data);
-                return response;
+                if ($scope.state.initial.id) {
+                    $scope.state.update(savedEntity);
+                    return response;
+                } else {
+                    formViewCtrl.navigation.toEntity(savedEntity.typeId, savedEntity.id, false);
+                }
             }, alert.showHttpError);
         }
 

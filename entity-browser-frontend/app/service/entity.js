@@ -118,14 +118,19 @@ angular.module('xodus').factory('entitiesService', [
             }
 
             function save(entity, changeSummary) {
-                var isNew = !angular.isDefined(entity.id);
+                var isNew = true;
+                if (entity.id) {
+                    isNew = false;
+                }
                 var path = 'api/dbs/' + fullDB.uuid + '/entities';
                 if (!isNew) {
                     path = path + '/' + entity.id
                 }
                 if (isNew) {
                     return $http.post(path, changeSummary, {
-                        typeId: entity.typeId
+                        params: {
+                            typeId: entity.typeId
+                        }
                     });
                 }
                 return $http.put(path, changeSummary);
@@ -189,7 +194,7 @@ angular.module('xodus').factory('entitiesService', [
                 if (!entityId) {
                     return $q.when(newEntity(typeId));
                 }
-                return $http.get('api/dbs/' + fullDB.uuid + '/entities/' + typeId + '-' + entityId).then(function (response) {
+                return $http.get('api/dbs/' + fullDB.uuid + '/entities/' + entityId).then(function (response) {
                     return response.data;
                 }, function () {
                     $location.path('/error');
@@ -206,8 +211,8 @@ angular.module('xodus').factory('entitiesService', [
                 });
             }
 
-            function deleteEntity(typeId, entityId) {
-                return $http['delete']('api/dbs/' + fullDB.uuid + '/entities/' + typeId + '-' + entityId);
+            function deleteEntity(entityId) {
+                return $http['delete']('api/dbs/' + fullDB.uuid + '/entities/' + entityId);
             }
 
             return {

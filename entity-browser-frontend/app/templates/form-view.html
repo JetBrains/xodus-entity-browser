@@ -21,7 +21,16 @@
                     </div>
                     <div class="panel-body">
                         <div ng-show="propertiesCtrl.properties.length === 0">
-                            No properties
+                            <div ng-show="!editMode">
+                                No properties
+                            </div>
+                            <div ng-show="editMode">
+                                Add property
+                                <a class="btn btn-primary" data-ng-click="propertiesCtrl.newProperty()">
+                                    <i class="fa fa-plus"></i>
+                                </a>
+                            </div>
+
                         </div>
 
                         <form class="form-horizontal" name="propsForm" novalidate>
@@ -56,8 +65,11 @@
                                                data-theme="bootstrap"
                                                data-ng-disabled="!editMode"
                                                data-ng-change="propertiesCtrl.removeValue(property)">
-                                        <ui-select-match placeholder="Select property type">{{$select.selected.displayName}}</ui-select-match>
-                                        <ui-select-choices repeat="type in propertiesCtrl.allPropertyTypes track by type.displayName">
+                                        <ui-select-match placeholder="Select property type">
+                                            {{$select.selected.displayName}}
+                                        </ui-select-match>
+                                        <ui-select-choices
+                                                repeat="type in propertiesCtrl.allPropertyTypes track by type.displayName">
                                             <small data-ng-bind="type.displayName"></small>
                                         </ui-select-choices>
                                     </ui-select>
@@ -80,12 +92,15 @@
                                     </div>
                                     <div class="col-md-2" data-ng-show="editMode">
                                         <div data-ng-show="$index + 1 !== propertiesCtrl.properties.length">
-                                            <a class="btn btn-danger" data-ng-click="propertiesCtrl.removeProperty(property)">
+                                            <a class="btn btn-danger"
+                                               data-ng-click="propertiesCtrl.removeProperty(property)">
                                                 <i class="fa fa-trash"></i>
                                             </a>
                                         </div>
-                                        <div class="btn-group" data-ng-show="$index + 1 === propertiesCtrl.properties.length">
-                                            <a class="btn btn-danger" data-ng-click="propertiesCtrl.removeProperty(property)">
+                                        <div class="btn-group"
+                                             data-ng-show="$index + 1 === propertiesCtrl.properties.length">
+                                            <a class="btn btn-danger"
+                                               data-ng-click="propertiesCtrl.removeProperty(property)">
                                                 <i class="fa fa-trash"></i>
                                             </a>
                                             <a class="btn btn-primary" data-ng-click="propertiesCtrl.newProperty()">
@@ -106,7 +121,8 @@
                     </div>
                     <div class="panel-body">
 
-                        <div class="row" style="font-weight: bold" ng-show="editMode || linksCtrl.currentLinks().length">
+                        <div class="row" style="font-weight: bold"
+                             ng-show="editMode || linksCtrl.currentLinks().length">
                             <div class="col-md-3">
                                 Name
                             </div>
@@ -129,11 +145,13 @@
                                 <div class="col-md-2">
                                     <ui-select data-ng-model="linksCtrl.newLink.type"
                                                data-theme="bootstrap"
-                                               data-ng-change="linksCtrl.resetNewEntityType()" >
+                                               data-ng-change="linksCtrl.resetNewEntityType()">
                                         <ui-select-match placeholder="Select type">
                                             {{$select.selected.name}}
                                         </ui-select-match>
-                                        <ui-select-choices repeat="type in linksCtrl.allEntityTypes | filter: $select.search track by type.id"  class="ui-select-choices-form-view">
+                                        <ui-select-choices
+                                                repeat="type in linksCtrl.allEntityTypes | filter: $select.search track by type.id"
+                                                class="ui-select-choices-form-view">
                                             <small data-ng-bind="type.name"></small>
                                         </ui-select-choices>
                                     </ui-select>
@@ -158,7 +176,8 @@
                                         </div>
                                     </div>
                                     <div class="col-md-2" data-ng-show="editMode">
-                                        <a class="btn btn-primary" data-ng-click="linksCtrl.addNewLink(linksCtrl.newLink, formViewCtrl.linkChanges)">
+                                        <a class="btn btn-primary"
+                                           data-ng-click="linksCtrl.addNewLink(linksCtrl.newLink, formViewCtrl.linkChanges)">
                                             Add link
                                         </a>
                                     </div>
@@ -186,7 +205,8 @@
                                     ></linked-entities-view>
                                 </div>
                                 <div class="col-md-2 pull-right" data-ng-show="editMode">
-                                    <a class="btn btn-danger" data-ng-click="linksCtrl.totallyRemoveLink(link.name, formViewCtrl.linkChanges)">
+                                    <a class="btn btn-danger"
+                                       data-ng-click="linksCtrl.totallyRemoveLink(link.name, formViewCtrl.linkChanges)">
                                         <i class="fa fa-trash"></i>
                                     </a>
                                 </div>

@@ -28,12 +28,13 @@
                 </li>
             </ul>
         </nav>
+
     </header>
     <div data-ng-view id="page-wrapper">
     </div>
 
     <div ng-controller="AlertCtrl as alertCtrl">
-        <div class="custom-alerts" ng-hide="alertCtrl.closed">
+        <div class="custom-alerts" ng-hide="alertCtrl.closed" ng-style="{top: alertCtrl.top}">
             <div class="alert alert-{{alertCtrl.type}} alert-dismissible" role="alert">
                 <button type="button" class="close" data-dismiss="alert" ng-click="alertCtrl.close()" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>

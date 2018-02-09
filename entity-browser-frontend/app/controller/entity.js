@@ -22,16 +22,17 @@ angular.module('xodus').controller('EntityController', [
                 var entityId = $routeParams.entityId;
                 entityCtrl.isNew = (entityId === 'new');
                 if (entityCtrl.isNew) {
-                    var typeId = $location.search().q;
+                    var typeId = parseInt($location.search().typeId);
                     var type = entityCtrl.fullDB.types.find(function (type) {
                         return type.id === typeId;
                     });
                     return $q.when({
                         typeId: type.id,
-                        type: type.name,
+                        type: type,
                         links: [],
                         properties: [],
-                        blobs: []
+                        blobs: [],
+                        id: null
                     });
                 } else {
                     var id = entityId.split('-');

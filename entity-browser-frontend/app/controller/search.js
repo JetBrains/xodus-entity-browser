@@ -9,7 +9,6 @@ angular.module('xodus').controller('SearchController', [
     function (types, $location, $routeParams, $scope, $uibModal, navigation, confirmation) {
         var searchCtrl = this;
 
-
         searchCtrl.$onInit = function () {
             syncCtrl();
         };
@@ -18,17 +17,18 @@ angular.module('xodus').controller('SearchController', [
         searchCtrl.onSearch = syncLocation(false);
 
         searchCtrl.newEntity = function () {
-            navigation.toEntity($scope.selectedType.id);
+            navigation(searchCtrl.fullDatabase).toEntity(searchCtrl.selectedType.id);
         };
 
         searchCtrl.deleteSearchResult = function () {
-            types.search($routeParams.typeId, $scope.searchQuery).then(function (result) {
+            var locationTypeId = searchCtrl.selectedType.id;
+            types.search(locationTypeId, $scope.searchQuery).then(function (result) {
                 confirmation({
                     label: 'You are going to delete "' + result.totalCount + '" entities',
                     message: 'Are you sure to proceed?',
                     action: 'Proceed'
                 }, function () {
-                    types.bulkDelete($routeParams.typeId, $scope.searchQuery).catch()
+                    types.bulkDelete(locationTypeId, $scope.searchQuery).catch()
                 });
             })
         };
@@ -59,8 +59,9 @@ angular.module('xodus').controller('SearchController', [
             var locationTypeId = $location.search().typeId;
             var result = null;
             if (locationTypeId) {
+                locationTypeId = locationTypeId.toString();
                 result = searchCtrl.fullDatabase.types.find(function (type) {
-                    return type.id === $location.search().typeId;
+                    return type.id === parseInt(locationTypeId);
                 }) || searchCtrl.fullDatabase.types[0];
             } else {
                 result = searchCtrl.fullDatabase.types[0];

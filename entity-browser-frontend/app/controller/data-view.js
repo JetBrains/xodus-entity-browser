@@ -50,14 +50,14 @@ angular.module('xodus').controller('DataViewController', [
                                 message: 'Are you sure you want to delete ' + item.label + '?',
                                 action: 'Delete',
                                 customAction: function () {
-                                    return entities.deleteEntity(item.typeId, item.id);
+                                    return entities.deleteEntity(item.id);
                                 }
                             };
                         }
                     }
                 }).result.then(function (result) {
                     if (result) {
-                        dataViewCtrl.onSearch();
+                        dataViewCtrl.refresh();
                     }
                 });
             };
@@ -116,9 +116,9 @@ angular.module('xodus').controller('DataViewController', [
         }
 
         function databaseType() {
-            var typeId = $routeParams.typeId ? parseInt($routeParams.typeId) : dataViewCtrl.fullDatabase().types[0].id;
+            var typeId = $routeParams.typeId ? $routeParams.typeId : dataViewCtrl.fullDatabase().types[0].id;
             return dataViewCtrl.fullDatabase().types.find(function (type) {
-                return type.id === typeId;
+                return type.id === parseInt(typeId);
             });
         }
     }]);

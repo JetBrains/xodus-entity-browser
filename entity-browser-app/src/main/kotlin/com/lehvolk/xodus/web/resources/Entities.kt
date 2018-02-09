@@ -42,7 +42,7 @@ class Entities : Resource, ResourceSupport {
                 storeService.updateEntity(entityId, it)
             }
 
-            http.safePost<ChangeSummary>("/:typeId") {
+            http.safePost<ChangeSummary> {
                 val typeId = request.queryParams("typeId").toInt()
                 logger.debug { "creating entity for '$entityId'. ChangeSummary: ${toString(it)}" }
                 storeService.newEntity(typeId, it)
