@@ -15,9 +15,6 @@
 
         <div ng-if="state">
             <div>
-                <uib-alert type="danger" data-ng-show="formViewCtrl.error" close="formViewCtrl.closeError()">
-                    {{formViewCtrl.error}}
-                </uib-alert>
                 <div class="panel panel-default" data-ng-controller="PropertiesController as propertiesCtrl">
                     <div class="panel-heading clearfix">
                         <h4 class="panel-title pull-left">Properties</h4>
@@ -109,7 +106,7 @@
                     </div>
                     <div class="panel-body">
 
-                        <div class="row" style="font-weight: bold" ng-show="editMode || uiLinks.length">
+                        <div class="row" style="font-weight: bold" ng-show="editMode || linksCtrl.currentLinks().length">
                             <div class="col-md-3">
                                 Name
                             </div>
@@ -123,7 +120,8 @@
                                     <div data-ng-class="{'has-error':  hasError('linksForm', 'name' )}">
                                         <input name="name" data-ng-type="text" class="form-control"
                                                placeholder="Enter name"
-                                               data-ng-required="true" data-ng-model="links.newLink.name"
+                                               data-ng-required="true"
+                                               data-ng-model="linksCtrl.newLink.name"
                                                data-uib-tooltip="{{getMessage('linksForm', 'name')}}"
                                                data-uib-tooltip-trigger="mouseenter">
                                     </div>
@@ -131,7 +129,7 @@
                                 <div class="col-md-2">
                                     <ui-select data-ng-model="linksCtrl.newLink.type"
                                                data-theme="bootstrap"
-                                               data-ng-change="linksCtrl.updateEntities()" >
+                                               data-ng-change="linksCtrl.resetNewEntityType()" >
                                         <ui-select-match placeholder="Select type">
                                             {{$select.selected.name}}
                                         </ui-select-match>
@@ -144,7 +142,7 @@
                                     <div class="form-group col-md-10"
                                          data-ng-class="{'has-error':  hasError('linksForm', 'value' )}">
                                         <div>
-                                            <ui-select data-ng-model="links.newLink.value"
+                                            <ui-select data-ng-model="linksCtrl.newLink.value"
                                                        data-theme="bootstrap"
                                                        data-ng-required="true"
                                                        name="value">
@@ -160,7 +158,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-2" data-ng-show="editMode">
-                                        <a class="btn btn-primary" data-ng-click="links.addNewLink()">
+                                        <a class="btn btn-primary" data-ng-click="linksCtrl.addNewLink(linksCtrl.newLink, formViewCtrl.linkChanges)">
                                             Add link
                                         </a>
                                     </div>
@@ -168,12 +166,12 @@
                             </form>
                             <hr>
                         </div>
-                        <div data-ng-show="uiLinks.length === 0">
+                        <div data-ng-show="linksCtrl.currentLinks().length === 0">
                             <div data-ng-class="{'no-link-text' : editMode}">
                                 No links
                             </div>
                         </div>
-                        <div class="row form-view-link-row" data-ng-repeat="link in uiLinks">
+                        <div class="row form-view-link-row" data-ng-repeat="link in linksCtrl.currentLinks()">
                             <div class="col-md-3">
                                 {{link.name}}
                             </div>
@@ -183,11 +181,12 @@
                                             full-database="formViewCtrl.fullDatabase"
                                             links-pager="link"
                                             entity="entity()"
+                                            on-remove="linksCtrl.onRemoveLink(formViewCtrl.linkChanges)"
                                             is-edit-mode="editMode"
                                     ></linked-entities-view>
                                 </div>
                                 <div class="col-md-2 pull-right" data-ng-show="editMode">
-                                    <a class="btn btn-danger" data-ng-click="links.removeLink(link)">
+                                    <a class="btn btn-danger" data-ng-click="linksCtrl.totallyRemoveLink(link.name, formViewCtrl.linkChanges)">
                                         <i class="fa fa-trash"></i>
                                     </a>
                                 </div>

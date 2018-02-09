@@ -341,7 +341,7 @@ a {
   margin-right: 4px;
   margin-bottom: 4px;
   white-space: nowrap;
-  padding: 0 6px;
+  padding: 4px 6px;
   border: 1px solid rgba(0, 0, 0, 0.475);
   border-radius: 3px;
   height: 26px;
@@ -351,8 +351,16 @@ a {
 
 .remove-link-icon {
   padding-left: 5px;
-  margin: 5px;
+  margin: 0 5px;
+  width: 16px;
+  height: 16px;
+}
+.remove-link-icon a {
   color: black;
+}
+
+.remove-link-icon.deleted {
+  display: none;
 }
 
 .database-status {
@@ -389,3 +397,12 @@ a {
   transition: none;
   -webkit-transition: none;
 }
+
+.deleted-entity-link {
+  color: rgba(0, 0, 0, .175)
+}
+
+.new-entity-link {
+  color: #5cb85c
+}
+

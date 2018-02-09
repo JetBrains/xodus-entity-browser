@@ -1,45 +1,8 @@
 angular.module('xodus').controller('FormViewController', ['$scope', 'entitiesService', '$timeout', 'navigationService', 'alert',
     function ($scope, entitiesService, $timeout, navigationService, alert) {
         var formViewCtrl = this;
-        var entities = entitiesService($scope.fullDatabase());
         formViewCtrl.fullDatabase = $scope.fullDatabase();
-        formViewCtrl.navigation = navigationService(formViewCtrl.fullDatabase);
-
-        formViewCtrl.find = function (items, link) {
-            return items.find(function (item) {
-                return item.name === link.name && item.id === link.id
-            });
-        };
-
-        initialize();
-
-        formViewCtrl.save = function () {
-            // var state = $scope.state;
-            var propsForm = $scope.getForm('propsForm');
-            $scope.makeDirty(propsForm);
-            if (propsForm.$invalid) {
-                return;
-            }
-            var changeSummary = entities.getChangeSummary($scope.state.initial.properties, $scope.state.current.properties, []);
-
-            entities.save($scope.state.initial, changeSummary).then(function (response) {
-                alert.success($scope.state.initial.label + ' updated');
-                $scope.toggleView();
-                $scope.state.update(response.data);
-                return response;
-            }, alert.showHttpError);
-        };
-
-        formViewCtrl.closeError = function () {
-            formViewCtrl.error = null;
-        };
-
-        formViewCtrl.revert = function () {
-            $scope.state.revert();
-            if (!formViewCtrl.isNew) {
-                $scope.toggleView();
-            }
-        };
+        var entities = entitiesService(formViewCtrl.fullDatabase);
 
         function initialize() {
             $scope.state = newState($scope.entity());
@@ -65,6 +28,7 @@ angular.module('xodus').controller('FormViewController', ['$scope', 'entitiesSer
         function forceReload() {
             var state = $scope.state;
             $scope.state = null;
+            formViewCtrl.linkChanges = [];
             $timeout(function () {
                 $scope.state = state;
                 updateContext();
@@ -76,4 +40,41 @@ angular.module('xodus').controller('FormViewController', ['$scope', 'entitiesSer
             formViewCtrl.isNew = !angular.isDefined(initial.id);
             formViewCtrl.label = (formViewCtrl.isNew ? 'New ' + initial.type : initial.label);
         }
+
+        function find(items, link) {
+            return items.find(function (item) {
+                return item.name === link.name && item.id === link.id
+            });
+        }
+
+        function save() {
+            var propsForm = $scope.getForm('propsForm');
+            $scope.makeDirty(propsForm);
+            if (propsForm.$invalid) {
+                return;
+            }
+            var changeSummary = entities.getChanges($scope.state.initial.properties, $scope.state.current.properties, formViewCtrl.linkChanges);
+
+            entities.save($scope.state.initial, changeSummary).then(function (response) {
+                alert.success($scope.state.initial.label + ' updated');
+                $scope.toggleView();
+                $scope.state.update(response.data);
+                return response;
+            }, alert.showHttpError);
+        }
+
+        function revert() {
+            $scope.state.revert();
+            if (!formViewCtrl.isNew) {
+                $scope.toggleView();
+            }
+        }
+
+        formViewCtrl.find = find;
+        formViewCtrl.save = save;
+        formViewCtrl.revert = revert;
+        formViewCtrl.linkChanges = [];
+        formViewCtrl.navigation = navigationService(formViewCtrl.fullDatabase);
+
+        initialize();
     }]);

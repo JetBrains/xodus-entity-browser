@@ -60,7 +60,7 @@ open class ChangeSummaryAction<T>(
 open class PropertiesChangeSummaryAction(name: String, newValue: EntityProperty?) : ChangeSummaryAction<EntityProperty>(name, newValue)
 open class LinkChangeSummaryAction(
         name: String,
-        newValue: EntityLink,
+        newValue: EntityLink?,
         var oldValue: EntityLink? = null,
         var totallyRemoved: Boolean = false
 ) : ChangeSummaryAction<EntityLink>(name, newValue)

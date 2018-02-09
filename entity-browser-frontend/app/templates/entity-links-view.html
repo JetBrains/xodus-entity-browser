@@ -4,6 +4,9 @@
                     is-edit-mode="isEditMode"
                     title="{{itemlink.label}}"
                     db-uuid="fullDatabase().uuid"
+                    on-remove="removeWithCallback(itemlink)"
+                    is-new="itemlink.isNew"
+                    is-deleted="itemlink.isDeleted"
                     link="itemlink">
             </entity-link>
     </span>

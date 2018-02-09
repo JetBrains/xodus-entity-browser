@@ -5,6 +5,8 @@ angular.module('xodus').directive('entityLink', function () {
             link: '=',
             dbUuid: '=',
             isEditMode: '=',
+            isNew: '=',
+            isDeleted: '=',
             onRemove: '&'
         },
         template: require('../templates/entity-link.html'),

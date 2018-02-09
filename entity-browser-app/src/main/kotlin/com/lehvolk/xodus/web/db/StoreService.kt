@@ -121,12 +121,12 @@ class StoreService(location: String, key: String) {
             vo.links.forEach {
                 val newValue = it.newValue
                 val oldValue = it.oldValue
-                if (newValue == null) {
+                if (it.totallyRemoved) {
+                    entity.deleteLinks(it.name)
+                } else if (newValue == null) {
                     if (oldValue != null) {
                         val linked = getEntity(oldValue.id, t)
                         entity.deleteLink(it.name, linked)
-                    } else if (it.totallyRemoved) {
-                        entity.setLink(it.name, null)
                     }
                 } else {
                     val linked = getEntity(newValue.id, t)

@@ -109,7 +109,7 @@ angular.module('xodus').factory('entitiesService', [
                 }
             }
 
-            function getChangeSummary(propertiesBefore, propertiesAfter, linksChanges) {
+            function getChanges(propertiesBefore, propertiesAfter, linksChanges) {
                 return {
                     properties: getPropertiesChanges(propertiesBefore, propertiesAfter),
                     links: linksChanges,
@@ -216,7 +216,7 @@ angular.module('xodus').factory('entitiesService', [
                 fromProperty: fromProperty,
                 appendValidation: appendValidation,
                 newEntity: newEntity,
-                getChangeSummary: getChangeSummary,
+                getChanges: getChanges,
                 save: save,
                 byId: byId,
                 linkedEntities: linkedEntities,

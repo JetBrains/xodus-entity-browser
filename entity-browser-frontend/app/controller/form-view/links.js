@@ -2,11 +2,10 @@ angular.module('xodus').controller('LinksController', ['$scope', 'entitiesServic
     function ($scope, entitiesService, types) {
         var linksCtrl = this;
 
-        $scope.uiLinks = $scope.state.current.links;
-
         linksCtrl.entities = [];
         linksCtrl.allEntityTypes = $scope.fullDatabase().types;
         linksCtrl.newLink = newLink();
+        linksCtrl.currentLinks = currentLinks;
 
         linksCtrl.searchEntities = function (q) {
             types.search($scope.fullDatabase(), linksCtrl.newLink.type.id, q, 0, 10).then(function (data) {
@@ -14,36 +13,43 @@ angular.module('xodus').controller('LinksController', ['$scope', 'entitiesServic
             });
         };
 
-        linksCtrl.updateEntities = function () {
+        linksCtrl.resetNewEntityType = function () {
             linksCtrl.newLink.value = null;
             linksCtrl.searchEntities(null);
         };
 
-        linksCtrl.removeLink = function (linkEntity) {
-            var foundEntity = $scope.find($scope.uiLinks, linkEntity);
-            if (foundEntity) {
-                var index1 = $scope.uiLinks.indexOf(foundEntity);
-                if (index1 >= 0) {
-                    $scope.uiLinks.splice(index1, 1);
-                }
-            }
+        linksCtrl.onRemoveLink = function (linksChanges) {
+            return function (linkedEntity) {
+                linksChanges.push({
+                    name: linkedEntity.name,
+                    oldValue: linkedEntity,
+                    newValue: null
+                });
+            };
+        };
 
-            var foundLink = $scope.state.current.links.find(function(l) {
-                return l.name === linkEntity.name;
+        linksCtrl.totallyRemoveLink = function (name, linksChanges) {
+            var foundEntity = currentLinks().find(function (link) {
+                return link.name === name;
             });
-            if (foundLink && foundLink.entities) {
-                var index2 = foundLink.entities.indexOf(linkEntity);
-                if (index2 >= 0) {
-                    foundLink.entities.splice(index2, 1);
+
+            if (foundEntity) {
+                var index = currentLinks().indexOf(foundEntity);
+                if (index >= 0) {
+                    currentLinks().splice(index, 1);
                 }
+                linksChanges.push({
+                    name: name,
+                    totallyRemoved: true
+                });
             }
         };
 
-        linksCtrl.addNewLink = function () {
+        linksCtrl.addNewLink = function (link, linksChanges) {
             var linksForm = $scope.linksForm;
             $scope.makeDirty(linksForm);
             if (linksForm.$valid) {
-                var found = $scope.state.current.links.find(function (link) {
+                var found = currentLinks().find(function (link) {
                     return link.name === linksCtrl.newLink.name;
                 });
                 var wasFound = !!found;
@@ -59,16 +65,22 @@ angular.module('xodus').controller('LinksController', ['$scope', 'entitiesServic
                 found.totalCount++;
 
                 if (!wasFound) {
-                    $scope.state.current.links.push(found);
+                    currentLinks().push(found);
                 }
 
-                $scope.uiLinks.push(newEntity);
-
                 linksCtrl.newLink = newLink();
-                linksCtrl.updateEntities();
+                linksCtrl.resetNewEntityType();
+                linksChanges.push({
+                    name: link.name,
+                    newValue: newEntity
+                });
                 linksForm.$setPristine(true);
             }
         };
+
+        function currentLinks() {
+            return $scope.state.current.links;
+        }
 
         function newLink() {
             return {
@@ -84,7 +96,8 @@ angular.module('xodus').controller('LinksController', ['$scope', 'entitiesServic
                 id: link.value.id,
                 typeId: link.type.id,
                 type: link.type.name,
-                label: link.value.label
+                label: link.value.label,
+                isNew: true
             }
         }
 

@@ -50,7 +50,7 @@ angular.module('xodus')
                 }).then(function (response) {
                     var msg = isStart ? 'started' : 'stopped';
                     if (isStart !== response.data.opened) {
-                        alert.error('Database is not ' + msg);
+                        alert.error('Database cannot be ' + msg);
                     } else {
                         alert.success('Database is ' + msg);
                     }

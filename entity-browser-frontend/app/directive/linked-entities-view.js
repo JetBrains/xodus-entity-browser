@@ -7,7 +7,8 @@ angular.module('xodus').directive('linkedEntitiesView', [
                 fullDatabase: '&',
                 entity: '&',
                 linksPager: '&',
-                isEditMode: '='
+                isEditMode: '=',
+                onRemove: '&'
             },
             replace: true,
             template: require('../templates/entity-links-view.html'),
@@ -17,12 +18,12 @@ angular.module('xodus').directive('linkedEntitiesView', [
                 scope.skip = 0;
 
                 scope.linkedEntities = scope.linksPager().entities;
-                scope.totalCount = scope.linksPager().totalCount;
                 scope.loadMore = loadMore;
                 scope.hasMore = hasMore;
+                scope.removeWithCallback = removeWithCallback;
 
                 function hasMore() {
-                    return scope.linkedEntities.length !== scope.totalCount;
+                    return scope.linkedEntities.length !== scope.linksPager().totalCount;
                 }
 
                 function loadMore() {
@@ -32,6 +33,21 @@ angular.module('xodus').directive('linkedEntitiesView', [
                         scope.linkedEntities = scope.linkedEntities.concat(linksPager.entities);
                         scope.skip = newSkip;
                     });
+                }
+
+                function removeWithCallback(linkedEntity) {
+                    if (scope.isEditMode) {
+                        var found = scope.linksPager().entities.find(function (entity) {
+                            return entity.id === linkedEntity.id;
+                        });
+                        if (found) {
+                            found.isDeleted = true;
+                            found.isNew = false;
+                            if (scope.onRemove()) {
+                                scope.onRemove()(linkedEntity);
+                            }
+                        }
+                    }
                 }
             }
         };
