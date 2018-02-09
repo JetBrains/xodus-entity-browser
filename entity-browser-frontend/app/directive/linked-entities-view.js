@@ -15,7 +15,7 @@ angular.module('xodus').directive('linkedEntitiesView', [
             link: function (scope) {
                 var entities = entitiesService(scope.fullDatabase());
                 scope.top = 50;
-                scope.skip = 0;
+                var skip = scope.linksPager().entities.length;
 
                 scope.linkedEntities = scope.linksPager().entities;
                 scope.loadMore = loadMore;
@@ -23,21 +23,26 @@ angular.module('xodus').directive('linkedEntitiesView', [
                 scope.removeWithCallback = removeWithCallback;
 
                 function hasMore() {
-                    return scope.linkedEntities.length !== scope.linksPager().totalCount;
+                    return notNewLinks().length !== scope.linksPager().totalCount;
                 }
 
                 function loadMore() {
                     var entity = scope.entity();
-                    var newSkip = scope.skip + 100;
-                    entities.linkedEntities(entity.id, scope.linksPager().name, scope.top, newSkip).then(function (linksPager) {
-                        scope.linkedEntities = scope.linkedEntities.concat(linksPager.entities);
-                        scope.skip = newSkip;
+                    entities.linkedEntities(entity.id, scope.linksPager().name, scope.top, skip).then(function (linksPager) {
+                        Array.prototype.push.apply(scope.linkedEntities, linksPager.entities);
+                        skip = notNewLinks().length;
                     });
+                }
+
+                function notNewLinks() {
+                    return scope.linkedEntities.filter(function (link) {
+                        return !link.isNew;
+                    })
                 }
 
                 function removeWithCallback(linkedEntity) {
                     if (scope.isEditMode) {
-                        var found = scope.linksPager().entities.find(function (entity) {
+                        var found = scope.linkedEntities.find(function (entity) {
                             return entity.id === linkedEntity.id;
                         });
                         if (found) {

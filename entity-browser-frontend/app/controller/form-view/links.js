@@ -61,8 +61,7 @@ angular.module('xodus').controller('LinksController', ['$scope', 'entitiesServic
                     };
                 }
                 var newEntity = toBackendLink(linksCtrl.newLink);
-                found.entities.push(newEntity);
-                found.totalCount++;
+                found.entities.splice(0, 0, newEntity);
 
                 if (!wasFound) {
                     currentLinks().push(found);
