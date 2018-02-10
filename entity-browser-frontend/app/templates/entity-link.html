@@ -1,6 +1,8 @@
-<span>
-    <a href="{{linkToEntity}}" ng-if="isEditMode !== true">{{title}}</a>
-    <span ng-if="isEditMode === true" class="bordered">
-        <a href="{{linkToEntity}}" ng-class="{'deleted-entity-link' : isDeleted , 'new-entity-link' : isNew}">{{title}}</a><span class="remove-link-icon"><a class="fa fa-times" ng-hide="isDeleted" ng-click="onRemove()"></a></span>
-    </span>
-</span>
+<div>
+    <div class="btn-group" role="group">
+        <a class="btn btn-default linked-entity"
+           href="{{linkToEntity}}"
+           ng-class="{'deleted-entity-link' : isDeleted , 'new-entity-link' : isNew}">{{title}}</a>
+        <button type="button" class="btn btn-default fa fa-times" ng-if="isEditMode && !isDeleted" ng-click="onRemove()"></button>
+    </div>
+</div>

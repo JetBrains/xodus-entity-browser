@@ -46,10 +46,9 @@ angular.module('xodus').directive('linkedEntitiesView', [
                             return entity.id === linkedEntity.id;
                         });
                         if (found) {
-                            found.isDeleted = true;
-                            found.isNew = false;
+                            found.isDeleted = !found.isDeleted;
                             if (scope.onRemove()) {
-                                scope.onRemove()(linkedEntity);
+                                scope.onRemove()(linkedEntity, found.isDeleted);
                             }
                         }
                     }
