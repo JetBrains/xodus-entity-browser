@@ -22,9 +22,9 @@ That's mean that if your application uses 'x' version of xodus and you modify da
 
 ## Run backend
 
-Command starts rest interfaces on 18080 port
+Run method `main` in Main.kt or execute
 
-    >./gradlew appRun
+    >./gradlew runShadow
 
 ## Run frontend
 

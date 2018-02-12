@@ -1,5 +1,7 @@
 package com.lehvolk.xodus.web.resources
 
+import com.lehvolk.xodus.web.JsonTransformer
+import com.lehvolk.xodus.web.RestError
 import spark.kotlin.Http
 
 class IndexHtmlPage : com.lehvolk.xodus.web.Resource {
@@ -15,6 +17,9 @@ class IndexHtmlPage : com.lehvolk.xodus.web.Resource {
                 response.status(200)
                 response.header("content-type", "text/html")
                 indexHtml
+            } else {
+                response.status(404)
+                JsonTransformer.render(RestError("${request.pathInfo()} - not found"))
             }
         }
     }

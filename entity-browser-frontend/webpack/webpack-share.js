@@ -20,7 +20,7 @@ function getStyleLoaders() {
                 'style-loader',
                 'css-loader',
                 'autoprefixer?{browsers:["last 2 version", "safari 5", "ie > 9", "iOS > 7", "Android > 4"]}',
-                'sass-loader?outputStyle=expanded&includePaths[]=' + path.resolve('node_modules/ring-ui/components')
+                'sass-loader?outputStyle=expanded'
             ]
         }, {
             test: /\.css$/,

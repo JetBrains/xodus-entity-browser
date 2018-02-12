@@ -11,7 +11,7 @@ require('bootstrap-toggle/js/bootstrap-toggle.js');
 require('bootstrap/dist/css/bootstrap.css');
 require('ui-select/dist/select.css');
 require('bootstrap-toggle/css/bootstrap-toggle.css');
-require('./styles/main.scss');
+require('./styles/main.css');
 
 require('font-awesome-loader');
 
@@ -72,7 +72,6 @@ angular.module('xodus').config(['$httpProvider', function ($httpProvider) {
 }]);
 
 
-require('./styles/main.scss');
 require('./service/db');
 require('./service/entity-type');
 require('./service/entity');
