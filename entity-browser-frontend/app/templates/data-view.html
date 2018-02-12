@@ -11,12 +11,12 @@
             <div class="row">
                 <div class="col-md-6">
                     <div data-ng-show="dataViewCtrl.pager.hasPagination()">
-                        <uib-pagination data-total-items="dataViewCtrl.pager.totalCount"
+                        <ul uib-pagination data-total-items="dataViewCtrl.pager.totalCount"
                                         data-ng-model="dataViewCtrl.pager.currentPage"
                                         data-ng-change="dataViewCtrl.pager.pageChanged()"
                                         data-items-per-page="{{dataViewCtrl.pageSize}}"
                                         max-size="5">
-                        </uib-pagination>
+                        </ul>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -87,9 +87,8 @@
                                     <tbody>
                                     <tr data-ng-repeat="p in item.links ">
                                         <td>{{p.name}}</td>
-                                        <td>
+                                        <td class="linked-entities">
                                             <linked-entities-view
-                                                    full-database="dataViewCtrl.fullDatabase()"
                                                     links-pager="p"
                                                     entity="item"
                                             ></linked-entities-view>
@@ -132,12 +131,12 @@
             </div>
 
             <div data-ng-show="dataViewCtrl.pager.hasPagination()">
-                <uib-pagination data-total-items="dataViewCtrl.pager.totalCount"
+                <ul uib-pagination data-total-items="dataViewCtrl.pager.totalCount"
                                 data-ng-model="dataViewCtrl.pager.currentPage"
                                 data-ng-change="dataViewCtrl.pager.pageChanged()"
                                 data-items-per-page="{{dataViewCtrl.pageSize}}"
                                 data-max-size="5">
-                </uib-pagination>
+                </ul>
             </div>
         </div>
     </div>

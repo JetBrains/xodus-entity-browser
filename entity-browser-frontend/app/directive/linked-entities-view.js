@@ -1,10 +1,10 @@
 angular.module('xodus').directive('linkedEntitiesView', [
     'entitiesService',
-    function (entitiesService) {
+    'currentDatabase',
+    function (entitiesService, currentDatabase) {
         return {
             restrict: 'E',
             scope: {
-                fullDatabase: '&',
                 entity: '&',
                 linksPager: '&',
                 isEditMode: '=',
@@ -13,7 +13,7 @@ angular.module('xodus').directive('linkedEntitiesView', [
             replace: true,
             template: require('../templates/entity-links-view.html'),
             link: function (scope) {
-                var entities = entitiesService(scope.fullDatabase());
+                var entities = entitiesService(currentDatabase.get());
                 scope.top = 50;
                 var skip = scope.linksPager().entities.length;
 

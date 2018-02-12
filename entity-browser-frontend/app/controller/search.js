@@ -7,29 +7,30 @@ angular.module('xodus').controller('SearchController', [
     'navigationService',
     'ConfirmationService',
     'alert',
-    function (types, $location, $routeParams, $scope, $uibModal, navigation, confirmation, alert) {
+    'currentDatabase',
+    function (types, $location, $routeParams, $scope, $uibModal, navigation, confirmation, alert, currentDatabase) {
         var searchCtrl = this;
 
         searchCtrl.$onInit = function () {
             syncCtrl();
         };
-
+        searchCtrl.fullDatabase = currentDatabase.get();
         searchCtrl.onTypeSelect = syncLocation(true);
         searchCtrl.onSearch = syncLocation(false);
 
         searchCtrl.newEntity = function () {
-            navigation(searchCtrl.fullDatabase).toEntity(searchCtrl.selectedType.id);
+            navigation(currentDatabase.get()).toEntity(searchCtrl.selectedType.id);
         };
 
         searchCtrl.deleteSearchResult = function () {
             var locationTypeId = searchCtrl.selectedType.id;
-            types.search(searchCtrl.fullDatabase, locationTypeId, searchCtrl.searchQuery).then(function (result) {
+            types.search(currentDatabase.get(), locationTypeId, searchCtrl.searchQuery).then(function (result) {
                 confirmation({
                     label: 'You are going to delete "' + result.totalCount + '" entities',
                     message: 'Are you sure to proceed?',
                     action: 'Proceed'
                 }, function () {
-                    types.bulkDelete(searchCtrl.fullDatabase, locationTypeId, searchCtrl.searchQuery)
+                    types.bulkDelete(currentDatabase.get(), locationTypeId, searchCtrl.searchQuery)
                         .catch(alert.showHttpError)
                         .then(function () {
                             searchCtrl.onSearch();
@@ -65,11 +66,11 @@ angular.module('xodus').controller('SearchController', [
             var result = null;
             if (locationTypeId) {
                 locationTypeId = locationTypeId.toString();
-                result = searchCtrl.fullDatabase.types.find(function (type) {
+                result = currentDatabase.get().types.find(function (type) {
                     return type.id === parseInt(locationTypeId);
-                }) || searchCtrl.fullDatabase.types[0];
+                }) || currentDatabase.get().types[0];
             } else {
-                result = searchCtrl.fullDatabase.types[0];
+                result = currentDatabase.get().types[0];
             }
             searchCtrl.selectedType = result;
             searchCtrl.searchQuery = $location.search().q;

@@ -2,20 +2,25 @@
     <div class="row">
         <form class="form" data-ng-submit="searchCtrl.onSearch()">
             <div class="form-group col-md-3">
-                <ui-select class="pull-right"
-                           data-ng-model="searchCtrl.selectedType"
-                           data-theme="bootstrap"
-                           data-ng-change="searchCtrl.onTypeSelect(searchCtrl.selectedType)"
-                           style="width: 100%; padding-right: 15px;"
-                >
-                    <ui-select-match placeholder="Select type">
-                        {{$select.selected.name}}
-                    </ui-select-match>
-                    <ui-select-choices
-                            repeat="type in searchCtrl.fullDatabase.types | filter: $select.search track by type.id" class="ui-select-choices-search">
-                        <small data-ng-bind="type.name"></small>
-                    </ui-select-choices>
-                </ui-select>
+                <div class="input-group">
+                    <ui-select class="pull-right select-type-with-add-button"
+                               data-ng-model="searchCtrl.selectedType"
+                               data-theme="bootstrap"
+                               data-ng-change="searchCtrl.onTypeSelect(searchCtrl.selectedType)"
+                               style="width: 100%;"
+                    >
+                        <ui-select-match placeholder="Select type">
+                            {{$select.selected.name}}
+                        </ui-select-match>
+                        <ui-select-choices
+                                repeat="type in searchCtrl.fullDatabase.types | filter: $select.search track by type.id" class="ui-select-choices-search">
+                            <small data-ng-bind="type.name"></small>
+                        </ui-select-choices>
+                    </ui-select>
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" ng-click=""><i class="fa fa-plus"></i></button>
+                    </div>
+                </div>
             </div>
             <div class="form-group col-md-7">
                 <div class="input-group">
@@ -37,7 +42,8 @@
             <div class="col-md-2">
                 <div class="btn-group pull-right">
                     <a class="btn btn-primary pull-left" data-ng-click="searchCtrl.newEntity()">New Entity</a>
-                    <a class="btn btn-danger pull-left" data-ng-click="searchCtrl.deleteSearchResult()">Delete results</a>
+                    <a class="btn btn-danger pull-left" data-ng-click="searchCtrl.deleteSearchResult()">Delete
+                        results</a>
                 </div>
             </div>
         </form>

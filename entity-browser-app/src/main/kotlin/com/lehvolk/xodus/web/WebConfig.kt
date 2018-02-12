@@ -87,8 +87,7 @@ object HttpServer : KLogging() {
             staticFiles.location("/static/")
             after {
                 logger.info {
-                    "'${request.requestMethod()} ${request.pathInfo()}' - ${response.status()} ${response.type()
-                            ?: ""} \n ${response.body()}"
+                    "'${request.requestMethod()} ${request.pathInfo()}' - ${response.status()} ${response.type() ?: ""}"
                 }
             }
             resources.forEach { it.registerRouting(this) }

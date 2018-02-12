@@ -3,17 +3,17 @@ angular.module('xodus').directive('formView', [
     '$location',
     'navigationService',
     'ConfirmationService',
-    function ($uibModal, $location, navigationService, confirmation) {
+    'currentDatabase',
+    function ($uibModal, $location, navigationService, confirmation, currentDatabase) {
         return {
             restrict: 'E',
             scope: {
-                fullDatabase: '&',
                 entity: '&'
             },
             replace: true,
             template: require('../templates/form-view.html'),
             link: function (scope, element) {
-                var navigation = navigationService(scope.fullDatabase());
+                var navigation = navigationService(currentDatabase.get());
 
                 scope.editMode = (scope.entity().id === null || $location.search().edit);
                 scope.toggleView = function () {

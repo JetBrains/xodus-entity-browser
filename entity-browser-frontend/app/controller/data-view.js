@@ -5,16 +5,16 @@ angular.module('xodus').controller('DataViewController', [
     '$scope',
     '$uibModal',
     '$routeParams',
-    'databaseService',
-    function (typeService, entitiesService, navigationService, $scope, $uibModal, $routeParams) {
+    'currentDatabase',
+    function (typeService, entitiesService, navigationService, $scope, $uibModal, $routeParams, currentDatabase) {
         var dataViewCtrl = this;
         dataViewCtrl.$onInit = function () {
-            var navigation = navigationService(dataViewCtrl.fullDatabase());
+            var navigation = navigationService(currentDatabase.get());
 
             dataViewCtrl.searchQuery = searchQuery();
             dataViewCtrl.pageSize = 50;
             dataViewCtrl.type = databaseType();
-            var entities = entitiesService(dataViewCtrl.fullDatabase());
+            var entities = entitiesService(currentDatabase.get());
 
             $scope.$on('$routeUpdate', function () {
                 dataViewCtrl.searchQuery = searchQuery();
@@ -83,7 +83,7 @@ angular.module('xodus').controller('DataViewController', [
                     var offset = (pageNo - 1) * dataViewCtrl.pageSize;
                     var self = this;
                     self.currentPage = pageNo;
-                    typeService.search(dataViewCtrl.fullDatabase(), dataViewCtrl.type.id, searchTerm, offset)
+                    typeService.search(currentDatabase.get(), dataViewCtrl.type.id, searchTerm, offset)
                         .then(function (data) {
                             self.items = data.items;
                             self.totalCount = data.totalCount;
@@ -116,8 +116,8 @@ angular.module('xodus').controller('DataViewController', [
         }
 
         function databaseType() {
-            var typeId = $routeParams.typeId ? $routeParams.typeId : dataViewCtrl.fullDatabase().types[0].id;
-            return dataViewCtrl.fullDatabase().types.find(function (type) {
+            var typeId = $routeParams.typeId ? $routeParams.typeId : currentDatabase.get().types[0].id;
+            return currentDatabase.get().types.find(function (type) {
                 return type.id === parseInt(typeId);
             });
         }

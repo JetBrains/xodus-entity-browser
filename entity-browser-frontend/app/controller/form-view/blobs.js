@@ -1,11 +1,13 @@
 angular.module('xodus').controller('BlobsController', [
     '$scope',
-    function ($scope, navigation) {
+    'navigationService',
+    'currentDatabase',
+    function ($scope, navigationService, currentDatabase) {
         $scope.uiBlobs = $scope.state.current.blobs;
-
+        var navigation = navigationService(currentDatabase.get());
 
         $scope.downloadLink = function (blob) {
-            return $scope.formViewCtrl.navigation.api.blobLink($scope.state.current, blob.name);
+            return navigation.api.blobLink($scope.state.current.id, blob.name);
         };
 
     }]

@@ -1,9 +1,7 @@
 angular.module('xodus').directive('typeView', [function () {
     return {
         restrict: 'E',
-        scope: {
-            fullDatabase: '&'
-        },
+        scope: {},
         replace: true,
         controller: 'DataViewController',
         controllerAs: 'dataViewCtrl',

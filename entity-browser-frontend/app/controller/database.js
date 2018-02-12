@@ -1,7 +1,8 @@
 angular.module('xodus').controller('DatabaseController', [
     'databaseService',
     '$routeParams',
-    function (databaseService, $routeParams) {
+    'currentDatabase',
+    function (databaseService, $routeParams, currentDatabase) {
         var databaseCtrl = this;
         databaseCtrl.loaded = false;
         databaseCtrl.found = false;
@@ -15,9 +16,10 @@ angular.module('xodus').controller('DatabaseController', [
             databaseCtrl.found = true;
             databaseService.getTypes(db).then(function (types) {
                 databaseCtrl.loaded = true;
-                databaseCtrl.fullDB = angular.extend({}, db, {
+                databaseCtrl.fullDatabase = angular.extend({}, db, {
                     types: types
                 });
+                currentDatabase.set(databaseCtrl.fullDatabase)
             })
         } else {
             databaseCtrl.loaded = true;

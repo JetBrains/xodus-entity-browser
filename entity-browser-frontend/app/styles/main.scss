@@ -386,3 +386,16 @@ li.linked-entity {
 .fa-angle-double-right {
   background-color: rgb(238, 238, 238);
 }
+
+td.linked-entities {
+  padding-bottom: 10px !important;
+}
+
+.select-type-with-add-button .ui-select-toggle {
+  border-bottom-left-radius: 4px !important;
+  border-top-left-radius: 4px !important;
+}
+
+input.ui-select-search {
+  width: 100% !important;
+}

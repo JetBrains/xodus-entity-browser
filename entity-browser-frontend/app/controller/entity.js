@@ -4,7 +4,8 @@ angular.module('xodus').controller('EntityController', [
     '$routeParams',
     '$location',
     '$q',
-    function (databaseService, entitiesService, $routeParams, $location, $q) {
+    'currentDatabase',
+    function (databaseService, entitiesService, $routeParams, $location, $q, currentDatabase) {
         var entityCtrl = this;
         entityCtrl.loaded = false;
         entityCtrl.types = [];
@@ -18,6 +19,7 @@ angular.module('xodus').controller('EntityController', [
                 entityCtrl.fullDB = angular.extend({}, db, {
                     types: types
                 });
+                currentDatabase.set(entityCtrl.fullDB);
             }).then(function () {
                 var entityId = $routeParams.entityId;
                 entityCtrl.isNew = (entityId === 'new');

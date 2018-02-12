@@ -5,8 +5,8 @@ angular.module('xodus').factory('navigationService', [
         return function (db) {
             var prefix = '/databases/' + db.uuid + '/';
 
-            function blobLink(entity, name) {
-                return 'api/dbs/' + db.uuid + '/entities/' + entity.typeId + '-' + entity.id + "/blob/" + name;
+            function blobLink(entityId, name) {
+                return 'api/dbs/' + db.uuid + '/entities/' + entityId + "/blob/" + name;
             }
 
             function toType(typeId) {

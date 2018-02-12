@@ -5,16 +5,16 @@
 
                 <div class="row database-title-container">
                     <div class="col-md-8">
-                        <h2 class="database-description">{{databaseCtrl.fullDB.description}}</h2>
-                        <div class="database-location">{{databaseCtrl.fullDB.location}}</div>
+                        <h2 class="database-description">{{databaseCtrl.fullDatabase.description}}</h2>
+                        <div class="database-location">{{databaseCtrl.fullDatabase.location}}</div>
                     </div>
                     <div class="col-md-4">
                     </div>
                 </div>
 
-                <div ng-if="databaseCtrl.fullDB.types.length">
-                    <search full-database="databaseCtrl.fullDB"></search>
-                    <type-view full-database="databaseCtrl.fullDB"></type-view>
+                <div ng-if="databaseCtrl.fullDatabase.types.length">
+                    <search></search>
+                    <type-view></type-view>
                 </div>
 
             </div>

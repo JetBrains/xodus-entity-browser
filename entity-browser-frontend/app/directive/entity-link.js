@@ -1,9 +1,8 @@
-angular.module('xodus').directive('entityLink', function () {
+angular.module('xodus').directive('entityLink', ['currentDatabase', function (currentDatabase) {
     return {
         restrict: 'E',
         scope: {
             link: '=',
-            dbUuid: '=',
             isEditMode: '=',
             isNew: '=',
             isDeleted: '=',
@@ -11,8 +10,8 @@ angular.module('xodus').directive('entityLink', function () {
         },
         template: require('../templates/entity-link.html'),
         link: function (scope, element, attrs) {
-            scope.linkToEntity = '/databases/' + scope.dbUuid + '/entities/' + scope.link.id;
+            scope.linkToEntity = '/databases/' + currentDatabase.get().uuid + '/entities/' + scope.link.id;
             scope.title = attrs.title;
         }
     }
-});
+}]);

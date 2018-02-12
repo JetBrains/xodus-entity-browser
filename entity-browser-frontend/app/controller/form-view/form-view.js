@@ -1,8 +1,14 @@
-angular.module('xodus').controller('FormViewController', ['$scope', 'entitiesService', '$timeout', 'navigationService', 'alert',
-    function ($scope, entitiesService, $timeout, navigationService, alert) {
+angular.module('xodus').controller('FormViewController', [
+    '$scope',
+    'entitiesService',
+    '$timeout',
+    'navigationService',
+    'alert',
+    'currentDatabase',
+    function ($scope, entitiesService, $timeout, navigationService, alert, currentDatabase) {
         var formViewCtrl = this;
-        formViewCtrl.fullDatabase = $scope.fullDatabase();
-        var entities = entitiesService(formViewCtrl.fullDatabase);
+        var fullDatabase = currentDatabase.get();
+        var entities = entitiesService(fullDatabase);
 
         function initialize() {
             $scope.state = newState($scope.entity());
@@ -79,7 +85,7 @@ angular.module('xodus').controller('FormViewController', ['$scope', 'entitiesSer
         formViewCtrl.save = save;
         formViewCtrl.revert = revert;
         formViewCtrl.linkChanges = [];
-        formViewCtrl.navigation = navigationService(formViewCtrl.fullDatabase);
+        formViewCtrl.navigation = navigationService(fullDatabase);
 
         initialize();
     }]);

@@ -1,9 +1,7 @@
 angular.module('xodus').directive('search', [function () {
     return {
         restrict: 'E',
-        scope: {
-            fullDatabase: '='
-        },
+        scope: {},
         replace: true,
         controller: 'SearchController',
         controllerAs: 'searchCtrl',

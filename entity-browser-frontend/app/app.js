@@ -37,9 +37,10 @@ angular.module('xodus').config([
 
         function when(path, route) {
             route.resolve = {
-                databases: ['$location', 'databaseService', function ($location, databaseService) {
+                databases: ['$location', 'databaseService', '$q',function ($location, databaseService, $q) {
                     return databaseService.getDatabases().catch(function () {
                         $location.path('/error');
+                        return $q.reject();
                     });
                 }]
             };
@@ -78,6 +79,7 @@ require('./service/entity');
 require('./service/navigation');
 require('./service/confirmation');
 require('./service/alert');
+require('./service/current-database');
 require('./controller/confirmation-dialog');
 require('./controller/data-view');
 require('./controller/search');
