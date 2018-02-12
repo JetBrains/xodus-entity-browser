@@ -18,7 +18,9 @@
                         </ui-select-choices>
                     </ui-select>
                     <div class="input-group-btn">
-                        <button class="btn btn-default" ng-click=""><i class="fa fa-plus"></i></button>
+                        <button class="btn btn-default " uib-popover-template="'add-new-entity-type.html'"
+                                popover-title="New entity type" popover-placement="bottom-right"
+                                ><i class="fa fa-plus js-close-popover" ></i></button>
                     </div>
                 </div>
             </div>

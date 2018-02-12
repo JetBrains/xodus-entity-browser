@@ -3,6 +3,7 @@ angular.module('xodus').service('EntityTypeService', [
     function ($http) {
         this.search = search;
         this.bulkDelete = bulkDelete;
+        this.newEntityType = newEntityType;
 
         function search(db, typeId, term, offset, pageSize) {
             return $http.get('api/dbs/' + db.uuid + '/entities', {
@@ -23,6 +24,14 @@ angular.module('xodus').service('EntityTypeService', [
                     q: term,
                     id: typeId
                 }
+            });
+        }
+
+        function newEntityType(db, typeName) {
+            return $http.post('api/dbs/' + db.uuid + '/types', {
+                name: typeName
+            }).then(function (response) {
+                return response.data;
             });
         }
 

@@ -17,9 +17,22 @@
                     <type-view></type-view>
                 </div>
 
+                <div ng-if="!databaseCtrl.fullDatabase.types.length">
+                    <h4>Database is empty - you can add
+                        <button class="btn btn-default js-close-popover"
+                                uib-popover-template="'add-new-entity-type.html'"
+                                popover-title="New entity type"
+                                popover-placement="bottom">Entity type
+                        </button>
+                    </h4>
+
+                </div>
+
             </div>
             <div ng-if="!databaseCtrl.found">
-                There is no such database. Try to <a href="/databases">lookup</a> another database
+                <h4>
+                    There is no such database. Try to <a href="/databases">lookup</a> another database
+                </h4>
             </div>
         </div>
 
@@ -27,5 +40,20 @@
             <h3>loading data...</h3>
         </div>
 
+        <script type="text/ng-template" id="add-new-entity-type.html">
+            <div ng-controller="AddTypeController as addTypeCtrl">
+                <div class="form horizontal-form">
+                    <div class="form-group input-group">
+                        <input required name="newTypeName" type="text" ng-model="addTypeCtrl.newTypeName"
+                               class="form-control">
+                        <div class="input-group-btn">
+                            <button class="btn btn-primary" ng-click="addTypeCtrl.addNewEntityType()">Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </script>
     </div>
+
+
 </div>

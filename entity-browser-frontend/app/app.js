@@ -93,6 +93,7 @@ require('./controller/databases');
 require('./controller/database');
 require('./controller/entity');
 require('./controller/alert');
+require('./controller/add-type');
 
 require('./directive/form-view');
 require('./directive/data-view');
