@@ -5,16 +5,15 @@ dependencies {
 task zipLauncher(type: Zip) {
     archiveName 'entity-browser-launcher.zip'
 
-    into('') {
+    into('xodus-entity-browser') {
         from 'src/main/resources', {
             include '*.xml'
             include '*.bat'
             include '*.sh'
-            include '*.txt'
         }
     }
 
-    into('resources') {
+    into('xodus-entity-browser/resources') {
         from globalArtifactsBuildDir, {
             include '*.jar'
         }

@@ -42,15 +42,23 @@
 
         <script type="text/ng-template" id="add-new-entity-type.html">
             <div ng-controller="AddTypeController as addTypeCtrl">
-                <div class="form horizontal-form">
-                    <div class="form-group input-group">
-                        <input required name="newTypeName" type="text" ng-model="addTypeCtrl.newTypeName"
-                               class="form-control">
-                        <div class="input-group-btn">
-                            <button class="btn btn-primary" ng-click="addTypeCtrl.addNewEntityType()">Add</button>
+                <form id="addType" novalidate ng-submit="addTypeCtrl.addNewEntityType()">
+                    <div class="form horizontal-form">
+                        <div class="form-group input-group" data-ng-class="{'has-error':  addTypeCtrl.error}">
+                            <input
+                                    data-ng-required="true"
+                                    name="newTypeName"
+                                    type="text"
+                                    ng-model="addTypeCtrl.newTypeName"
+                                    data-uib-tooltip="{{addTypeCtrl.error}}"
+                                    data-uib-tooltip-trigger="mouseenter"
+                                    class="form-control">
+                            <div class="input-group-btn">
+                                <button class="btn btn-primary" type="button" ng-click="addTypeCtrl.addNewEntityType()">Add</button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
         </script>
     </div>

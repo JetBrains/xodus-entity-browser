@@ -42,6 +42,10 @@ function getStyleLoaders() {
         {
             test: /\.(ttf|eot|svg)(\?[\s\S]+)?$/,
             loader: 'file'
+        },
+        {
+            test: /\.jpe?g$|\.ico$|\.gif$|\.png$|\.svg$|\.woff$|\.ttf$|\.wav$|\.mp3$/,
+            loader: 'file-loader?name=[name].[ext]'
         }
     ];
 }

@@ -483,3 +483,17 @@ input.ui-select-search {
 .checkbox-primary input[type="checkbox"]:checked + label::after {
     color: #fff;
 }
+
+.xodus-logo {
+    height: 20px;
+    filter: invert(1);
+    display: inline-block !important;
+}
+
+.xodus-logo-text {
+    display: inline-block !important;
+    position: relative;
+    top: 3px;
+    color: white;
+    font-size: 20px;
+}

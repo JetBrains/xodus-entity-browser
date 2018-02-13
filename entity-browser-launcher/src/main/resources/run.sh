@@ -1,5 +1,5 @@
 #!/bin/sh
-SERVER_PORT=8080
+SERVER_PORT=18080
 
 if [ -z "${JAVA_HOME}" ]; then
   JAVA=java
@@ -11,8 +11,6 @@ fi
 ${JAVA} \
 -Dlogback.configurationFile=logback.xml \
 -Dserver.port=${SERVER_PORT} \
--Dentity.browser.config=./xodus-store.properties \
 -Dexodus.entityStore.refactoring.skipAll=true \
 -Dexodus.entityStore.cachingDisabled=true \
--agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 \
--jar jetty-runner.jar --port ${SERVER_PORT} ./resources/xodus-entity-browser.war
+-jar xodus-entity-browser.jar

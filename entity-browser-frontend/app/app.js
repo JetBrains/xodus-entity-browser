@@ -100,3 +100,7 @@ require('./directive/entity-link');
 require('./directive/search');
 require('./directive/linked-entities-view');
 require('./directive/toogle');
+
+
+require('./favicon.ico');
+require('./logo64x64.ico');

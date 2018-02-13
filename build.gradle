@@ -1,5 +1,4 @@
 buildscript {
-    ext.xodusBuildTypeId = 'Xodus_Build'
     ext.xodusVersion = '1.1.0'
     ext.kotlinVersion = '1.2.21'
 
@@ -14,7 +13,6 @@ buildscript {
 plugins {
     id 'java'
     id 'idea'                                         // ide sync fine tuning
-    id 'com.github.jk1.tcdeps' version '0.13'        // resolves dependencies from TeamCity
     id "com.jfrog.bintray" version "1.7"
     id 'com.github.johnrengelman.shadow' version '2.0.2'
 }
@@ -24,10 +22,7 @@ apply plugin: 'kotlin'
 
 ext.globalArtifactsBuildDir = buildDir
 
-def isMavenXodus = Boolean.getBoolean('xodus-from-maven')
-ext.isMavenXodus = isMavenXodus
-
-def buildVersion = "1.0.0-" + (new Date().format('yyyyMMdd'))
+def buildVersion = "$xodusVersion"
 
 group = 'com.lehvolk.xodus'
 version = buildVersion
@@ -35,7 +30,6 @@ version = buildVersion
 allprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
-    apply plugin: 'com.github.jk1.tcdeps'
     apply plugin: 'maven'
     apply plugin: 'maven-publish'
 
@@ -43,7 +37,6 @@ allprojects {
 
     repositories {
         mavenCentral()
-        teamcityServer { url = 'https://teamcity.jetbrains.com' }
         maven { url "https://dl.bintray.com/lehvolk/maven" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
@@ -62,7 +55,7 @@ bintray {
 
     pkg {
         repo = 'maven'
-        name = isMavenXodus ? 'public' : 'jetbrains-team'
+        name = 'public'
         userOrg = user
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/lehvolk/xodus-entity-browser.git'
