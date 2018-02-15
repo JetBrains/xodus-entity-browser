@@ -11,8 +11,6 @@ require('bootstrap-toggle/js/bootstrap-toggle.js');
 require('bootstrap/dist/css/bootstrap.css');
 require('ui-select/dist/select.css');
 require('bootstrap-toggle/css/bootstrap-toggle.css');
-require('./styles/main.css');
-
 require('font-awesome-loader');
 
 angular.module('xodus', [
@@ -71,6 +69,7 @@ angular.module('xodus').config(['$httpProvider', function ($httpProvider) {
     $qProvider.errorOnUnhandledRejections(false);
 }]);
 
+require('./styles/main.css');
 
 require('./service/db');
 require('./service/entity-type');

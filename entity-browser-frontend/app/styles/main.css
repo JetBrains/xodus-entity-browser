@@ -455,6 +455,7 @@ input.ui-select-search {
 }
 
 .checkbox input[type="checkbox"]:checked + label::after {
+    font-family: "FontAwesome";
     content: "\f00c";
 }
 
@@ -496,4 +497,8 @@ input.ui-select-search {
     top: 3px;
     color: white;
     font-size: 20px;
+}
+
+.caret {
+    border-top: 4px dashed;
 }
