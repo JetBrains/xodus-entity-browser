@@ -500,5 +500,5 @@ input.ui-select-search {
 }
 
 .caret {
-    border-top: 4px dashed;
+    border-top: 4px dashed; /* has no idea why this is overriten in prod environment */
 }

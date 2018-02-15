@@ -12,7 +12,7 @@ task zipLauncher(type: Zip) {
         }
     }
 
-    into("xodus-entity-browser-${version}") {
+    into("xodus-entity-browser-${buildVersion}") {
         from globalArtifactsBuildDir, {
             include '*.jar'
         }
