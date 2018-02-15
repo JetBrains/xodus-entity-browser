@@ -112,9 +112,9 @@ object HttpServer : KLogging() {
                 response.status(HttpURLConnection.HTTP_BAD_REQUEST)
                 response.body(JsonTransformer.render(e.toVO()))
             }
-            exception(DatabaseNotFoundException::class.java) { e, _, response ->
+            exception(NotFoundException::class.java) { e, _, response ->
                 logger.debug("can't handle database", e)
-                response.status(HttpURLConnection.HTTP_BAD_REQUEST)
+                response.status(HttpURLConnection.HTTP_NOT_FOUND)
                 response.body(JsonTransformer.render(e.toVO()))
             }
             exception(Exception::class.java) { e, _, response ->
@@ -157,7 +157,7 @@ class InvalidFieldException(cause: Throwable, fieldName: String, fieldValue: Str
     override val msg: String = "invalid value of property '$fieldName': '$fieldValue'"
 }
 
-class DatabaseNotFoundException(override val msg: String) : RuntimeException(), WithMessage
+class NotFoundException(override val msg: String) : RuntimeException(), WithMessage
 
 data class RestError(val errorMessage: String)
 

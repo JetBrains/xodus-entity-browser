@@ -56,8 +56,7 @@ class Entities : Resource, ResourceSupport {
             http.get("/:entityId/blob/:blobName") {
                 logger.debug { "getting entity by entity id '$entityId'" }
                 response.header("content-type", "application/octet-stream;charset=utf-8")
-                storeService.getBlob(entityId, request.params("blobName"),
-                        response.raw().outputStream)
+                storeService.getBlob(entityId, request.params("blobName"))
             }
 
             http.safeGet("/:entityId/links/:linkName") {

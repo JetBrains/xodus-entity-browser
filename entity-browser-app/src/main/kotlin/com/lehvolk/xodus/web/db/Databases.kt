@@ -1,7 +1,7 @@
 package com.lehvolk.xodus.web.db
 
 import com.lehvolk.xodus.web.DBSummary
-import com.lehvolk.xodus.web.DatabaseNotFoundException
+import com.lehvolk.xodus.web.NotFoundException
 import com.lehvolk.xodus.web.mapper
 import com.lehvolk.xodus.web.systemOr
 import java.io.File
@@ -41,20 +41,20 @@ object Databases {
             dbs.add(DBSummary(location, key, uuid = uuid))
         }
         return find(uuid) {
-            throw DatabaseNotFoundException("Database on '$location' is already registered")
+            throw NotFoundException("Database on '$location' is already registered")
         }
     }
 
     fun applyChange(uuid: String, call: DBSummary.() -> Unit): DBSummary {
         val dbCopy = find(uuid) {
-            throw DatabaseNotFoundException("Database not found by id '$uuid'")
+            throw NotFoundException("Database not found by id '$uuid'")
         }
         val location = dbCopy.location
         saveWith {
             dbCopy.call()
         }
         return find(uuid) {
-            throw DatabaseNotFoundException("Database on '$location' can't be modified")
+            throw NotFoundException("Database on '$location' can't be modified")
         }
     }
 
@@ -69,7 +69,7 @@ object Databases {
     }
 
     internal fun find(uuid: String, error: () -> Nothing = {
-        throw DatabaseNotFoundException("Database not found by id '$uuid'")
+        throw NotFoundException("Database not found by id '$uuid'")
     }) = dbs.firstOrNull { it.uuid == uuid } ?: error()
 
 

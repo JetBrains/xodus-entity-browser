@@ -7,7 +7,7 @@ import jetbrains.exodus.entitystore.*
 import jetbrains.exodus.env.Environments
 import org.slf4j.LoggerFactory
 import java.io.IOException
-import java.io.OutputStream
+import java.io.InputStream
 
 class StoreService(location: String, key: String) {
 
@@ -88,11 +88,11 @@ class StoreService(location: String, key: String) {
     }
 
     @Throws(IOException::class)
-    fun getBlob(id: String, blobName: String, out: OutputStream) {
+    fun getBlob(id: String, blobName: String): InputStream {
         val tx = store.beginReadonlyTransaction()
         try {
             val entity = getEntity(id, tx)
-            entity.getBlob(blobName)?.copyTo(out, bufferSize = 4096)
+            return entity.getBlob(blobName) ?: throw NotFoundException("there is no blob $blobName")
         } finally {
             tx.commit()
         }

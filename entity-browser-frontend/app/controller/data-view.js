@@ -67,7 +67,7 @@ angular.module('xodus').controller('DataViewController', [
             };
 
             dataViewCtrl.blobLink = function (entity, blob) {
-                return navigation.api.blobLink(entity, blob.name);
+                return navigation.api.blobLink(entity.id, blob.name);
             };
         };
 
