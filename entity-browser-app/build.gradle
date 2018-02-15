@@ -25,7 +25,7 @@ dependencies {
     compile lib('ch.qos.logback:logback-classic')
     compile lib('ch.qos.logback:logback-core')
 
-    compile project(path: ':entity-browser-frontend', configuration: 'compile')
+    compile project(':entity-browser-frontend')
 
     compile lib('org.jetbrains.xodus:xodus-environment')
     compile lib('org.jetbrains.xodus:xodus-entity-store')

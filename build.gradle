@@ -1,6 +1,7 @@
 buildscript {
     ext.xodusVersion = '1.1.0'
     ext.kotlinVersion = '1.2.21'
+    ext.buildVersion = '1.1.0'
 
     repositories {
         mavenCentral()
@@ -21,19 +22,15 @@ apply from: 'libraries.gradle'
 apply plugin: 'kotlin'
 
 ext.globalArtifactsBuildDir = buildDir
-
-def buildVersion = "$xodusVersion"
-
 group = 'com.lehvolk.xodus'
-version = buildVersion
 
 allprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
     apply plugin: 'maven'
     apply plugin: 'maven-publish'
-
     sourceCompatibility = 1.8
+    version = buildVersion
 
     repositories {
         mavenCentral()
@@ -72,10 +69,10 @@ bintray {
 publishing {
     publications {
         mavenBintray(MavenPublication) {
-            artifact 'build/entity-browser-launcher.zip'
+            artifact "build/xodus-entity-browser-${buildVersion}.zip"
 
             groupId 'com.lehvolk.xodus'
-            artifactId 'entity-browser-launcher'
+            artifactId 'xodus-entity-browser'
             version buildVersion
         }
     }

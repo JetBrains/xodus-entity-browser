@@ -1,19 +1,20 @@
-# xodus-entity-browser
-Web UI entity browser for Xodus database. Provides ability to search, delete, create and edit entities.
+# Xodus entity browser
+
+Web UI entity browser for Xodus database. Provides ability to search, delete, create and edit entities. Used in support 
+activities for YouTrack and Hub applications.
 
 ## Application
 
-Highly desirable to use entity browser shipped with the same xodus version as used in application which produce database.
-
-That's mean that if your application uses 'x' version of xodus and you modify data with 'y' version of xodus shipped with entity browser then application (with 'x' version of xodus) may not working as expected on this database.
+Highly desirable to use entity browser shipped with the same Xodus version as used in application which works with database.
 
 ## Run
 
-* get [latest version based on maven repo](https://bintray.com/lehvolk/maven/download_file?file_path=com%2Flehvolk%2Fxodus%2Fentity-browser-launcher%2F1.0.0-20170804%2Fentity-browser-launcher-1.0.0-20170804.zip)
+* get [latest build](https://bintray.com/lehvolk/maven/download_file?file_path=com%2Flehvolk%2Fxodus%2Fentity-browser-launcher%2F1.0.0-20170804%2Fentity-browser-launcher-1.0.0-20170804.zip) and unpack it
 * execute run.bat or run.sh
 * open browser http://localhost:18080
 
 ## Configuring
+
 * JVM arguments, server port can be modified in startup script.
 
 ## Build from sources
