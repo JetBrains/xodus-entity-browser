@@ -9,7 +9,7 @@ Highly desirable to use entity browser shipped with the same Xodus version as us
 
 ## Run
 
-* get [latest build](https://bintray.com/lehvolk/maven/download_file?file_path=com%2Flehvolk%2Fxodus%2Fentity-browser-launcher%2F1.0.0-20170804%2Fentity-browser-launcher-1.0.0-20170804.zip) and unpack it
+* get [latest build](https://bintray.com/lehvolk/maven/download_file?file_path=com%2Flehvolk%2Fxodus%2Fxodus-entity-browser%2F1.1.0%2Fxodus-entity-browser-1.1.0.zip) and unpack it
 * execute run.bat or run.sh
 * open browser http://localhost:18080
 
