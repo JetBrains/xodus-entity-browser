@@ -1,10 +1,11 @@
 angular.module('xodus').directive('formView', [
     '$uibModal',
     '$location',
+    '$window',
     'navigationService',
     'ConfirmationService',
     'currentDatabase',
-    function ($uibModal, $location, navigationService, confirmation, currentDatabase) {
+    function ($uibModal, $location, $window, navigationService, confirmation, currentDatabase) {
         return {
             restrict: 'E',
             scope: {
@@ -41,12 +42,10 @@ angular.module('xodus').directive('formView', [
                     });
                 };
                 scope.getForm = getForm;
-                var cleanUp = scope.$on('$locationChangeStart', function (event, next, current) {
+                var cleanUp = scope.$on('$locationChangeStart', function (event, next) {
                         if (scope.editMode) {
                             confirmExit(function () {
-                                // due to https://github.com/angular/angular.js/issues/8617
-                                var path = next.substring($location.absUrl().length - $location.url().length);
-                                $location.path(path);
+                                $window.location = next; //$location.path is too buggy
                             });
                             event.preventDefault();
                         }

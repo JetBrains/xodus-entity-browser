@@ -9,6 +9,7 @@ import com.lehvolk.xodus.web.resources.Entities
 import com.lehvolk.xodus.web.resources.IndexHtmlPage
 import com.lehvolk.xodus.web.search.SearchQueryException
 import mu.KLogging
+import spark.Response
 import spark.ResponseTransformer
 import spark.Spark.exception
 import spark.kotlin.Http
@@ -95,17 +96,17 @@ object HttpServer : KLogging() {
             exception(EntityNotFoundException::class.java) { e, _, response ->
                 logger.error("getting entity failed", e)
                 response.status(HttpURLConnection.HTTP_NOT_FOUND)
-                response.body(JsonTransformer.render(e.toVO()))
+                withBody(response, e)
             }
             exception(InvalidFieldException::class.java) { e, _, response ->
                 logger.error("error updating entity", e)
                 response.status(HttpURLConnection.HTTP_BAD_REQUEST)
-                response.body(JsonTransformer.render(e.toVO()))
+                withBody(response, e)
             }
             exception(SearchQueryException::class.java) { e, request, response ->
                 logger.warn("error executing '${request.requestMethod()}' request for '${request.pathInfo()}'", e)
                 response.status(HttpURLConnection.HTTP_BAD_REQUEST)
-                response.body(JsonTransformer.render(e.toVO()))
+                withBody(response, e)
             }
             exception(NumberFormatException::class.java) { e, _, response ->
                 logger.debug("error parsing request path or query parameter", e)
@@ -115,18 +116,23 @@ object HttpServer : KLogging() {
             exception(NotFoundException::class.java) { e, _, response ->
                 logger.debug("can't handle database", e)
                 response.status(HttpURLConnection.HTTP_NOT_FOUND)
-                response.body(JsonTransformer.render(e.toVO()))
+                withBody(response, e)
             }
             exception(Exception::class.java) { e, _, response ->
                 logger.error("unexpected exception", e)
                 response.status(HttpURLConnection.HTTP_INTERNAL_ERROR)
-                response.body(JsonTransformer.render(e.toVO()))
+                withBody(response, e)
             }
 
             internalServerError {
                 "Sorry, something went wrong. Check server logs"
             }
         }
+    }
+
+    private fun withBody(response: Response, e: Exception) {
+        val vo = if (e is WithMessage) e.toVO() else e.toVO()
+        response.body(JsonTransformer.render(vo))
     }
 
     fun stop() {

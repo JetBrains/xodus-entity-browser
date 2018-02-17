@@ -55,7 +55,7 @@ angular.module('xodus').controller('SearchController', [
         function syncLocation(onlyType) {
             return function () {
                 $location.search({
-                    typeId: searchCtrl.selectedType.id,
+                    typeId: searchCtrl.selectedType.id.toString(),
                     q: onlyType ? null : searchCtrl.searchQuery
                 });
             }
@@ -65,7 +65,6 @@ angular.module('xodus').controller('SearchController', [
             var locationTypeId = $location.search().typeId;
             var result = null;
             if (locationTypeId) {
-                locationTypeId = locationTypeId.toString();
                 result = currentDatabase.get().types.find(function (type) {
                     return type.id === parseInt(locationTypeId);
                 }) || currentDatabase.get().types[0];

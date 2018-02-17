@@ -10,7 +10,7 @@ angular.module('xodus').factory('navigationService', [
             }
 
             function toType(typeId) {
-                return angular.isDefined(typeId) ? $location.path(prefix).search({typeId: typeId}) : toType(0);
+                return angular.isDefined(typeId) ? $location.path(prefix).search({typeId: typeId.toString()}) : toType(0);
             }
 
             function toEntity(typeId, entityId, edit) {
@@ -25,7 +25,7 @@ angular.module('xodus').factory('navigationService', [
                     $location.search(params);
                 } else {
                     $location.path(prefix + 'entities/new').search({
-                        typeId: typeId
+                        typeId: typeId.toString()
                     });
                 }
             }
