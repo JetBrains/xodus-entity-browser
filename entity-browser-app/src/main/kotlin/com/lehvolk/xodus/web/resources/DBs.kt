@@ -16,12 +16,16 @@ class DBs : Resource {
     override fun registerRouting(http: Http) {
         http.service.path("/api/dbs") {
             http.safeGet {
-                Databases.all()
+                Databases.all().map { it.secureCopy() }
             }
             http.safePost<DBSummary> {
-                databaseService.add(it.location, it.key, it.isOpened)
+                databaseService.add(it).secureCopy()
             }
         }
+    }
+
+    private fun DBSummary.secureCopy(): DBSummary {
+        return copy(encryptionKey = null, initialization = null, encryptionProvider = null)
     }
 
 }

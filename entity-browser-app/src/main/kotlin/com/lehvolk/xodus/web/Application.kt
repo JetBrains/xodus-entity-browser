@@ -31,9 +31,7 @@ object Application {
             return true
         }
         val service = try {
-            val location = db.location
-            val key = db.key
-            StoreService(location, key)
+            StoreService(db)
         } catch (e: Exception) {
             null
         }

@@ -35,13 +35,13 @@ object Databases {
         result
     }
 
-    fun add(location: String, key: String): DBSummary {
+    fun add(dbSummary: DBSummary): DBSummary {
         val uuid = UUID.randomUUID().toString()
         saveWith {
-            dbs.add(DBSummary(location, key, uuid = uuid))
+            dbs.add(dbSummary.copy(uuid = uuid))
         }
         return find(uuid) {
-            throw NotFoundException("Database on '$location' is already registered")
+            throw NotFoundException("Database on '${dbSummary.location}' is already registered")
         }
     }
 

@@ -30,6 +30,7 @@ dependencies {
     compile lib('org.jetbrains.xodus:xodus-environment')
     compile lib('org.jetbrains.xodus:xodus-entity-store')
     compile lib('org.jetbrains.xodus:xodus-openAPI')
+    compile lib('org.jetbrains.xodus:xodus-crypto')
     compile lib('com.sparkjava:spark-kotlin')
     compile lib('com.sparkjava:spark-core')
     compile lib('com.fasterxml.jackson.module:jackson-module-kotlin')

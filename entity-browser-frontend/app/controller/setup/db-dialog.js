@@ -5,8 +5,14 @@ angular.module('xodus').controller('DBDialogController', [
     'databaseService',
     function ($scope, $http, $modalInstance, databaseService) {
         var dbDialogCtrl = this;
+
+        dbDialogCtrl.isChaCha = true;
         dbDialogCtrl.error = null;
 
+
+        dbDialogCtrl.toggleProvider = function () {
+            dbDialogCtrl.isChaCha = !dbDialogCtrl.isChaCha;
+        };
         dbDialogCtrl.cancel = function () {
             $modalInstance.dismiss('cancel');
         };
@@ -28,11 +34,13 @@ angular.module('xodus').controller('DBDialogController', [
         dbDialogCtrl.db = {
             location: angular.isDefined(dbDialogCtrl.location) ? dbDialogCtrl.location : null,
             key: angular.isDefined(dbDialogCtrl.key) ? dbDialogCtrl.key : null,
-            opened: true
+            opened: true,
+            encrypted: false
         };
 
         dbDialogCtrl.saveDB = function () {
             if ($scope.database.$valid) {
+                dbDialogCtrl.db.encryptionProvider = (dbDialogCtrl.isChaCha ? 'SALSA' : 'CHACHA');
                 databaseService.add(dbDialogCtrl.db).then(function (db) {
                     return $modalInstance.close(db);
                 });

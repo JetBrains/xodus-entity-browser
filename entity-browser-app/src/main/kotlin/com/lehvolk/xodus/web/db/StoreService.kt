@@ -3,24 +3,42 @@ package com.lehvolk.xodus.web.db
 
 import com.lehvolk.xodus.web.*
 import com.lehvolk.xodus.web.search.smartSearch
+import jetbrains.exodus.crypto.InvalidCipherParametersException
 import jetbrains.exodus.entitystore.*
+import jetbrains.exodus.env.EnvironmentConfig
 import jetbrains.exodus.env.Environments
-import org.slf4j.LoggerFactory
+import mu.KLogging
 import java.io.IOException
 import java.io.InputStream
 
-class StoreService(location: String, key: String) {
+class StoreService(dbSummary: DBSummary) {
 
-    private val log = LoggerFactory.getLogger(this.javaClass)
+    companion object : KLogging()
 
     private val store: PersistentEntityStoreImpl
 
     init {
         try {
-            store = PersistentEntityStores.newInstance(Environments.newInstance(location), key)
+            val config = EnvironmentConfig().also {
+                if (dbSummary.isEncrypted) {
+                    it.cipherBasicIV = dbSummary.initialization?.toLong() ?: throw IllegalStateException("initialization vector can't be null")
+                    it.setCipherKey(dbSummary.encryptionKey)
+                    it.cipherId = dbSummary.encryptionProvider?.cipherId ?: throw IllegalStateException("cipher id can't be null")
+                }
+            }
+
+            store = PersistentEntityStores.newInstance(Environments.newInstance(dbSummary.location, config), dbSummary.key)
+        } catch (e: InvalidCipherParametersException) {
+            val msg = "It seems that store encrypted with another parameters"
+            logger.error(e) { msg }
+            throw IllegalStateException(msg, e)
+        } catch (e: IllegalStateException) {
+            val msg = "It seems that store encrypted with another parameters"
+            logger.error(e) { msg }
+            throw IllegalStateException(msg, e)
         } catch (e: RuntimeException) {
             val msg = "Can't get valid Xodus entity store location and store key. Check the configuration"
-            log.error(msg, e)
+            logger.error(e) { msg }
             throw IllegalStateException(msg, e)
         }
     }
@@ -30,12 +48,12 @@ class StoreService(location: String, key: String) {
         var count = 1
         while (proceed && count <= 10) {
             try {
-                log.info("trying to close persistent store. attempt {}", count)
+                logger.info { "trying to close persistent store. attempt $count" }
                 store.close()
                 proceed = false
-                log.info("persistent store closed")
+                logger.info("persistent store closed")
             } catch (e: RuntimeException) {
-                log.error("error closing persistent store", e)
+                logger.error(e) { "error closing persistent store" }
                 count++
             }
         }
@@ -175,7 +193,7 @@ class StoreService(location: String, key: String) {
         try {
             return t.getEntity(PersistentEntityId.toEntityId(id))
         } catch (e: RuntimeException) {
-            log.error("entity not found by '$id'", e)
+            logger.error(e) { "entity not found by '$id'" }
             throw EntityNotFoundException(e, id)
         }
 

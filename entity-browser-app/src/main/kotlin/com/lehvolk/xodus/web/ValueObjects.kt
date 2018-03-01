@@ -73,19 +73,20 @@ data class ChangeSummary(
         var blobs: List<BlobChangeSummaryAction> = listOf()
 )
 
-//enum class EncryptionProvider {
-//    SALSA()
-//}
+
+enum class EncryptionProvider(val cipherId: String) {
+    SALSA("jetbrains.exodus.crypto.streamciphers.Salsa20StreamCipherProvider"),
+    CHACHA("jetbrains.exodus.crypto.streamciphers.ChaChaStreamCipherProvider")
+}
 
 data class DBSummary(
+        var uuid: String = UUID.randomUUID().toString(),
+
         var location: String,
         var key: String,
         var isOpened: Boolean = false,
-        var uuid: String = UUID.randomUUID().toString()
-//        var encrypted: Boolean = false,
-//        var encryptionProvider: EncryptionProvider? = null,
-//        @Transient
-//        var encryptionKey: String? = null
-//        @Transient
-//        var initialization: Long? = null
+        var isEncrypted: Boolean = false,
+        var encryptionProvider: EncryptionProvider? = null,
+        var encryptionKey: String? = null,
+        var initialization: String? = null // js can't in Long
 )

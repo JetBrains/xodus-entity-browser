@@ -6,9 +6,9 @@ import com.lehvolk.xodus.web.DBSummary
 
 class DatabaseService {
 
-    fun add(location: String, key: String, isOpened: Boolean): DBSummary {
-        val newDB = Databases.add(location, key)
-        return if (isOpened) {
+    fun add(dbSummary: DBSummary): DBSummary {
+        val newDB = Databases.add(dbSummary)
+        return if (dbSummary.isOpened) {
             tryStart(newDB.uuid)
         } else {
             newDB

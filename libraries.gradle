@@ -19,6 +19,7 @@ ext.libraries = [
         'org.jetbrains.xodus:xodus-environment'                   : xodusVersion,
         'org.jetbrains.xodus:xodus-entity-store'                  : xodusVersion,
         'org.jetbrains.xodus:xodus-openAPI'                       : xodusVersion,
+        'org.jetbrains.xodus:xodus-crypto'                        : xodusVersion,
 
         'org.mockito:mockito-all'                                 : '1.9.5',
         'junit:junit'                                             : '4.11',

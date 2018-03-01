@@ -42,6 +42,38 @@
                         <label for="opened">open database</label>
                     </div>
                 </div>
+                <div class="form-group">
+                    <div class="checkbox checkbox-primary">
+                        <input id="encryted" type="checkbox" name="opened" ng-model="dbDialogCtrl.db.encrypted">
+                        <label for="encryted">is encrypted</label>
+                    </div>
+                </div>
+                <div class="form-group" ng-if="dbDialogCtrl.db.encrypted">
+                    <span>using</span>
+                    <input id="algorithm" name="algorithm" type="checkbox" toggle-checkbox
+                           ng-model="dbDialogCtrl.isChaCha" data-style="animation-disabled" data-off="Salsa"
+                           data-on="ChaCha">
+                </div>
+                <div class="form-group" ng-if="dbDialogCtrl.db.encrypted"
+                     data-ng-class="{'has-error':  (database.encryptionKey.$invalid && database.encryptionKey.$dirty)}">
+                    <label for="encryptionKey">encryption key</label>
+                    <input id="encryptionKey" name="encryptionKey" data-ng-required="true"
+                           ng-model="dbDialogCtrl.db.encryptionKey"
+                           class="form-control"
+                           placeholder="encryption key"
+                           data-uib-tooltip="{{dbDialogCtrl.getMessage('encryptionKey')}}"
+                           data-uib-tooltip-trigger="mouseenter">
+                </div>
+                <div class="form-group" ng-if="dbDialogCtrl.db.encrypted"
+                     data-ng-class="{'has-error':  (database.initialization.$invalid && database.initialization.$dirty)}">
+                    <label for="initialization">initialization</label>
+                    <input id="initialization" name="initialization" data-ng-required="true"
+                           ng-model="dbDialogCtrl.db.initialization"
+                           class="form-control"
+                           placeholder="initialization"
+                           data-uib-tooltip="{{dbDialogCtrl.getMessage('initialization')}}"
+                           data-uib-tooltip-trigger="mouseenter">
+                </div>
             </form>
         </div>
     </div>
