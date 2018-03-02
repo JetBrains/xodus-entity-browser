@@ -25,7 +25,7 @@ class DBs : Resource {
     }
 
     private fun DBSummary.secureCopy(): DBSummary {
-        return copy(encryptionKey = null, initialization = null, encryptionProvider = null)
+        return copy(encryptionKey = null, encryptionIV = null, encryptionProvider = null)
     }
 
 }

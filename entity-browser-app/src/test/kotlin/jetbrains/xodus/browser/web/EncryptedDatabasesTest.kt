@@ -30,7 +30,7 @@ class EncryptedDatabasesTest : TestSupport() {
 
             assertNull(it.encryptionProvider)
             assertNull(it.encryptionKey)
-            assertNull(it.initialization)
+            assertNull(it.encryptionIV)
         }
     }
 
@@ -53,7 +53,7 @@ class EncryptedDatabasesTest : TestSupport() {
                 isEncrypted = true,
                 encryptionProvider = EncryptionProvider.CHACHA,
                 encryptionKey = encKey,
-                initialization = encInit.toString()
+                encryptionIV = encInit.toString()
         )
     }
 

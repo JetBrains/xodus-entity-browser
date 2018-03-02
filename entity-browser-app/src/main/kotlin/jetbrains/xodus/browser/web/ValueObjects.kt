@@ -88,5 +88,5 @@ data class DBSummary(
         var isEncrypted: Boolean = false,
         var encryptionProvider: EncryptionProvider? = null,
         var encryptionKey: String? = null,
-        var initialization: String? = null // js can't in Long
+        var encryptionIV: String? = null // js can't in Long
 )

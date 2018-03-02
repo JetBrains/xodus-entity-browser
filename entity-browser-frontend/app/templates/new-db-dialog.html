@@ -71,9 +71,9 @@
                 </div>
                 <div class="form-group" ng-if="dbDialogCtrl.db.encrypted"
                      data-ng-class="{'has-error':  (database.initialization.$invalid && database.initialization.$dirty)}">
-                    <label for="initialization">initialization</label>
+                    <label for="initialization">initialization vector</label>
                     <input id="initialization" name="initialization" data-ng-required="true"
-                           ng-model="dbDialogCtrl.db.initialization"
+                           ng-model="dbDialogCtrl.db.encryptionIV"
                            class="form-control"
                            placeholder="initialization"
                            data-uib-tooltip="{{dbDialogCtrl.getMessage('initialization')}}"

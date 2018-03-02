@@ -22,7 +22,7 @@ class StoreService(dbSummary: DBSummary) {
             val config = EnvironmentConfig().also {
                 if (dbSummary.isEncrypted) {
                     val initialization = try {
-                        dbSummary.initialization?.toLong()
+                        dbSummary.encryptionIV?.toLong()
                     } catch (e: Exception) {
                         throw InvalidCipherParametersException()
                     }
