@@ -1,5 +1,6 @@
 #!/bin/sh
 SERVER_PORT=18080
+SERVER_HOST=localhost
 
 if [ -z "${JAVA_HOME}" ]; then
   JAVA=java
@@ -11,6 +12,7 @@ fi
 ${JAVA} \
 -Dlogback.configurationFile=logback.xml \
 -Dserver.port=${SERVER_PORT} \
+-Dserver.host=${SERVER_HOST} \
 -Dexodus.entityStore.refactoring.skipAll=true \
 -Dexodus.entityStore.cachingDisabled=true \
 -jar xodus-entity-browser.jar

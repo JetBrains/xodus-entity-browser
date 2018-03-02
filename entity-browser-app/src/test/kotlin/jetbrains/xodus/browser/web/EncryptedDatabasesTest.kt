@@ -1,11 +1,11 @@
 package jetbrains.xodus.browser.web
 
-import com.lehvolk.xodus.web.db.Databases
 import jetbrains.exodus.crypto.streamciphers.CHACHA_CIPHER_ID
 import jetbrains.exodus.entitystore.PersistentEntityStores
 import jetbrains.exodus.entitystore.PersistentStoreTransaction
 import jetbrains.exodus.env.EnvironmentConfig
 import jetbrains.exodus.env.Environments
+import jetbrains.xodus.browser.web.db.Databases
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before

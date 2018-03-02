@@ -43,7 +43,7 @@ open class TestSupport {
         System.setProperty("recent.dbs", newLocation() + File.separator + "recent.dbs.json")
         store = PersistentEntityStores.newInstance(Environments.newInstance(lockedDBLocation), key)
         Application.start()
-        HttpServer.setup(port)
+        HttpServer.setup(port = port)
 
         var setuped = false
         var times = 0

@@ -83,8 +83,8 @@ object HttpServer : KLogging() {
             IndexHtmlPage()
     )
 
-    fun setup(port: Int) {
-        http = ignite().port(port).apply {
+    fun setup(host: String = "localhost", port: Int) {
+        http = ignite().port(port).ipAddress(host).apply {
             staticFiles.location("/static/")
             after {
                 logger.info {

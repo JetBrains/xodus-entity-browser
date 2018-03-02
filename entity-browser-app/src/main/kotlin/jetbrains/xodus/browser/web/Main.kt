@@ -1,23 +1,22 @@
 package jetbrains.xodus.browser.web
 
 import mu.KLogging
-import java.io.IOException
-import java.io.InputStreamReader
 
 
 fun main(args: Array<String>) {
     val port = Integer.getInteger("server.port", 18080)
+    val host = System.getProperty("server.host", "localhost")
     Application.start()
 
-    HttpServer.setup(port)
+    HttpServer.setup(host, port)
 
-    OS.launchBrowser(port)
+    OS.launchBrowser(host, port)
 }
 
 private object OS : KLogging() {
 
-    fun launchBrowser(port: Int) {
-        val url = "http://$hostName:$port"
+    fun launchBrowser(host: String, port: Int) {
+        val url = "http://$host:$port"
         logger.info { "try to open browser for '$url'" }
         try {
             val osName = "os.name".system()
@@ -46,12 +45,4 @@ private object OS : KLogging() {
         }
     }
 
-    private val hostName: String
-        get() {
-            try {
-                return InputStreamReader(Runtime.getRuntime().exec("hostname").inputStream).readLines().first()
-            } catch (ignored: IOException) {
-            }
-            return "localhost"
-        }
 }
