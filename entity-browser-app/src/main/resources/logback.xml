@@ -19,7 +19,7 @@
     </appender>
 
     <logger name="org.eclipse.jetty.server" level="INFO"/>
-    <logger name="com.lehvolk.xodus.web" level="INFO"/>
+    <logger name="jetbrains.xodus.browser.web" level="INFO"/>
 
     <root level="info">
         <appender-ref ref="FILE" />

@@ -5,7 +5,7 @@ options {
 
 PARSER_BEGIN(SmartSearchQueryParser)
 
-package com.lehvolk.xodus.web.search;
+package jetbrains.xodus.browser.web.search;
 
 import java.util.List;
 import java.util.ArrayList;

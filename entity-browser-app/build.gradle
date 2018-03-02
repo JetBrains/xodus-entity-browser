@@ -6,7 +6,7 @@ apply plugin: 'kotlin'
 apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
 
-mainClassName = 'com.lehvolk.xodus.web.MainKt'
+mainClassName = 'jetbrains.xodus.browser.web.MainKt'
 
 def javaCCFolder = "src/main/generated"
 
@@ -46,7 +46,7 @@ shadowJar {
     archiveName = "xodus-entity-browser.jar"
     destinationDir = globalArtifactsBuildDir
     manifest {
-        attributes 'Main-Class': 'com.lehvolk.xodus.web.MainKt'
+        attributes 'Main-Class': 'jetbrains.xodus.browser.web.MainKt'
     }
 }
 
@@ -60,6 +60,6 @@ clean {
 
 compileJavacc {
     inputDirectory = file('src/main/javacc')
-    outputDirectory = file(javaCCFolder + '/com/lehvolk/xodus/web/search')
+    outputDirectory = file(javaCCFolder + '/jetbrains/xodus/browser/web/search')
     // plugin wont create package for generated classes
 }
