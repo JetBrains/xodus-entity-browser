@@ -1,4 +1,5 @@
 # Xodus entity browser
+[![official JetBrains project](http://jb.gg/badges/official.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
 
 Web UI entity browser for Xodus database stores. Used in support activities for YouTrack and Hub applications. Highly desirable to use entity browser shipped with the same Xodus version as used in application which works with database.
 
