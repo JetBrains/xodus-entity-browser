@@ -22,7 +22,7 @@ class DB : Resource, ResourceSupport {
             http.safePost {
                 val operation = request.queryParams("op")
                 when (operation) {
-                    "start" -> databaseService.tryStart(db.uuid)
+                    "start" -> databaseService.tryStart(db.uuid, false)
                     "stop" -> databaseService.stop(db.uuid)
                     else -> response.status(404)
                 }

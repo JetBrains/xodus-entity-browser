@@ -59,10 +59,10 @@ angular.module('xodus')
                     });
                     angular.extend(oldDb, response.data);
                     return response;
-                }, function () {
-                    var msg = isStart ? 'started' : 'stopped';
-                    alert.error('Database is not ' + msg);
-                }).catch(alert.showHttpError);
+                }).catch(function (response) {
+                    alert.showHttpError(response);
+                    db.opened = !db.opened; // revert model
+                });
             }
 
             function getTypes(db) {

@@ -7,17 +7,16 @@ import com.lehvolk.xodus.web.DBSummary
 class DatabaseService {
 
     fun add(dbSummary: DBSummary): DBSummary {
-        val newDB = Databases.add(dbSummary)
-        return if (dbSummary.isOpened) {
-            tryStart(newDB.uuid)
-        } else {
-            newDB
+        return Databases.add(dbSummary) {
+            if (dbSummary.isOpened) {
+                tryStart(uuid, false)
+            }
         }
     }
 
-    fun tryStart(uuid: String): DBSummary {
+    fun tryStart(uuid: String, silent: Boolean = true): DBSummary {
         return Databases.applyChange(uuid) {
-            val servicesStarted = Application.tryStartServices(this)
+            val servicesStarted = Application.tryStartServices(this, silent)
             isOpened = servicesStarted
         }
     }

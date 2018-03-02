@@ -27,18 +27,19 @@ object Databases {
             }
         }
         try {
-            val type = mapper.typeFactory.constructCollectionType(List::class.java, DBSummary::class.java)
-            result.addAll(mapper.readValue(canonicalFile, type))
+            result.addAll(fileDBs())
         } catch (e: Exception) {
             // ignore
         }
         result
     }
 
-    fun add(dbSummary: DBSummary): DBSummary {
+    fun add(dbSummary: DBSummary, tweak: DBSummary.() -> Unit): DBSummary {
         val uuid = UUID.randomUUID().toString()
         saveWith {
-            dbs.add(dbSummary.copy(uuid = uuid))
+            val copy = dbSummary.copy(uuid = uuid, isOpened = false)
+            dbs.add(copy)
+            copy.tweak()
         }
         return find(uuid) {
             throw NotFoundException("Database on '${dbSummary.location}' is already registered")
@@ -75,8 +76,13 @@ object Databases {
 
     private fun saveWith(call: () -> Unit) {
         synchronized(this) {
-            call()
-            doSync()
+            try {
+                call()
+                doSync()
+            } catch (e: Exception) {
+                revert()
+                throw e
+            }
         }
     }
 
@@ -88,4 +94,18 @@ object Databases {
         dbs.addAll(distinct)
     }
 
+    private fun revert() {
+        dbs.clear()
+        dbs.addAll(fileDBs())
+    }
+
+    private fun fileDBs(): List<DBSummary> {
+        try {
+            val type = mapper.typeFactory.constructCollectionType(List::class.java, DBSummary::class.java)
+            return mapper.readValue<List<DBSummary>>(File(file.canonicalPath), type)
+        } catch (e: Exception) {
+            // ignore
+            return arrayListOf<DBSummary>()
+        }
+    }
 }

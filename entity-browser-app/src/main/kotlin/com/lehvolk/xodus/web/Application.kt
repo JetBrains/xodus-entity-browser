@@ -26,12 +26,18 @@ object Application {
         Databases.all().forEach { databaseService.tryStart(it.uuid) }
     }
 
-    fun tryStartServices(db: DBSummary): Boolean {
+    fun tryStartServices(db: DBSummary, silent: Boolean = true): Boolean {
         if (allServices.containsKey(db.uuid)) {
             return true
         }
         val service = try {
             StoreService(db)
+        } catch (e: DatabaseException) {
+            if (silent) {
+                null
+            } else {
+                throw e
+            }
         } catch (e: Exception) {
             null
         }

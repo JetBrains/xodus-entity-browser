@@ -103,6 +103,11 @@ object HttpServer : KLogging() {
                 response.status(HttpURLConnection.HTTP_BAD_REQUEST)
                 withBody(response, e)
             }
+            exception(DatabaseException::class.java) { e, _, response ->
+                logger.error("error with working with database", e)
+                response.status(HttpURLConnection.HTTP_BAD_REQUEST)
+                withBody(response, e)
+            }
             exception(SearchQueryException::class.java) { e, request, response ->
                 logger.warn("error executing '${request.requestMethod()}' request for '${request.pathInfo()}'", e)
                 response.status(HttpURLConnection.HTTP_BAD_REQUEST)
@@ -164,6 +169,7 @@ class InvalidFieldException(cause: Throwable, fieldName: String, fieldValue: Str
 }
 
 class NotFoundException(override val msg: String) : RuntimeException(), WithMessage
+class DatabaseException(override val msg: String) : RuntimeException(), WithMessage
 
 data class RestError(val errorMessage: String)
 

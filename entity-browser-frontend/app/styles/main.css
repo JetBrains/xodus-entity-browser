@@ -502,3 +502,9 @@ input.ui-select-search {
 .caret {
     border-top: 4px dashed; /* has no idea why this is overriten in prod environment */
 }
+
+.encrypted-icon-wrapper {
+    padding-top: 2px;
+    padding-right: 5px;
+    font-size: 30px;
+}

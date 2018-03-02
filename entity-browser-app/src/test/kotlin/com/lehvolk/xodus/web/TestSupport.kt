@@ -59,7 +59,7 @@ open class TestSupport {
     }
 
     fun newDB(location: String, isOpened: Boolean = false): DBSummary {
-        return dbsResource.new(DBSummary(location, key, isOpened)).execute().body()!!
+        return dbsResource.new(DBSummary(location = location, key = key, isOpened = isOpened)).execute().body()!!
     }
 
 

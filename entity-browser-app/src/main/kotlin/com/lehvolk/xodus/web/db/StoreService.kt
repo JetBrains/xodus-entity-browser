@@ -21,9 +21,14 @@ class StoreService(dbSummary: DBSummary) {
         try {
             val config = EnvironmentConfig().also {
                 if (dbSummary.isEncrypted) {
-                    it.cipherBasicIV = dbSummary.initialization?.toLong() ?: throw IllegalStateException("initialization vector can't be null")
+                    val initialization = try {
+                        dbSummary.initialization?.toLong()
+                    } catch (e: Exception) {
+                        throw InvalidCipherParametersException()
+                    }
+                    it.cipherBasicIV = initialization ?: throw InvalidCipherParametersException()
                     it.setCipherKey(dbSummary.encryptionKey)
-                    it.cipherId = dbSummary.encryptionProvider?.cipherId ?: throw IllegalStateException("cipher id can't be null")
+                    it.cipherId = dbSummary.encryptionProvider?.cipherId ?: throw InvalidCipherParametersException()
                 }
             }
 
@@ -31,11 +36,7 @@ class StoreService(dbSummary: DBSummary) {
         } catch (e: InvalidCipherParametersException) {
             val msg = "It seems that store encrypted with another parameters"
             logger.error(e) { msg }
-            throw IllegalStateException(msg, e)
-        } catch (e: IllegalStateException) {
-            val msg = "It seems that store encrypted with another parameters"
-            logger.error(e) { msg }
-            throw IllegalStateException(msg, e)
+            throw DatabaseException("Database is ciphered with different/unknown cipher parameters")
         } catch (e: RuntimeException) {
             val msg = "Can't get valid Xodus entity store location and store key. Check the configuration"
             logger.error(e) { msg }

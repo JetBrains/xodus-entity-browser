@@ -42,17 +42,25 @@
                         <label for="opened">open database</label>
                     </div>
                 </div>
-                <div class="form-group">
-                    <div class="checkbox checkbox-primary">
-                        <input id="encryted" type="checkbox" name="opened" ng-model="dbDialogCtrl.db.encrypted">
-                        <label for="encryted">is encrypted</label>
+                <div class="form-group row">
+                    <div class="col-md-6" style="padding-left: 0;">
+                        <div class="checkbox checkbox-primary">
+                            <input id="encryted" type="checkbox" name="opened" ng-model="dbDialogCtrl.db.encrypted">
+                            <label for="encryted">is encrypted</label>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group" ng-if="dbDialogCtrl.db.encrypted">
-                    <span>using</span>
-                    <input id="algorithm" name="algorithm" type="checkbox" toggle-checkbox
-                           ng-model="dbDialogCtrl.isChaCha" data-style="animation-disabled" data-off="Salsa"
-                           data-on="ChaCha">
+                    <div class="col-md-6" style="padding-right: 0;" ng-if="dbDialogCtrl.db.encrypted">
+                        <div class="pull-right">
+                            <span>using</span>
+                            <div class="btn-group">
+                                <button class="btn btn-default" ng-class="{'btn-info': dbDialogCtrl.isChaCha}">ChaCha</button>
+                                <button class="btn btn-default" ng-class="{'btn-info': !dbDialogCtrl.isChaCha}">Salsa</button>
+                            </div>
+                        </div>
+                        <!--<input id="algorithm" name="algorithm" type="checkbox" toggle-checkbox-->
+                               <!--ng-model="dbDialogCtrl.isChaCha" data-style="animation-disabled" data-off="Salsa"-->
+                               <!--data-on="ChaCha">-->
+                    </div>
                 </div>
                 <div class="form-group" ng-if="dbDialogCtrl.db.encrypted"
                      data-ng-class="{'has-error':  (database.encryptionKey.$invalid && database.encryptionKey.$dirty)}">
