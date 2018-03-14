@@ -1,6 +1,6 @@
 buildscript {
-    ext.xodusVersion = '1.2.3010'
-    ext.kotlinVersion = '1.2.21'
+    ext.xodusVersion = '1.2.2'
+    ext.kotlinVersion = '1.2.30'
     ext.buildVersion = '1.1.0'
 
     repositories {
@@ -23,7 +23,7 @@ apply from: 'libraries.gradle'
 apply plugin: 'kotlin'
 
 ext.globalArtifactsBuildDir = buildDir
-group = 'com.lehvolk.xodus'
+group = 'org.jetbrains.xodus'
 
 allprojects {
     apply plugin: 'java'
@@ -35,7 +35,6 @@ allprojects {
 
     repositories {
         mavenCentral()
-        maven { url "https://dl.bintray.com/lehvolk/maven" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
         maven { url 'http://repository.jetbrains.com/xodus' }
     }
@@ -43,39 +42,6 @@ allprojects {
     idea {
         module {
             downloadSources = true
-        }
-    }
-}
-
-bintray {
-    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getProperty('BINTRAY_USER')
-    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getProperty('BINTRAY_API_KEY')
-    publications = ['mavenBintray']
-
-    pkg {
-        repo = 'maven'
-        name = 'public'
-        userOrg = user
-        licenses = ['Apache-2.0']
-        vcsUrl = 'https://github.com/lehvolk/xodus-entity-browser.git'
-        labels = ['xodus']
-        publicDownloadNumbers = true
-        publish = true
-        version {
-            name = buildVersion
-            desc = 'Xodus entity browser'
-        }
-    }
-}
-
-publishing {
-    publications {
-        mavenBintray(MavenPublication) {
-            artifact "build/xodus-entity-browser-${buildVersion}.zip"
-
-            groupId 'com.lehvolk.xodus'
-            artifactId 'xodus-entity-browser'
-            version buildVersion
         }
     }
 }
