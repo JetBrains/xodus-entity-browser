@@ -35,7 +35,7 @@ open class TestSupport {
     }
 
     protected fun newLocation(): String {
-        return "java.io.tmpdir".system() + Random().nextLong()
+        return "java.io.tmpdir".system() + File.separator + Random().nextLong()
     }
 
     @Before
