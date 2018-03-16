@@ -15,7 +15,7 @@ Web UI entity browser for Xodus database stores. Used in support activities for 
 
 ## Run
 
-* get [latest build](https://bintray.com/lehvolk/maven/download_file?file_path=com%2Flehvolk%2Fxodus%2Fxodus-entity-browser%2F1.1.0%2Fxodus-entity-browser-1.1.0.zip) and unpack it
+* get [latest release](https://github.com/JetBrains/xodus-entity-browser/releases/download/v1.2.0/xodus-entity-browser-1.2.0.zip) and unpack it
 * execute run.bat or run.sh
 * browser should open automatically. Otherwise goto http://localhost:18080
 
