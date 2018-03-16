@@ -83,7 +83,7 @@ data class DBSummary(
         var uuid: String = UUID.randomUUID().toString(),
 
         var location: String,
-        var key: String,
+        var key: String? = null,
         var isOpened: Boolean = false,
         var isEncrypted: Boolean = false,
         var encryptionProvider: EncryptionProvider? = null,

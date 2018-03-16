@@ -1,7 +1,7 @@
 buildscript {
     ext.xodusVersion = '1.2.2'
     ext.kotlinVersion = '1.2.30'
-    ext.buildVersion = '1.1.0'
+    ext.buildVersion = '1.2.0'
 
     repositories {
         mavenCentral()

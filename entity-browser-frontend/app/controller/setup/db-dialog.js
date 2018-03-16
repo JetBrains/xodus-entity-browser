@@ -9,6 +9,34 @@ angular.module('xodus').controller('DBDialogController', [
         dbDialogCtrl.isChaCha = true;
         dbDialogCtrl.error = null;
 
+        var hubKey = 'jetPassServerDb';
+        var youtrackKey = 'teamsysstore';
+
+
+        dbDialogCtrl.predefinedKeys = [
+            {name: 'Hub', key: hubKey},
+            {name: 'YouTrack', key: youtrackKey}
+        ];
+
+        dbDialogCtrl.keyOptions = [
+            {
+                title: 'Default',
+                key: null
+            },
+            {
+                title: 'YouTrack',
+                key: youtrackKey
+            },
+            {
+                title: 'Hub',
+                key: hubKey
+            },
+            {
+                title: 'Custom',
+                key: ""
+            }
+        ];
+        dbDialogCtrl.selectedkeyOption = dbDialogCtrl.keyOptions[0];
 
         dbDialogCtrl.toggleProvider = function () {
             dbDialogCtrl.isChaCha = !dbDialogCtrl.isChaCha;
@@ -47,16 +75,16 @@ angular.module('xodus').controller('DBDialogController', [
             }
         };
 
-        var hubKey = 'jetPassServerDb';
-        var youtrackKey = 'teamsysstore';
+        dbDialogCtrl.setKeyOption = function (keyOption) {
+            dbDialogCtrl.selectedkeyOption = keyOption;
+            dbDialogCtrl.db.key = keyOption.key;
+        };
 
+        dbDialogCtrl.isKeyOption = function (keyOption) {
+            return keyOption.title === dbDialogCtrl.selectedkeyOption.title;
+        };
 
-        dbDialogCtrl.predefinedKeys = [
-            {name: 'Hub', key: hubKey},
-            {name: 'YouTrack', key: youtrackKey}
-        ];
-
-        dbDialogCtrl.applyKey = function (item) {
-            dbDialogCtrl.db.key = item.key;
+        dbDialogCtrl.isCustomKeyOption = function () {
+            return dbDialogCtrl.selectedkeyOption.title === dbDialogCtrl.keyOptions[3].title;
         };
     }]);

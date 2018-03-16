@@ -31,8 +31,14 @@ class StoreService(dbSummary: DBSummary) {
                     it.cipherId = dbSummary.encryptionProvider?.cipherId ?: throw InvalidCipherParametersException()
                 }
             }
-
-            store = PersistentEntityStores.newInstance(Environments.newInstance(dbSummary.location, config), dbSummary.key)
+            val environment = Environments.newInstance(dbSummary.location, config)
+            store = dbSummary.key.let {
+                if (it == null) {
+                    PersistentEntityStores.newInstance(environment)
+                } else {
+                    PersistentEntityStores.newInstance(environment, it)
+                }
+            }
         } catch (e: InvalidCipherParametersException) {
             val msg = "It seems that store encrypted with another parameters"
             logger.error(e) { msg }

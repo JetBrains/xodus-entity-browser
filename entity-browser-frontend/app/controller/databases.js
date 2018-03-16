@@ -23,6 +23,8 @@ angular.module('xodus').controller('DatabasesController', [
                         db.description = 'HUB';
                     } else if (db.key === youtrackKey) {
                         db.description = 'YouTrack';
+                    } else if (!db.key) {
+                        db.description = 'Default';
                     } else {
                         db.description = db.key;
                     }

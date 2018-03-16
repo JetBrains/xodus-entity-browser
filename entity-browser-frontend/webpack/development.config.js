@@ -6,7 +6,7 @@ var parseArgs = require('minimist');
 var argv = parseArgs(process.argv.slice(2), {
   default: {
     port: '19090',
-    host: '0.0.0.0',
+    host: 'localhost',
 
     params: {
       example: false,
@@ -20,7 +20,7 @@ argv.params.server = argv.params.server || {};
 
 require('mout/object/fillIn')(argv.params.server, {
   context: '',
-  hostname: require('os').hostname(),
+  hostname: "localhost",
   port: '18080',
   protocol: 'http'
 });
