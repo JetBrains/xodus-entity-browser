@@ -4,6 +4,9 @@
 
 Web UI entity browser for Xodus database stores. Used in support activities for YouTrack and Hub applications. Highly desirable to use entity browser shipped with the same Xodus version as used in application which works with database.
 
+![Databases](/screenshots/dbs.jpg?raw=true "List of entities")
+![List of entities](/screenshots/entities.jpg?raw=true "List of entities")
+
 ## Features
 
 * searching entities with specific query language (search by property values and by links)
