@@ -6,17 +6,18 @@ import mu.KLogging
 fun main(args: Array<String>) {
     val port = Integer.getInteger("server.port", 18080)
     val host = System.getProperty("server.host", "localhost")
+    val context = System.getProperty("server.context", "entity-browser")
     Application.start()
 
-    HttpServer.setup(host, port)
+    HttpServer(host, port, context).setup()
 
-    OS.launchBrowser(host, port)
+    OS.launchBrowser(host, port, context)
 }
 
 private object OS : KLogging() {
 
-    fun launchBrowser(host: String, port: Int) {
-        val url = "http://$host:$port"
+    fun launchBrowser(host: String, port: Int, context: String) {
+        val url = "http://$host:$port/$context"
         logger.info { "try to open browser for '$url'" }
         try {
             val osName = "os.name".system()
@@ -27,7 +28,7 @@ private object OS : KLogging() {
                 openURL.invoke(null, url)
             } else if (osName.startsWith("Windows")) {
                 logger.info("windows detected")
-                Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url)
+                Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler $url")
             } else {
                 // Unix or Linux
                 logger.info("linux detected")

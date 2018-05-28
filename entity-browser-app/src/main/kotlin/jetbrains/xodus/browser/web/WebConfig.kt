@@ -3,18 +3,26 @@ package jetbrains.xodus.browser.web
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import jetbrains.xodus.browser.web.resources.DB
-import jetbrains.xodus.browser.web.resources.DBs
-import jetbrains.xodus.browser.web.resources.Entities
-import jetbrains.xodus.browser.web.resources.IndexHtmlPage
+import jetbrains.xodus.browser.web.resources.*
 import jetbrains.xodus.browser.web.search.SearchQueryException
 import mu.KLogging
+import org.eclipse.jetty.server.Handler
+import org.eclipse.jetty.server.Server
+import org.eclipse.jetty.util.thread.QueuedThreadPool
+import org.eclipse.jetty.util.thread.ThreadPool
 import spark.Response
 import spark.ResponseTransformer
 import spark.Spark.exception
+import spark.embeddedserver.EmbeddedServers
+import spark.embeddedserver.jetty.EmbeddedJettyServer
+import spark.embeddedserver.jetty.JettyHandler
+import spark.embeddedserver.jetty.JettyServerFactory
+import spark.http.matching.MatcherFilter
 import spark.kotlin.Http
 import spark.kotlin.RouteHandler
 import spark.kotlin.ignite
+import spark.route.Routes
+import spark.staticfiles.StaticFilesConfiguration
 import java.net.HttpURLConnection
 
 
@@ -69,7 +77,7 @@ fun Http.safeDelete(path: String = "", executor: RouteHandler.() -> Any) {
     }
 }
 
-object HttpServer : KLogging() {
+class HttpServer(val host: String = "localhost", val _port: Int, val context: String = "") : KLogging() {
 
     private lateinit var http: Http
 
@@ -80,18 +88,51 @@ object HttpServer : KLogging() {
             Entities(),
 
             // index html
-            IndexHtmlPage()
+            IndexHtmlPage(context)
     )
 
-    fun setup(host: String = "localhost", port: Int) {
-        http = ignite().port(port).ipAddress(host).apply {
-            staticFiles.location("/static/")
+    val port get() = http.port()
+
+    private val jettyFactory = object : JettyServerFactory {
+
+        override fun create(maxThreads: Int, minThreads: Int, threadTimeoutMillis: Int): Server {
+            return if (maxThreads > 0) {
+                val min = if (minThreads > 0) minThreads else 8
+                val idleTimeout = if (threadTimeoutMillis > 0) threadTimeoutMillis else 60000
+
+                Server(QueuedThreadPool(maxThreads, min, idleTimeout))
+            } else {
+                Server()
+            }
+        }
+
+        override fun create(threadPool: ThreadPool?): Server {
+            return if (threadPool != null) Server(threadPool) else Server()
+        }
+    }
+
+    private fun newContextHandler(routeMatcher: Routes, hasMultipleHandler: Boolean): Handler {
+        val matcherFilter = MatcherFilter(routeMatcher, ContextAwareStaticFilesConfiguration(context), false, hasMultipleHandler).also { it.init(null) }
+        return JettyHandler(matcherFilter)
+    }
+
+    fun setup() {
+        EmbeddedServers.add(EmbeddedServers.Identifiers.JETTY) { routeMatcher: Routes, _: StaticFilesConfiguration, hasMultipleHandler: Boolean ->
+            val handler = newContextHandler(routeMatcher, hasMultipleHandler)
+            EmbeddedJettyServer(jettyFactory, handler)
+        }
+
+
+        http = ignite().port(_port).ipAddress(host).apply {
+            staticFiles.location("/static") // just hack for Spark
+            service.path("/$context") {
+                resources.forEach { it.registerRouting(this) }
+            }
             after {
                 logger.info {
                     "'${request.requestMethod()} ${request.pathInfo()}' - ${response.status()} ${response.type() ?: ""}"
                 }
             }
-            resources.forEach { it.registerRouting(this) }
 
             exception(EntityNotFoundException::class.java) { e, _, response ->
                 logger.error("getting entity failed", e)

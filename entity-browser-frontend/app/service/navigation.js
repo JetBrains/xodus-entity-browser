@@ -3,7 +3,7 @@ angular.module('xodus').factory('navigationService', [
     '$window',
     function ($location, $window) {
         return function (db) {
-            var prefix = '/databases/' + db.uuid + '/';
+            var prefix = 'databases/' + db.uuid + '/';
 
             function blobLink(entityId, name) {
                 return 'api/dbs/' + db.uuid + '/entities/' + entityId + "/blob/" + name;

@@ -18,14 +18,12 @@ open class TestSupport {
     protected val lockedDBLocation = newLocation()
     private lateinit var store: PersistentEntityStoreImpl
     private val databaseService = DatabaseService()
-    private val port by lazy {
-        ServerSocket(0).let {
-            it.close()
-            it.localPort
-        }
-    }
 
-    protected val retrofit: Retrofit = Retrofit.Builder().baseUrl("http://localhost:$port/").addConverterFactory(JacksonConverterFactory.create(mapper)).build()
+    private val http = HttpServer(_port = 0, context = "custom")
+
+    protected val retrofit: Retrofit by lazy {
+        Retrofit.Builder().baseUrl("http://localhost:${http.port}/custom/").addConverterFactory(JacksonConverterFactory.create(mapper)).build()
+    }
 
     protected val dbsResource by lazy {
         retrofit.create(DBsApi::class.java)
@@ -43,7 +41,7 @@ open class TestSupport {
         System.setProperty("recent.dbs", newLocation() + File.separator + "recent.dbs.json")
         store = PersistentEntityStores.newInstance(Environments.newInstance(lockedDBLocation), key)
         Application.start()
-        HttpServer.setup(port = port)
+        http.setup()
 
         var setuped = false
         var times = 0
@@ -68,6 +66,6 @@ open class TestSupport {
         store.close()
         databaseService.deleteAll()
         Databases.file.delete()
-        HttpServer.stop()
+        http.stop()
     }
 }

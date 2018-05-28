@@ -35,7 +35,7 @@ angular.module('xodus')
             }
 
             function add(db) {
-                return $http.post('/api/dbs', db).then(function (response) {
+                return $http.post('api/dbs', db).then(function (response) {
                     service.databases.push(response.data);
                     return response.data;
                 }).catch(alert.showHttpError);
@@ -43,7 +43,7 @@ angular.module('xodus')
 
             function startOrStop(db) {
                 var isStart = db.opened;
-                return $http.post('/api/dbs/' + db.uuid, db, {
+                return $http.post('api/dbs/' + db.uuid, db, {
                     params: {
                         op: isStart ? "start" : "stop"
                     }
@@ -66,13 +66,13 @@ angular.module('xodus')
             }
 
             function getTypes(db) {
-                return $http.get('/api/dbs/' + db.uuid + '/types').then(function (response) {
+                return $http.get('api/dbs/' + db.uuid + '/types').then(function (response) {
                     return response.data;
                 });
             }
 
             function deleteDB(db) {
-                return $http['delete']('/api/dbs/' + db.uuid).then(function (data) {
+                return $http['delete']('api/dbs/' + db.uuid).then(function (data) {
                     var index = service.databases.indexOf(db);
                     if (index > -1) {
                         service.databases.splice(index, 1);

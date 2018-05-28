@@ -24,7 +24,7 @@
                     <div class="database-row">
                         <span style="font-weight: bold">{{database.description}}:</span>
                         <span ng-if="!database.opened">{{database.location}}</span>
-                        <a ng-if="database.opened" ng-href="/databases/{{database.uuid}}">{{database.location}}</a>
+                        <a ng-if="database.opened" ng-href="databases/{{database.uuid}}">{{database.location}}</a>
                     </div>
                 </td>
                 <td>

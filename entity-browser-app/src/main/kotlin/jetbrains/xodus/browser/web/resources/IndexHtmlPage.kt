@@ -5,11 +5,11 @@ import jetbrains.xodus.browser.web.Resource
 import jetbrains.xodus.browser.web.RestError
 import spark.kotlin.Http
 
-class IndexHtmlPage : Resource {
+class IndexHtmlPage(private val context: String) : Resource {
 
     private val indexHtml by lazy {
         val inputStream = javaClass.getResourceAsStream("/static/index.html")
-        inputStream.reader().readText()
+        inputStream.reader().readText().replace("<base href=\"/\">", "<base href=\"/$context/\">")
     }
 
     override fun registerRouting(http: Http) {
