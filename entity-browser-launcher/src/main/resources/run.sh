@@ -1,7 +1,7 @@
 #!/bin/sh
 SERVER_PORT=18080
 SERVER_HOST=localhost
-SERVER_HOST=
+SERVER_CONTEXT=
 
 if [ -z "${JAVA_HOME}" ]; then
   JAVA=java
