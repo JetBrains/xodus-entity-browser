@@ -6,7 +6,7 @@ import mu.KLogging
 fun main(args: Array<String>) {
     val port = Integer.getInteger("server.port", 18080)
     val host = System.getProperty("server.host", "localhost")
-    val context = System.getProperty("server.context", "entity-browser")
+    val context = System.getProperty("server.context", "")
     Application.start()
 
     HttpServer(host, port, context).setup()

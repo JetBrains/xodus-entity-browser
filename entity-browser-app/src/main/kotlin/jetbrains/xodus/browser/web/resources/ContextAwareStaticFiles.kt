@@ -14,10 +14,11 @@ class ContextAwareStaticFilesConfiguration(private val context: String) : Static
     private val handler = object : ClassPathResourceHandler("/static") {
 
         override fun getResource(path: String?): AbstractFileResolvingResource {
-            val newPath = path?.removePrefix("/$context")
-            return super.getResource(newPath)
+            if (context.isBlank()) {
+                return super.getResource(path)
+            }
+            return super.getResource(path?.removePrefix("/$context"))
         }
-
     }
 
     override fun consume(httpRequest: HttpServletRequest,

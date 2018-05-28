@@ -9,7 +9,12 @@ class IndexHtmlPage(private val context: String) : Resource {
 
     private val indexHtml by lazy {
         val inputStream = javaClass.getResourceAsStream("/static/index.html")
-        inputStream.reader().readText().replace("<base href=\"/\">", "<base href=\"/$context/\">")
+        val text = inputStream.reader().readText()
+        if (context.isBlank()) {
+            text
+        } else {
+            text.replace("<base href=\"/\">", "<base href=\"/$context/\">")
+        }
     }
 
     override fun registerRouting(http: Http) {
