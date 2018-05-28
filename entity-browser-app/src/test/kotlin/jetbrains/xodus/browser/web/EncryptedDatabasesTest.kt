@@ -68,8 +68,10 @@ class EncryptedDatabasesTest : TestSupport() {
         store.executeInTransaction {
             val tr = it as PersistentStoreTransaction
             store.getEntityTypeId(tr, "Type1", true)
-            tr.newEntity("Type1").also {
-                it.setProperty("type", "Band")
+            repeat(100) {
+                tr.newEntity("Type1").also {
+                    it.setProperty("type", "Band")
+                }
             }
         }
         store.close()
