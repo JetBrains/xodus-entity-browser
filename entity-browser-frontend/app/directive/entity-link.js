@@ -11,6 +11,7 @@ angular.module('xodus').directive('entityLink', ['currentDatabase', function (cu
         template: require('../templates/entity-link.html'),
         link: function (scope, element, attrs) {
             scope.linkToEntity = 'databases/' + currentDatabase.get().uuid + '/entities/' + scope.link.id;
+            scope.readonly = currentDatabase.get().readonly;
             scope.title = attrs.title;
         }
     }

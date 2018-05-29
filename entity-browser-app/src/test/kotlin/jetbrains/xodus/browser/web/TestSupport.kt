@@ -10,7 +10,6 @@ import org.junit.Before
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import java.io.File
-import java.net.ServerSocket
 import java.util.*
 
 open class TestSupport {
@@ -57,7 +56,11 @@ open class TestSupport {
     }
 
     fun newDB(location: String, isOpened: Boolean = false): DBSummary {
-        return dbsResource.new(DBSummary(location = location, key = key, isOpened = isOpened)).execute().body()!!
+        return dbsResource.new(DBSummary(location = location,
+                key = key,
+                isOpened = isOpened,
+                isReadonly = false,
+                isWatchReadonly = false)).execute().body()!!
     }
 
 

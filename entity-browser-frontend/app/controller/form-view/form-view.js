@@ -86,6 +86,7 @@ angular.module('xodus').controller('FormViewController', [
         formViewCtrl.revert = revert;
         formViewCtrl.linkChanges = [];
         formViewCtrl.navigation = navigationService(fullDatabase);
+        formViewCtrl.fullDatabase = fullDatabase;
 
         initialize();
     }]);

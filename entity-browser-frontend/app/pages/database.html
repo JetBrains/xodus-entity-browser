@@ -19,7 +19,7 @@
 
                 <div ng-if="!databaseCtrl.fullDatabase.types.length">
                     <h4>Database is empty - you can add
-                        <button class="btn btn-default js-close-popover"
+                        <button ng-if="!databaseCtrl.fullDatabase.readonly" class="btn btn-default js-close-popover"
                                 uib-popover-template="'add-new-entity-type.html'"
                                 popover-title="New entity type"
                                 popover-placement="bottom">Entity type

@@ -84,7 +84,11 @@ data class DBSummary(
 
         var location: String,
         var key: String? = null,
+
         var isOpened: Boolean = false,
+        var isReadonly: Boolean = true,
+        var isWatchReadonly: Boolean = true,
+
         var isEncrypted: Boolean = false,
         var encryptionProvider: EncryptionProvider? = null,
         var encryptionKey: String? = null,

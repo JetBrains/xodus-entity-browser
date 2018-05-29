@@ -32,11 +32,16 @@
                         <h4 class="panel-title pull-left" style="padding-top: 5.5px;">
                             {{item.label}}</h4>
 
-                        <div class="btn-group pull-right">
+                        <div class="btn-group pull-right" ng-if="!dataViewCtrl.fullDatabase.readonly">
                                 <button class="btn btn-primary fa fa-lg fa-pencil"
                                    data-ng-click="dataViewCtrl.edit(item)"></button>
                                 <button class="btn btn-danger fa fa-lg fa-trash"
                                    data-ng-click="dataViewCtrl.deleteItem(item)"></button>
+                        </div>
+
+                        <div class="btn-group pull-right" ng-if="dataViewCtrl.fullDatabase.readonly">
+                                <button class="btn btn-primary fa fa-lg fa-external-link"
+                                   data-ng-click="dataViewCtrl.edit(item)"></button>
                         </div>
                     </div>
                     <div class="panel-body">

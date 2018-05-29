@@ -5,6 +5,7 @@ import jetbrains.exodus.crypto.InvalidCipherParametersException
 import jetbrains.exodus.entitystore.*
 import jetbrains.exodus.env.EnvironmentConfig
 import jetbrains.exodus.env.Environments
+import jetbrains.exodus.io.WatchingFileDataReaderWriterProvider
 import jetbrains.xodus.browser.web.*
 import jetbrains.xodus.browser.web.search.smartSearch
 import mu.KLogging
@@ -20,6 +21,10 @@ class StoreService(dbSummary: DBSummary) {
     init {
         try {
             val config = EnvironmentConfig().also {
+                it.envIsReadonly = dbSummary.isReadonly
+                if (dbSummary.isWatchReadonly && dbSummary.isReadonly) {
+                    it.logDataReaderWriterProvider = WatchingFileDataReaderWriterProvider::class.java.name
+                }
                 if (dbSummary.isEncrypted) {
                     val initialization = try {
                         dbSummary.encryptionIV?.toLong()

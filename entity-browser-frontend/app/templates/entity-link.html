@@ -3,6 +3,6 @@
         <a class="btn btn-default linked-entity"
            href="{{linkToEntity}}"
            ng-class="{'deleted-entity-link' : isDeleted , 'new-entity-link' : isNew}">{{title}}</a>
-        <button type="button" class="btn btn-default fa fa-times" ng-if="isEditMode && !isDeleted" ng-click="onRemove()"></button>
+        <button type="button" class="btn btn-default fa fa-times" ng-if="isEditMode && !isDeleted && !readonly" ng-click="onRemove()"></button>
     </div>
 </div>

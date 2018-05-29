@@ -21,7 +21,7 @@ angular.module('xodus').directive('formView', [
                     scope.editMode = !scope.editMode;
                 };
                 scope.cancel = function () {
-                    if (scope.editMode) {
+                    if (scope.editMode && !currentDatabase.get().readonly) {
                         confirmExit(toSearch);
                     } else {
                         navigation.toType(scope.entity().typeId);
@@ -43,7 +43,7 @@ angular.module('xodus').directive('formView', [
                 };
                 scope.getForm = getForm;
                 var cleanUp = scope.$on('$locationChangeStart', function (event, next) {
-                        if (scope.editMode) {
+                        if (scope.editMode && !currentDatabase.get().readonly) {
                             confirmExit(function () {
                                 $window.location = next; //$location.path is too buggy
                             });

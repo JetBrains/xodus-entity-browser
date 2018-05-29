@@ -2,7 +2,7 @@
     <div class="row">
         <form class="form" data-ng-submit="searchCtrl.onSearch()">
             <div class="form-group col-md-3">
-                <div class="input-group">
+                <div ng-class="{'input-group': !searchCtrl.fullDatabase.readonly}">
                     <ui-select class="pull-right select-type-with-add-button"
                                data-ng-model="searchCtrl.selectedType"
                                data-theme="bootstrap"
@@ -18,7 +18,7 @@
                         </ui-select-choices>
                     </ui-select>
                     <div class="input-group-btn">
-                        <a class="btn btn-default" uib-popover-template="'add-new-entity-type.html'"
+                        <a ng-show="!searchCtrl.fullDatabase.readonly" class="btn btn-default" uib-popover-template="'add-new-entity-type.html'"
                                 popover-title="New entity type" popover-placement="bottom-right"
                                 ><i class="fa fa-plus js-close-popover" ></i></a>
                     </div>
@@ -42,7 +42,7 @@
                 </div>
             </div>
             <div class="col-md-2">
-                <div class="btn-group pull-right">
+                <div class="btn-group pull-right" ng-if="!searchCtrl.fullDatabase.readonly">
                     <a class="btn btn-primary pull-left" data-ng-click="searchCtrl.newEntity()">New Entity</a>
                     <a class="btn btn-danger pull-left" data-ng-click="searchCtrl.deleteSearchResult()">Delete
                         results</a>

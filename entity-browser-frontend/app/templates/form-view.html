@@ -4,11 +4,11 @@
         <div class="row entity-actions">
             <button class="btn btn-primary pull-left" data-ng-click="cancel()">Back to search</button>
 
-            <div class="pull-right" data-ng-show="editMode">
+            <div class="pull-right" data-ng-show="editMode && !formViewCtrl.fullDatabase.readonly">
                 <button class="btn btn-primary action-button" data-ng-click="formViewCtrl.save()">Save</button>
                 <button class="btn btn-danger action-button" data-ng-click="formViewCtrl.revert()">Revert</button>
             </div>
-            <div class="pull-right" data-ng-hide="editMode">
+            <div class="pull-right" data-ng-hide="editMode || formViewCtrl.fullDatabase.readonly">
                 <button class="btn btn-primary action-button" data-ng-click="toggleView()">Edit</button>
             </div>
         </div>
@@ -24,7 +24,7 @@
                             <div ng-show="!editMode">
                                 No properties
                             </div>
-                            <div ng-show="editMode">
+                            <div ng-show="editMode && !formViewCtrl.fullDatabase.readonly">
                                 Add property
                                 <a class="btn btn-primary" data-ng-click="propertiesCtrl.newProperty()">
                                     <i class="fa fa-plus"></i>
@@ -53,7 +53,7 @@
                                                class="form-control"
                                                data-ng-required="true"
                                                data-ng-model="property.name"
-                                               data-ng-disabled="!editMode"
+                                               data-ng-disabled="!editMode || formViewCtrl.fullDatabase.readonly"
                                                data-ng-change="propertiesCtrl.checkDuplicates(property)"
                                                placeholder="Enter name"
                                                data-uib-tooltip="{{getMessage('propsForm', $index + 'name')}}"
@@ -63,7 +63,7 @@
                                 <div class="col-md-2">
                                     <ui-select data-ng-model="property.type"
                                                data-theme="bootstrap"
-                                               data-ng-disabled="!editMode"
+                                               data-ng-disabled="!editMode  || formViewCtrl.fullDatabase.readonly"
                                                data-ng-change="propertiesCtrl.removeValue(property)">
                                         <ui-select-match placeholder="Select property type">
                                             {{$select.selected.displayName}}
@@ -85,12 +85,12 @@
                                                    data-ng-required="true"
                                                    placeholder="Enter value"
                                                    data-ng-change="propertiesCtrl.validateType(property)"
-                                                   data-ng-disabled="!editMode || property.type.readonly"
+                                                   data-ng-disabled="!editMode || property.type.readonly  || formViewCtrl.fullDatabase.readonly"
                                                    data-uib-tooltip="{{getMessage('propsForm', $index + 'value')}}"
                                                    data-uib-tooltip-trigger="mouseenter">
                                         </div>
                                     </div>
-                                    <div class="col-md-2" data-ng-show="editMode">
+                                    <div class="col-md-2" data-ng-show="editMode && !formViewCtrl.fullDatabase.readonly">
                                         <div data-ng-show="$index + 1 !== propertiesCtrl.properties.length">
                                             <a class="btn btn-danger"
                                                data-ng-click="propertiesCtrl.removeProperty(property)">
@@ -122,7 +122,7 @@
                     <div class="panel-body">
 
                         <div class="row" style="font-weight: bold"
-                             ng-show="editMode || linksCtrl.currentLinks().length">
+                             ng-show="(editMode || linksCtrl.currentLinks().length) && !formViewCtrl.fullDatabase.readonly">
                             <div class="col-md-3">
                                 Name
                             </div>
@@ -130,7 +130,7 @@
                                 Value
                             </div>
                         </div>
-                        <div class="row add-link-section" ng-show="editMode">
+                        <div class="row add-link-section" ng-show="editMode && !formViewCtrl.fullDatabase.readonly">
                             <form class="form-horizontal" name="linksForm" novalidate>
                                 <div class="col-md-3">
                                     <div data-ng-class="{'has-error':  hasError('linksForm', 'name' )}">
@@ -203,7 +203,7 @@
                                             is-edit-mode="editMode"
                                     ></linked-entities-view>
                                 </div>
-                                <div class="col-md-2 pull-right" data-ng-show="editMode">
+                                <div class="col-md-2 pull-right" data-ng-show="editMode && !formViewCtrl.fullDatabase.readonly">
                                     <a class="btn btn-danger"
                                        data-ng-click="linksCtrl.totallyRemoveLink(link.name, formViewCtrl.linkChanges)">
                                         <i class="fa fa-trash"></i>

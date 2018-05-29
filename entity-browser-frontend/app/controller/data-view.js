@@ -14,6 +14,7 @@ angular.module('xodus').controller('DataViewController', [
             dataViewCtrl.searchQuery = searchQuery();
             dataViewCtrl.pageSize = 50;
             dataViewCtrl.type = databaseType();
+            dataViewCtrl.fullDatabase = currentDatabase.get();
             var entities = entitiesService(currentDatabase.get());
 
             $scope.$on('$routeUpdate', function () {

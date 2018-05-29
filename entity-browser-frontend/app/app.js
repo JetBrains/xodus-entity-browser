@@ -27,8 +27,6 @@ angular.module('xodus').config([
 
         $routeProvider.when('/error', {
             template: require('./pages/error.html')
-        }).when('/databases', {
-            template: require('./pages/databases.html')
         }).otherwise({
             redirectTo: '/'
         });
@@ -46,6 +44,9 @@ angular.module('xodus').config([
         }
 
         when('/', {
+            template: require('./pages/databases.html')
+        });
+        when('/databases', {
             template: require('./pages/databases.html')
         });
         when('/databases/:databaseId', {

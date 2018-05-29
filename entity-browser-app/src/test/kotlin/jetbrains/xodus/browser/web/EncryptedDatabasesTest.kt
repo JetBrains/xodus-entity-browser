@@ -51,6 +51,8 @@ class EncryptedDatabasesTest : TestSupport() {
                 key = key,
                 isOpened = true,
                 isEncrypted = true,
+                isReadonly = false,
+                isWatchReadonly = false,
                 encryptionProvider = EncryptionProvider.CHACHA,
                 encryptionKey = encKey,
                 encryptionIV = encInit.toString()
