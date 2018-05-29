@@ -514,3 +514,7 @@ input.ui-select-search {
     margin-bottom: 5px;
     font-weight: bold;
 }
+
+.badge-warning {
+    background-color: #f8ac59;
+}

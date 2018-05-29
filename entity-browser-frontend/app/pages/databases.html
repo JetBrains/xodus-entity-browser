@@ -25,6 +25,7 @@
                         <span style="font-weight: bold">{{database.description}}:</span>
                         <span ng-if="!database.opened">{{database.location}}</span>
                         <a ng-if="database.opened" ng-href="databases/{{database.uuid}}">{{database.location}}</a>
+                        <span class="badge badge-warning" ng-if="database.readonly">readonly</span>
                     </div>
                 </td>
                 <td>
