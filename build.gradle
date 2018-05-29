@@ -44,6 +44,17 @@ allprojects {
             downloadSources = true
         }
     }
+
+    test {
+        minHeapSize = '512m'
+        maxHeapSize = '512m'
+        testLogging {
+            showStandardStreams = true
+            exceptionFormat = 'full'
+        }
+        outputs.upToDateWhen { false }
+    }
+
 }
 
 defaultTasks 'clean build'
