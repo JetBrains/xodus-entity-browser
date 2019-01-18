@@ -1,9 +1,9 @@
 plugins {
-    id "com.moowork.node" version "0.13"
+    id "com.moowork.node" version "1.2.0"
 }
 
 node {
-    version = '7.7.0'
+    version = '7.7.3'
 }
 
 task runNpm(type: NpmTask, dependsOn: 'npmInstall') { args = ['run', 'build'] }

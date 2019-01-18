@@ -11,7 +11,7 @@ require('bootstrap-toggle/js/bootstrap-toggle.js');
 require('bootstrap/dist/css/bootstrap.css');
 require('ui-select/dist/select.css');
 require('bootstrap-toggle/css/bootstrap-toggle.css');
-require('font-awesome-loader');
+require("font-awesome-sass-loader");
 
 angular.module('xodus', [
     'ngRoute',

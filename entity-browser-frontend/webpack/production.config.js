@@ -38,7 +38,6 @@ module.exports = require('webpack-config-merger')(
           'NODE_ENV': '"production"'
         }
       }),
-      new webpack.optimize.DedupePlugin(),
       new webpack.optimize.UglifyJsPlugin({
         minimize: true,
         sourceMap: false,
@@ -46,7 +45,7 @@ module.exports = require('webpack-config-merger')(
           warnings: false
         }
       }),
-      new SplitByPathPlugin([{
+      new webpack.optimize.CommonsChunkPlugin([{
         name: 'vendor',
         path: require('path').join(webpackShare.getProjectDirectory(), 'node_modules/')
       }])

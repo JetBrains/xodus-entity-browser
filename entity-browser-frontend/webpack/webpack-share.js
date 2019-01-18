@@ -34,14 +34,22 @@ function getStyleLoaders() {
             loader: 'style-loader!css-loader'
         },
         {
-            test: /\.woff2?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-            // Limiting the size of the woff fonts breaks font-awesome ONLY for the extract text plugin
-            // loader: "url?limit=10000"
-            loader: "url"
+            test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+            use: [
+                {
+                    loader: 'url-loader',
+                    options: {
+                        limit: 10000,
+                        mimetype: 'application/font-woff'
+                    }
+                }
+            ]
         },
         {
-            test: /\.(ttf|eot|svg)(\?[\s\S]+)?$/,
-            loader: 'file'
+            test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+            use: [
+                { loader: 'file-loader' }
+            ]
         },
         {
             test: /\.jpe?g$|\.ico$|\.gif$|\.png$|\.svg$|\.woff$|\.ttf$|\.wav$|\.mp3$/,
@@ -62,7 +70,7 @@ function getTemplateLoaders() {
     return [{
         test: /\.html$/,
         loaders: [
-            'html?' + JSON.stringify({
+            'html-loader?' + JSON.stringify({
                 collapseBooleanAttributes: false,
                 collapseWhitespace: false
             })
@@ -131,9 +139,7 @@ module.exports = {
         return [
             new webpack.DefinePlugin({
                 AppBuildConfig: toJson(AppBuildConfig)
-            }),
-
-            new webpack.optimize.OccurenceOrderPlugin(true)
+            })
         ];
     },
 

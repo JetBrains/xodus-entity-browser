@@ -7,7 +7,7 @@ ext.libraries = [
         'org.jetbrains.kotlin:kotlin-stdlib'                      : kotlinVersion,
         'org.jetbrains.kotlin:kotlin-reflect'                     : kotlinVersion,
 
-        'org.webjars:bootstrap'                                   : '3.3.5',
+        'org.webjars:bootstrap'                                   : '3.4.0',
         'org.webjars:font-awesome'                                : '4.4.0',
 
         'ch.qos.logback:logback-classic'                          : '1.1.3',
