@@ -180,7 +180,7 @@ class LinkSearchTerm private constructor(name: String, val oppositeEntityTypeNam
                 } catch (ex: EntityRemovedInDatabaseException) {
                     null
                 }
-                return if (oppositeEntity == null) {
+                if (oppositeEntity == null) {
                     EntityIterableBase.EMPTY
                 } else {
                     txn.findLinks(entityType, oppositeEntity, name)
