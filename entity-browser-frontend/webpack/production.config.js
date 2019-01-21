@@ -7,7 +7,7 @@ webpackShare.setupFixForBuildNodeSass();
 module.exports = {
     entry: webpackShare.entryPoints,
     output: {
-        path: path.resolve('./dist/static'),
+        path: path.resolve('./dist'),
         filename: '[name].[hash].js'
     },
     resolve: webpackShare.resolve,
