@@ -26,7 +26,6 @@ require('mout/object/fillIn')(argv.params.server, {
 });
 
 /**
- * YouTrack
  * server context
  * This need for correct work task replace in watch mode
  * because this task called how sub process
@@ -64,24 +63,7 @@ var webpackConfig = require('webpack-config-merger')(
     resolveLoader: webpackShare.resolveLoader,
     module: webpackShare.module,
     devtool: 'sourcemap',
-    plugins: webpackShare.getPlugins({
-      build: {
-        version: process.env.VERSION_NUMBER || 'dev',
-        number: process.env.BUILD_NUMBER || 'dev',
-        date: (new Date()).toUTCString()
-      },
-      backend: {
-        serviceId: '0-0-0-0-0',
-        youtrackBaseUri: getServerContext(),
-        scope: ['0-0-0-0-0'],
-        refresh: true
-      },
-      flags: {
-        allowRedirects: true,
-        debugAnalytics: false
-      }
-    }),
-
+    plugins: webpackShare.getPlugins(),
     devServer: {
       port: argv.port,
       host: argv.host,

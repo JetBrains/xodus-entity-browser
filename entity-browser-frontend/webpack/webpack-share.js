@@ -10,7 +10,6 @@ function getJavaScriptLoaders() {
         loaders: ['ng-annotate-loader']
     }];
 }
-
 function getStyleLoaders() {
     return [
         {
