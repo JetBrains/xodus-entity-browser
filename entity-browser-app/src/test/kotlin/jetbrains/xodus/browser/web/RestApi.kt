@@ -42,4 +42,10 @@ interface EntitiesApi {
             @Path("id") id: String,
             @Path("linkName") linkName: String): Call<LinkPager>
 
+    @PUT("api/dbs/{uuid}/entities/{id}")
+    fun update(
+            @Path("uuid") uuid: String,
+            @Path("id") id: String,
+            @Body changeSummary: ChangeSummary): Call<Void>
+
 }

@@ -31,15 +31,27 @@ fun Entity.linkView(name: String, skip: Int = 0, top: Int = 100): LinkPager {
             totalCount = links.size(),
             entities = links.asSequence().drop(skip).take(top).map { link ->
                 val linkId = link.id
+                val exists = link.exists()
                 EntityLink(
                         id = link.id.toString(),
                         name = name,
                         typeId = linkId.typeId,
                         label = link.label,
-                        type = link.type
+                        type = link.type,
+                        notExists = !exists
                 )
             }.toList()
     )
+}
+
+fun Entity.exists(): Boolean {
+    return try {
+        val currentTransaction = store.currentTransaction!!
+        currentTransaction.getEntity(id)
+        true
+    } catch (e: RuntimeException) {
+        false
+    }
 }
 
 

@@ -2,7 +2,8 @@
     <div class="btn-group" role="group">
         <a class="btn btn-default linked-entity"
            href="{{linkToEntity}}"
-           ng-class="{'deleted-entity-link' : isDeleted , 'new-entity-link' : isNew}">{{title}}</a>
+           ng-class="{'deleted-entity-link' : isDeleted , 'new-entity-link' : isNew}">{{title}} <span class="label label-danger" ng-show="link.notExists">broken</span></a>
         <button type="button" class="btn btn-default fa fa-times" ng-if="isEditMode && !isDeleted && !readonly" ng-click="onRemove()"></button>
+
     </div>
 </div>

@@ -23,7 +23,8 @@ data class EntityLink(
         override var name: String,
         var typeId: Int,
         var type: String,
-        var label: String
+        var label: String,
+        var notExists: Boolean = false
 ) : Named
 
 data class LinkPager(

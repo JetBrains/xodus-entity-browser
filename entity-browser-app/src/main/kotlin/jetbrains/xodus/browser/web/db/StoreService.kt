@@ -155,7 +155,7 @@ class StoreService(dbSummary: DBSummary) {
                     entity.deleteLinks(it.name)
                 } else if (newValue == null) {
                     if (oldValue != null) {
-                        val linked = getEntity(oldValue.id, t)
+                        val linked = getEntityOrStub(oldValue.id, t)
                         entity.deleteLink(it.name, linked)
                     }
                 } else {
@@ -209,6 +209,16 @@ class StoreService(dbSummary: DBSummary) {
             throw EntityNotFoundException(e, id)
         }
 
+    }
+
+    private fun getEntityOrStub(id: String, t: PersistentStoreTransaction): PersistentEntity {
+        val entityId = PersistentEntityId.toEntityId(id)
+        return try {
+            t.getEntity(entityId)
+        } catch (e: EntityRemovedInDatabaseException) {
+            logger.info { "entity not found by '$id'. using stub" }
+            PersistentEntity(store, entityId as PersistentEntityId)
+        }
     }
 
     private fun safeTrim(value: String?): String? {
