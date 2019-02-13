@@ -1,5 +1,8 @@
 package jetbrains.xodus.browser.web
 
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.jetty.Jetty
+import io.ktor.server.jetty.JettyApplicationEngine
 import jetbrains.exodus.entitystore.PersistentEntityStoreImpl
 import jetbrains.exodus.entitystore.PersistentEntityStores
 import jetbrains.exodus.env.Environments
@@ -11,6 +14,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import java.io.File
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 open class TestSupport {
     protected val key = "teamsysdata"
@@ -18,10 +22,12 @@ open class TestSupport {
     private lateinit var store: PersistentEntityStoreImpl
     private val databaseService = DatabaseService()
 
-    private val http = HttpServer(_port = 0, context = "custom")
+    private lateinit var server: JettyApplicationEngine
+    private val context = "/custom"
+    private val port = 18443
 
     protected val retrofit: Retrofit by lazy {
-        Retrofit.Builder().baseUrl("http://localhost:${http.port}/custom/").addConverterFactory(JacksonConverterFactory.create(mapper)).build()
+        Retrofit.Builder().baseUrl("http://localhost:$port/custom/").addConverterFactory(JacksonConverterFactory.create(mapper)).build()
     }
 
     protected val dbsResource by lazy {
@@ -40,7 +46,10 @@ open class TestSupport {
         System.setProperty("recent.dbs", newLocation() + File.separator + "recent.dbs.json")
         store = PersistentEntityStores.newInstance(Environments.newInstance(lockedDBLocation), key)
         Application.start()
-        http.setup()
+        server = embeddedServer(Jetty, port = port) {
+            HttpServer(context).setup(this, port)
+        }
+        server.start(wait = false)
 
         var setuped = false
         var times = 0
@@ -69,6 +78,6 @@ open class TestSupport {
         store.close()
         databaseService.deleteAll()
         Databases.file.delete()
-        http.stop()
+        server.stop(gracePeriod = 20, timeout = 20, timeUnit = TimeUnit.SECONDS)
     }
 }

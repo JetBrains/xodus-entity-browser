@@ -1,23 +1,26 @@
 package jetbrains.xodus.browser.web
 
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.jetty.Jetty
 import mu.KLogging
 
-
-fun main(args: Array<String>) {
-    val port = Integer.getInteger("server.port", 18080)
-    val host = System.getProperty("server.host", "localhost")
-    val context = System.getProperty("server.context", "")
+fun main() {
+    val appPort = Integer.getInteger("server.port", 18443)
+    val appHost = System.getProperty("server.host", "localhost")
+    val context = System.getProperty("server.context", "/")
     Application.start()
 
-    HttpServer(host, port, context).setup()
-
-    OS.launchBrowser(host, port, context)
+    val server = embeddedServer(Jetty, port = appPort, host = appHost) {
+        HttpServer(context).setup(this, appPort)
+    }
+    server.start(false)
+    OS.launchBrowser(appHost, appPort, context)
 }
 
 private object OS : KLogging() {
 
     fun launchBrowser(host: String, port: Int, context: String) {
-        val url = "http://$host:$port/$context"
+        val url = "http://$host:$port$context"
         logger.info { "try to open browser for '$url'" }
         try {
             val osName = "os.name".system()

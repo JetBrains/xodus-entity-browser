@@ -2,195 +2,149 @@ package jetbrains.xodus.browser.web
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import jetbrains.xodus.browser.web.resources.*
+import io.ktor.application.Application
+import io.ktor.application.ApplicationCall
+import io.ktor.application.call
+import io.ktor.application.install
+import io.ktor.features.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.files
+import io.ktor.http.content.static
+import io.ktor.jackson.jackson
+import io.ktor.request.httpMethod
+import io.ktor.request.path
+import io.ktor.response.respond
+import io.ktor.routing.Route
+import io.ktor.routing.route
+import io.ktor.routing.routing
+import jetbrains.xodus.browser.web.resources.DB
+import jetbrains.xodus.browser.web.resources.DBs
+import jetbrains.xodus.browser.web.resources.Entities
+import jetbrains.xodus.browser.web.resources.IndexHtmlPage
 import jetbrains.xodus.browser.web.search.SearchQueryException
 import mu.KLogging
-import org.eclipse.jetty.server.Handler
-import org.eclipse.jetty.server.Server
-import org.eclipse.jetty.util.thread.QueuedThreadPool
-import org.eclipse.jetty.util.thread.ThreadPool
-import spark.Response
-import spark.ResponseTransformer
-import spark.Spark.exception
-import spark.embeddedserver.EmbeddedServers
-import spark.embeddedserver.jetty.EmbeddedJettyServer
-import spark.embeddedserver.jetty.JettyHandler
-import spark.embeddedserver.jetty.JettyServerFactory
-import spark.http.matching.MatcherFilter
-import spark.kotlin.Http
-import spark.kotlin.RouteHandler
-import spark.kotlin.ignite
-import spark.route.Routes
-import spark.staticfiles.StaticFilesConfiguration
-import java.net.HttpURLConnection
+import org.slf4j.event.Level
 
 
-val mapper: ObjectMapper = ObjectMapper()
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        .registerModule(KotlinModule())
+lateinit var mapper: ObjectMapper
 
-object JsonTransformer : ResponseTransformer {
+open class HttpServer(val context: String = "/") : KLogging() {
 
-    override fun render(model: Any): String {
-        return mapper.writeValueAsString(model)
-    }
-}
-
-const val json = "application/json"
-
-inline fun <reified T> Http.safePost(path: String = "", crossinline executor: RouteHandler.(T) -> Any) {
-    post(path, json) {
-        val t = mapper.readValue(request.body(), T::class.java)
-        response.type(json)
-        JsonTransformer.render(executor(t))
-    }
-}
-
-fun Http.safePost(path: String = "", executor: RouteHandler.() -> Any) {
-    post(path) {
-        response.type(json)
-        JsonTransformer.render(executor())
-    }
-}
-
-inline fun <reified T> Http.safePut(path: String, crossinline executor: RouteHandler.(T) -> Any) {
-    put(path, json) {
-        val t = mapper.readValue(request.body(), T::class.java)
-        response.type(json)
-        JsonTransformer.render(executor(t))
-    }
-}
-
-
-fun Http.safeGet(path: String = "", executor: RouteHandler.() -> Any) {
-    get(path, json) {
-        response.type(json)
-        JsonTransformer.render(executor())
-    }
-}
-
-fun Http.safeDelete(path: String = "", executor: RouteHandler.() -> Any) {
-    delete(path, json) {
-        response.type(json)
-        JsonTransformer.render(executor())
-    }
-}
-
-class HttpServer(val host: String = "localhost", val _port: Int, val context: String = "") : KLogging() {
-
-    private lateinit var http: Http
+    internal val indexHtml = IndexHtmlPage(context)
 
     private val resources = listOf(
             // rest api
             DBs(),
             DB(),
-            Entities(),
-
-            // index html
-            IndexHtmlPage(context)
+            Entities()
     )
 
-    val port get() = http.port()
+    fun setup(application: Application, port: Int) {
+        with(application) {
+//            install(HttpsRedirect) {
+//                sslPort = port
+//            }
+            install(DefaultHeaders)
+            install(Compression)
 
-    private val jettyFactory = object : JettyServerFactory {
-
-        override fun create(maxThreads: Int, minThreads: Int, threadTimeoutMillis: Int): Server {
-            return if (maxThreads > 0) {
-                val min = if (minThreads > 0) minThreads else 8
-                val idleTimeout = if (threadTimeoutMillis > 0) threadTimeoutMillis else 60000
-
-                Server(QueuedThreadPool(maxThreads, min, idleTimeout))
-            } else {
-                Server()
-            }
-        }
-
-        override fun create(threadPool: ThreadPool?): Server {
-            return if (threadPool != null) Server(threadPool) else Server()
-        }
-    }
-
-    private fun newContextHandler(routeMatcher: Routes, hasMultipleHandler: Boolean): Handler {
-        val matcherFilter = MatcherFilter(routeMatcher, ContextAwareStaticFilesConfiguration(context), false, hasMultipleHandler).also { it.init(null) }
-        return JettyHandler(matcherFilter)
-    }
-
-    fun setup() {
-        EmbeddedServers.add(EmbeddedServers.Identifiers.JETTY) { routeMatcher: Routes, _: StaticFilesConfiguration, hasMultipleHandler: Boolean ->
-            val handler = newContextHandler(routeMatcher, hasMultipleHandler)
-            EmbeddedJettyServer(jettyFactory, handler)
-        }
-
-
-        http = ignite().port(_port).ipAddress(host).apply {
-            staticFiles.location("/static") // just hack for Spark
-            service.path("/$context") {
-                resources.forEach { it.registerRouting(this) }
-            }
-            after {
-                logger.info {
-                    "'${request.requestMethod()} ${request.pathInfo()}' - ${response.status()} ${response.type() ?: ""}"
+            install(ContentNegotiation) {
+                jackson {
+                    disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                    mapper = this
                 }
             }
 
-            exception(EntityNotFoundException::class.java) { e, _, response ->
-                logger.error("getting entity failed", e)
-                response.status(HttpURLConnection.HTTP_NOT_FOUND)
-                withBody(response, e)
+            install(CallLogging) {
+                install(CallLogging) {
+                    level = Level.DEBUG
+                    filter { call -> call.request.path().startsWith("/$context/api") }
+                }
             }
-            exception(InvalidFieldException::class.java) { e, _, response ->
-                logger.error("error updating entity", e)
-                response.status(HttpURLConnection.HTTP_BAD_REQUEST)
-                withBody(response, e)
-            }
-            exception(DatabaseException::class.java) { e, _, response ->
-                logger.error("error with working with database", e)
-                response.status(HttpURLConnection.HTTP_BAD_REQUEST)
-                withBody(response, e)
-            }
-            exception(SearchQueryException::class.java) { e, request, response ->
-                logger.warn("error executing '${request.requestMethod()}' request for '${request.pathInfo()}'", e)
-                response.status(HttpURLConnection.HTTP_BAD_REQUEST)
-                withBody(response, e)
-            }
-            exception(NumberFormatException::class.java) { e, _, response ->
-                logger.debug("error parsing request path or query parameter", e)
-                response.status(HttpURLConnection.HTTP_BAD_REQUEST)
-                response.body(JsonTransformer.render(e.toVO()))
-            }
-            exception(NotFoundException::class.java) { e, _, response ->
-                logger.debug("can't handle database", e)
-                response.status(HttpURLConnection.HTTP_NOT_FOUND)
-                withBody(response, e)
-            }
-            exception(Exception::class.java) { e, _, response ->
-                logger.error("unexpected exception", e)
-                response.status(HttpURLConnection.HTTP_INTERNAL_ERROR)
-                withBody(response, e)
-            }
+            installStatusPages()
+            installStatic()
 
-            internalServerError {
-                "Sorry, something went wrong. Check server logs"
+            installIndexHTML()
+            installRestApi()
+
+        }
+    }
+
+    open fun Application.installStatic() {
+        routing {
+            static(context) {
+                files("static")
             }
         }
     }
 
-    private fun withBody(response: Response, e: Exception) {
-        val vo = if (e is WithMessage) e.toVO() else e.toVO()
-        response.body(JsonTransformer.render(vo))
+    open fun Application.installIndexHTML() {
+        routing {
+            static {
+                files("static")
+            }
+        }
     }
 
-    fun stop() {
-        http.stop()
+    open fun Application.installRestApi() {
+        routing {
+            route("$context/api") {
+                resources.forEach { with(it) { install() } }
+            }
+        }
+    }
+
+    private fun Application.installStatusPages() {
+        install(StatusPages) {
+            exception<EntityNotFoundException> {
+                logger.error("getting entity failed", it)
+                call.respond(HttpStatusCode.NotFound, it)
+            }
+            exception<InvalidFieldException> {
+                logger.error("error updating entity", it)
+                call.respond(HttpStatusCode.BadRequest, it)
+            }
+            exception<DatabaseException> {
+                logger.error("error with working with database", it)
+                call.respond(HttpStatusCode.BadRequest, it)
+            }
+            exception<SearchQueryException> {
+                logger.warn("error executing '${call.request.httpMethod.value}' request for '${call.request.path()}'", it)
+                call.respond(HttpStatusCode.BadRequest, it)
+            }
+            exception<NumberFormatException> {
+                logger.debug("error parsing request path or query parameter", it)
+                call.respond(HttpStatusCode.BadRequest, it)
+            }
+            exception<NotFoundException> {
+                logger.debug("can't handle database", it)
+                call.respond(HttpStatusCode.NotFound, it)
+            }
+            exception<Exception> {
+                logger.error("unexpected exception", it)
+                call.respond(HttpStatusCode.InternalServerError, it)
+            }
+            exception<io.ktor.features.NotFoundException> {
+                logger.error("unexpected exception", it)
+                if (!call.request.path().startsWith("/$context/api")) {
+                    with(indexHtml) { call.respondIndexHtml() }
+                } else {
+                    call.respond(HttpStatusCode.NotFound, it)
+                }
+            }
+        }
+    }
+
+    private suspend fun ApplicationCall.respond(status: HttpStatusCode, e: Exception) {
+        val vo = if (e is WithMessage) e.toVO() else e.toVO()
+        respond(status, vo)
     }
 }
 
-interface Resource {
+interface AppRoute {
 
     companion object : KLogging()
 
-    fun registerRouting(http: Http)
+    fun Route.install()
 }
 
 interface WithMessage {

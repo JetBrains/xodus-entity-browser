@@ -57,7 +57,7 @@ object Application {
 }
 
 
-fun servicesOf(dbUUID: String): Services = Application.allServices[dbUUID]!!
+fun servicesOf(dbUUID: String): Services = Application.allServices[dbUUID] ?: throw NotFoundException("no database founded for $dbUUID")
 
 infix fun String.systemOr(default: String): String = System.getProperty(this, default)
 

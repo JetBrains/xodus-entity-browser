@@ -1,85 +1,123 @@
 package jetbrains.xodus.browser.web.resources
 
 import com.fasterxml.jackson.core.JsonProcessingException
-import jetbrains.xodus.browser.web.*
+import io.ktor.application.ApplicationCall
+import io.ktor.application.call
+import io.ktor.features.BadRequestException
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.request.receive
+import io.ktor.response.respond
+import io.ktor.response.respondOutputStream
+import io.ktor.routing.*
+import jetbrains.xodus.browser.web.AppRoute
+import jetbrains.xodus.browser.web.ChangeSummary
+import jetbrains.xodus.browser.web.mapper
 import mu.KLogging
-import spark.kotlin.Http
-import spark.kotlin.RouteHandler
 
 
-class Entities : Resource, ResourceSupport {
+class Entities : AppRoute, ResourceSupport {
 
     companion object : KLogging()
 
-    private val RouteHandler.entityId: String
+    private val ApplicationCall.entityId: String
         get() {
-            return request.params("entityId")
+            return parameters["entityId"] ?: throw BadRequestException("entity id required")
         }
 
-    override fun registerRouting(http: Http) {
-        http.service.path("/api/dbs/:uuid/entities") {
-            http.safeGet {
-                val id = request.queryParams("id").toInt()
-                val q = request.queryParams("q")
-                val offset = (request.queryParams("offset") ?: "0").toInt()
-                val pageSize = (request.queryParams("pageSize") ?: "0").toInt()
+    override fun Route.install() {
+        route("/dbs/{uuid}/entities") {
+            get {
+
+                val id = call.request.queryParameters["id"]?.toInt() ?: 0
+                val q = call.request.queryParameters["q"]
+                val offset = (call.request.queryParameters["offset"] ?: "0").toInt()
+                val pageSize = (call.request.queryParameters["pageSize"] ?: "0").toInt()
                 logger.debug {
                     "searching entities by typeId: $id, q [$q] with offset = $offset and pageSize = $pageSize"
                 }
                 if (offset < 0 || pageSize < 0) {
-                    response.status(400)
+                    call.respond(HttpStatusCode.BadRequest)
+                } else {
+                    call.respond(
+                            call.storeService.searchType(
+                                    id,
+                                    q,
+                                    offset,
+                                    if (pageSize == 0) 50 else Math.min(pageSize, 1000)
+                            )
+                    )
                 }
-                storeService.searchType(id, q, offset, if (pageSize == 0) 50 else Math.min(pageSize, 1000))
             }
 
-            http.safeGet("/:entityId") {
+            get("/{entityId}") {
+                call.respond(call.storeService.getEntity(call.entityId))
+            }
+
+            put("/{entityId}") {
+                val changeSummary = call.receive(ChangeSummary::class)
+                val entityId = call.entityId
+                logger.debug { "updating entity for '$entityId'. ChangeSummary: ${toString(changeSummary)}" }
+                call.respond(
+                        call.storeService.updateEntity(entityId, changeSummary)
+                )
+            }
+            post {
+                val changeSummary = call.receive(ChangeSummary::class)
+                val typeId = call.request.queryParameters["typeId"]?.toInt()
+                        ?: throw BadRequestException("typeId is required")
+
+                logger.debug { "creating entity for '$typeId'. ChangeSummary: ${toString(changeSummary)}" }
+                call.respond(
+                        call.storeService.newEntity(typeId, changeSummary)
+                )
+            }
+            delete("/{entityId}") {
+                val entityId = call.entityId
+                call.respond(
+                        call.storeService.deleteEntity(entityId)
+                )
+            }
+            get("/{entityId}/blob/{blobName}") {
+                val entityId = call.entityId
+                val blobName = call.parameters["blobName"] ?: ""
                 logger.debug { "getting entity by entity id '$entityId'" }
-                storeService.getEntity(entityId)
+                call.respondOutputStream(ContentType.parse("application/octet-stream;charset=utf-8")) {
+                    call.storeService.getBlob(entityId, blobName).use {
+                        it.copyTo(this)
+                    }
+                }
             }
+            get("/{entityId}/links/{linkName}") {
+                val entityId = call.entityId
+                val linkName = call.parameters["linkName"] ?: ""
+                val offset = (call.request.queryParameters["offset"] ?: "0").toInt()
+                val pageSize = (call.request.queryParameters["pageSize"] ?: "0").toInt()
 
-            http.safePut<ChangeSummary>("/:entityId") {
-                logger.debug { "updating entity for '$entityId'. ChangeSummary: ${toString(it)}" }
-                storeService.updateEntity(entityId, it)
-            }
-
-            http.safePost<ChangeSummary> {
-                val typeId = request.queryParams("typeId").toInt()
-                logger.debug { "creating entity for '$entityId'. ChangeSummary: ${toString(it)}" }
-                storeService.newEntity(typeId, it)
-            }
-
-            http.safeDelete("/:entityId") {
-                logger.debug { "deleting '$entityId'" }
-                storeService.deleteEntity(entityId)
-            }
-
-            http.get("/:entityId/blob/:blobName") {
-                logger.debug { "getting entity by entity id '$entityId'" }
-                response.header("content-type", "application/octet-stream;charset=utf-8")
-                storeService.getBlob(entityId, request.params("blobName"))
-            }
-
-            http.safeGet("/:entityId/links/:linkName") {
-                val linkName = request.params("linkName")
-                val offset = (request.queryParams("offset") ?: "0").toInt()
-                val pageSize = (request.queryParams("pageSize") ?: "0").toInt()
                 logger.debug {
                     "searching entities by typeId: $entityId, linkName [$linkName] with offset = $offset and pageSize = $pageSize"
                 }
                 if (offset < 0 || pageSize < 0) {
-                    response.status(400)
+                    call.respond(HttpStatusCode.BadRequest)
+                } else {
+                    call.respond(
+                            call.storeService.searchEntity(
+                                    entityId,
+                                    linkName,
+                                    offset,
+                                    if (pageSize == 0) 50 else Math.min(pageSize, 1000)
+                            )
+                    )
                 }
-                storeService.searchEntity(entityId, linkName, offset, if (pageSize == 0) 100 else Math.min(pageSize, 1000))
             }
         }
     }
+}
 
-    private fun toString(vo: ChangeSummary): String {
-        return try {
-            mapper.writeValueAsString(vo)
-        } catch (e: JsonProcessingException) {
-            "Error converting vo to string. Check the server state this error should never happened"
-        }
+private fun toString(vo: ChangeSummary): String {
+    return try {
+        mapper.writeValueAsString(vo)
+    } catch (e: JsonProcessingException) {
+        "Error converting vo to string. Check the server state this error should never happened"
     }
-
 }

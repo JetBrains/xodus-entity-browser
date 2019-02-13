@@ -1,29 +1,30 @@
 package jetbrains.xodus.browser.web.resources
 
+import io.ktor.application.ApplicationCall
 import jetbrains.xodus.browser.web.DBSummary
+import jetbrains.xodus.browser.web.NotFoundException
 import jetbrains.xodus.browser.web.db.Databases
 import jetbrains.xodus.browser.web.db.JobsService
 import jetbrains.xodus.browser.web.db.StoreService
 import jetbrains.xodus.browser.web.servicesOf
-import spark.kotlin.RouteHandler
 
 interface ResourceSupport {
 
-    val RouteHandler.db: DBSummary
+    val ApplicationCall.db: DBSummary
         get() {
-            val uuid = request.params("uuid")
+            val uuid = parameters["uuid"] ?: throw NotFoundException("database not found")
             return Databases.find(uuid)
         }
 
-    val RouteHandler.jobsService: JobsService
+    val ApplicationCall.jobsService: JobsService
         get() {
-            val uuid = request.params("uuid")
+            val uuid = parameters["uuid"] ?: throw NotFoundException("database not found")
             return servicesOf(uuid).jobsService
         }
 
-    val RouteHandler.storeService: StoreService
+    val ApplicationCall.storeService: StoreService
         get() {
-            val uuid = request.params("uuid")
+            val uuid = parameters["uuid"] ?: throw NotFoundException("database service not found")
             return servicesOf(uuid).storeService
         }
 

@@ -1,7 +1,8 @@
 buildscript {
     ext.xodusVersion = '1.2.3523'
-    ext.kotlinVersion = '1.2.30'
+    ext.kotlinVersion = '1.3.21'
     ext.buildVersion = '1.2.1'
+    ext.ktorVersion = '1.1.2'
 
     repositories {
         mavenCentral()
@@ -15,8 +16,7 @@ buildscript {
 plugins {
     id 'java'
     id 'idea'                                         // ide sync fine tuning
-    id "com.jfrog.bintray" version "1.7"
-    id 'com.github.johnrengelman.shadow' version '2.0.2'
+    id 'com.github.johnrengelman.shadow' version '4.0.2'
 }
 
 apply from: 'libraries.gradle'
@@ -37,6 +37,7 @@ allprojects {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
         maven { url 'http://jetbrains.bintray.com/xodus' }
+        maven { url 'https://kotlin.bintray.com/kotlinx' }
     }
 
     idea {

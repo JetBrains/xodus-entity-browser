@@ -1,11 +1,10 @@
 package jetbrains.xodus.browser.web.resources
 
-import jetbrains.xodus.browser.web.JsonTransformer
-import jetbrains.xodus.browser.web.Resource
-import jetbrains.xodus.browser.web.RestError
-import spark.kotlin.Http
+import io.ktor.application.ApplicationCall
+import io.ktor.http.ContentType
+import io.ktor.response.respondText
 
-class IndexHtmlPage(private val context: String) : Resource {
+class IndexHtmlPage(val context: String) {
 
     private val indexHtml by lazy {
         val inputStream = javaClass.getResourceAsStream("/static/index.html")
@@ -17,17 +16,11 @@ class IndexHtmlPage(private val context: String) : Resource {
         }
     }
 
-    override fun registerRouting(http: Http) {
-        http.notFound {
-            if (!request.pathInfo().startsWith("/api")) {
-                response.status(200)
-                response.header("content-type", "text/html")
-                indexHtml
-            } else {
-                response.status(404)
-                JsonTransformer.render(RestError("${request.pathInfo()} - not found"))
-            }
+    suspend fun ApplicationCall.respondIndexHtml() {
+        respondText(ContentType.Text.Html) {
+            indexHtml
         }
     }
+
 }
 

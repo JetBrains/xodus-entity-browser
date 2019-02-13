@@ -19,7 +19,6 @@ sourceSets {
 }
 
 dependencies {
-    compile lib('org.jetbrains.kotlin:kotlin-stdlib')
     compile lib('org.jetbrains.kotlin:kotlin-reflect')
 
     compile lib('ch.qos.logback:logback-classic')
@@ -31,9 +30,10 @@ dependencies {
     compile lib('org.jetbrains.xodus:xodus-entity-store')
     compile lib('org.jetbrains.xodus:xodus-openAPI')
     compile lib('org.jetbrains.xodus:xodus-crypto')
-    compile lib('com.sparkjava:spark-kotlin')
-    compile lib('com.sparkjava:spark-core')
-    compile lib('com.fasterxml.jackson.module:jackson-module-kotlin')
+
+    compile "io.ktor:ktor-jackson:$ktorVersion"
+    compile "io.ktor:ktor-auth:$ktorVersion"
+    compile "io.ktor:ktor-server-jetty:$ktorVersion"
 
     testCompile lib('org.mockito:mockito-all')
     testCompile lib('junit:junit')
