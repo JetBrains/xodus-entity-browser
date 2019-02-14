@@ -4,6 +4,7 @@ import jetbrains.xodus.browser.web.db.DatabaseService
 import jetbrains.xodus.browser.web.db.Databases
 import jetbrains.xodus.browser.web.db.JobsService
 import jetbrains.xodus.browser.web.db.StoreService
+import java.util.concurrent.ConcurrentHashMap
 
 
 class Services(val storeService: StoreService,
@@ -18,7 +19,7 @@ class Services(val storeService: StoreService,
 
 object Application {
 
-    internal val allServices = hashMapOf<String, Services>()
+    internal val allServices = ConcurrentHashMap<String, Services>()
 
     private val databaseService: DatabaseService = DatabaseService()
 

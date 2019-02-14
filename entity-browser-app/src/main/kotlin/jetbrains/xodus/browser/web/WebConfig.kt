@@ -4,7 +4,10 @@ import io.ktor.application.Application
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.application.install
-import io.ktor.features.*
+import io.ktor.features.Compression
+import io.ktor.features.ContentNegotiation
+import io.ktor.features.DefaultHeaders
+import io.ktor.features.StatusPages
 import io.ktor.gson.gson
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.resources
@@ -22,7 +25,6 @@ import jetbrains.xodus.browser.web.resources.Entities
 import jetbrains.xodus.browser.web.resources.IndexHtmlPage
 import jetbrains.xodus.browser.web.search.SearchQueryException
 import mu.KLogging
-import org.slf4j.event.Level
 
 
 open class HttpServer(val appContext: String = "/") : KLogging() {
