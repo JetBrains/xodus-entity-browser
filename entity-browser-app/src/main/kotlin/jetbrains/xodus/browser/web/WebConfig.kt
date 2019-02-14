@@ -25,8 +25,6 @@ import mu.KLogging
 import org.slf4j.event.Level
 
 
-//lateinit var mapper: ObjectMapper
-
 open class HttpServer(val appContext: String = "/") : KLogging() {
 
     open val indexHtml = IndexHtmlPage(appContext)
@@ -44,16 +42,9 @@ open class HttpServer(val appContext: String = "/") : KLogging() {
             install(Compression)
 
             install(ContentNegotiation) {
-                gson {
-//                    disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-//                    mapper = this
-                }
+                gson { }
             }
 
-            install(CallLogging) {
-                level = Level.DEBUG
-                filter { call -> call.request.path().startsWith("/$appContext/api") }
-            }
             installStatusPages()
             installStatic()
 

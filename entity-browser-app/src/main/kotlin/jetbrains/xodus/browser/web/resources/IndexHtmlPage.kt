@@ -9,10 +9,10 @@ class IndexHtmlPage(val context: String) {
     private val indexHtml by lazy {
         val inputStream = javaClass.getResourceAsStream("/static/index.html")
         val text = inputStream.reader().readText()
-        if (context.isBlank()) {
+        if (context.isBlank() || context == "/") {
             text
         } else {
-            text.replace("<base href=\"/\">", "<base href=\"$context\">")
+            text.replace("<base href=\"/\">", "<base href=\"$context/\">")
         }
     }
 
