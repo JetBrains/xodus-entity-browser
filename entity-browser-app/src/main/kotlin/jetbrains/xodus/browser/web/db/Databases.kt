@@ -8,6 +8,7 @@ import jetbrains.exodus.env.EnvironmentConfig
 import jetbrains.exodus.env.Environments
 import jetbrains.xodus.browser.web.DBSummary
 import jetbrains.xodus.browser.web.EncryptionProvider
+import jetbrains.xodus.browser.web.Home
 import jetbrains.xodus.browser.web.NotFoundException
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -18,7 +19,12 @@ object Databases {
     private val iv: Long = System.getProperty("xodus.entity.browser.env.iv", "0").toLong()
     private val key: String? = System.getProperty("xodus.entity.browser.env.key")
     private val cipherId: String = System.getProperty("xodus.entity.browser.env.cipherId", EncryptionProvider.CHACHA.cipherId)
-    private val location: String = System.getProperty("xodus.entity.browser.env.location", "db")
+
+    private val location: String
+        get() {
+            return Home.dbHome.absolutePath
+        }
+
     private val isEncrypted: Boolean get() = key != null
     private val dbType: String = "DB"
 
@@ -33,10 +39,19 @@ object Databases {
             }
         }
         val env = Environments.newInstance(location, config)
-        store = PersistentEntityStores.newInstance(env, "xodus-entoty-browser")
+        store = PersistentEntityStores.newInstance(env, "xodus-entity-browser")
         store.executeInTransaction {
             it as PersistentStoreTransaction
-            store.getEntityTypeId(it, "DB", true)
+            store.getEntityTypeId(it, dbType, true)
+
+            //validate store
+            it.getAll(dbType).toList().forEach { entity ->
+                try {
+                    DBEntity(entity).summary()
+                } catch (e: Exception) {
+                    entity.delete()
+                }
+            }
         }
     }
 

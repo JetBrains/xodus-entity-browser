@@ -115,11 +115,11 @@ open class HttpServer(val appContext: String = "/") : KLogging() {
                 call.respond(HttpStatusCode.BadRequest, it)
             }
             exception<NumberFormatException> {
-                logger.debug("error parsing request path or query parameter", it)
+                logger.info("error parsing request path or query parameter", it)
                 call.respond(HttpStatusCode.BadRequest, it)
             }
             exception<NotFoundException> {
-                logger.debug("can't handle database", it)
+                logger.info("can't handle database", it)
                 call.respond(HttpStatusCode.NotFound, it)
             }
             exception<Exception> {

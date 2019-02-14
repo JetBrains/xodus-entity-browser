@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
+
 plugins {
     id "ca.coglinc.javacc" version "2.3.1"
 }
@@ -16,9 +18,9 @@ sourceSets {
 }
 
 dependencies {
-    compile 'org.slf4j:jul-to-slf4j:1.7.25'
+    compile 'org.slf4j:slf4j-simple:1.7.25'
     compile 'io.github.microutils:kotlin-logging:1.4.9'
-    
+
     compile project(':entity-browser-frontend')
 
     compile "org.jetbrains.xodus:xodus-environment:$xodusVersion"
@@ -28,11 +30,10 @@ dependencies {
 
     compile "io.ktor:ktor-gson:$ktorVersion"
     compile "io.ktor:ktor-server-jetty:$ktorVersion"
-    compile "io.ktor:ktor-server-jetty:$ktorVersion"
 
     testCompile 'org.mockito:mockito-all:1.9.5'
     testCompile 'junit:junit:4.11'
-    
+
     testCompile 'com.squareup.retrofit2:retrofit:2.3.0'
     testCompile 'com.squareup.retrofit2:converter-jackson:2.3.0'
     testCompile 'com.squareup.okhttp3:okhttp:3.9.1'
@@ -47,6 +48,10 @@ shadowJar {
     destinationDir = globalArtifactsBuildDir
     manifest {
         attributes 'Main-Class': 'jetbrains.xodus.browser.web.MainKt'
+    }
+    transform(ServiceFileTransformer) {
+        path = 'META-INF/services'
+        include 'org.eclipse.jetty.http.HttpFieldPreEncoder'
     }
 }
 
