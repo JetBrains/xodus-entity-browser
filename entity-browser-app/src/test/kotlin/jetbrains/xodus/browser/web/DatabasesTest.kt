@@ -42,7 +42,7 @@ class DatabasesTest : TestSupport() {
         with(newDB(location)) {
             dbResource.delete(uuid).execute()
             assertTrue(Databases.all().all { it.location != location })
-            assertFalse(Application.allServices.contains(uuid))
+            assertFalse(Application.allServices.containsKey(uuid))
         }
     }
 
@@ -53,11 +53,11 @@ class DatabasesTest : TestSupport() {
 
             val resultOfStart = dbResource.startOrStop(uuid, "start").execute()
             assertFalse(resultOfStart.body()!!.isOpened)
-            assertFalse(Application.allServices.contains(uuid))
+            assertFalse(Application.allServices.containsKey(uuid))
 
             val resultOfStop = dbResource.startOrStop(uuid, "stop").execute()
             assertFalse(resultOfStop.body()!!.isOpened)
-            assertFalse(Application.allServices.contains(uuid))
+            assertFalse(Application.allServices.containsKey(uuid))
         }
     }
 
@@ -69,11 +69,11 @@ class DatabasesTest : TestSupport() {
 
             val resultOfStart = dbResource.startOrStop(uuid, "start").execute()
             assertTrue(resultOfStart.body()!!.isOpened)
-            assertTrue(Application.allServices.contains(uuid))
+            assertTrue(Application.allServices.containsKey(uuid))
 
             val resultOfStop = dbResource.startOrStop(uuid, "stop").execute()
             assertFalse(resultOfStop.body()!!.isOpened)
-            assertFalse(Application.allServices.contains(uuid))
+            assertFalse(Application.allServices.containsKey(uuid))
         }
     }
 
