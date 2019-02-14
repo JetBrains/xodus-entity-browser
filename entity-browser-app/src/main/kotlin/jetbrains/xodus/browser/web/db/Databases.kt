@@ -1,58 +1,61 @@
 package jetbrains.xodus.browser.web.db
 
+import jetbrains.exodus.entitystore.Entity
+import jetbrains.exodus.entitystore.PersistentEntityStoreImpl
+import jetbrains.exodus.entitystore.PersistentEntityStores
+import jetbrains.exodus.entitystore.PersistentStoreTransaction
+import jetbrains.exodus.env.EnvironmentConfig
+import jetbrains.exodus.env.Environments
 import jetbrains.xodus.browser.web.DBSummary
+import jetbrains.xodus.browser.web.EncryptionProvider
 import jetbrains.xodus.browser.web.NotFoundException
-import jetbrains.xodus.browser.web.mapper
-import jetbrains.xodus.browser.web.systemOr
-import java.io.File
-import java.util.*
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
 
 
 object Databases {
 
-    internal val file by lazy {
-        File("recent.dbs" systemOr "./recent-dbs.json")
+    private val iv: Long = System.getProperty("xodus.entity.browser.env.iv", "0").toLong()
+    private val key: String? = System.getProperty("xodus.entity.browser.env.key")
+    private val cipherId: String = System.getProperty("xodus.entity.browser.env.cipherId", EncryptionProvider.CHACHA.cipherId)
+    private val location: String = System.getProperty("xodus.entity.browser.env.location", "db")
+    private val isEncrypted: Boolean get() = key != null
+    private val dbType: String = "DB"
+
+    private lateinit var store: PersistentEntityStoreImpl
+
+    fun start() {
+        val config = EnvironmentConfig().also {
+            if (isEncrypted) {
+                it.cipherBasicIV = iv
+                it.setCipherKey(key)
+                it.cipherId = cipherId
+            }
+        }
+        val env = Environments.newInstance(location, config)
+        store = PersistentEntityStores.newInstance(env, "xodus-entoty-browser")
+        store.executeInTransaction {
+            it as PersistentStoreTransaction
+            store.getEntityTypeId(it, "DB", true)
+        }
     }
 
-    private val dbs by lazy {
-        val result = arrayListOf<DBSummary>()
-        val canonicalFile = File(file.canonicalPath)
-        if (!canonicalFile.exists()) {
-            val parent = canonicalFile.parentFile
-            if (!parent.exists() && !parent.mkdirs()) {
-                throw IllegalStateException("can't create folder ${parent.canonicalPath}")
+    fun add(dbSummary: DBSummary): DBSummary {
+        val id = store.computeInTransaction {
+            val entity = it.newEntity(dbType)
+            val dbEntity = DBEntity(entity).merge(dbSummary).also {
+                it.isOpened = false
             }
-            if (!canonicalFile.createNewFile()) {
-                throw IllegalStateException("can't create file ${canonicalFile.absolutePath}")
-            }
+            dbEntity.id
         }
-        try {
-            result.addAll(fileDBs())
-        } catch (e: Exception) {
-            // ignore
-        }
-        result
-    }
-
-    fun add(dbSummary: DBSummary, tweak: DBSummary.() -> Unit): DBSummary {
-        val uuid = UUID.randomUUID().toString()
-        saveWith {
-            val copy = dbSummary.copy(uuid = uuid, isOpened = false)
-            dbs.add(copy)
-            copy.tweak()
-        }
-        return find(uuid) {
+        return find(id) {
             throw NotFoundException("Database on '${dbSummary.location}' is already registered")
         }
     }
 
-    fun applyChange(uuid: String, call: DBSummary.() -> Unit): DBSummary {
-        val dbCopy = find(uuid) {
-            throw NotFoundException("Database not found by id '$uuid'")
-        }
-        val location = dbCopy.location
-        saveWith {
-            dbCopy.call()
+    fun update(uuid: String, summary: DBSummary): DBSummary {
+        store.transactional {
+            DBEntity(it.getEntity(it.toEntityId(uuid))).merge(summary)
         }
         return find(uuid) {
             throw NotFoundException("Database on '$location' can't be modified")
@@ -60,52 +63,115 @@ object Databases {
     }
 
     fun delete(uuid: String) {
-        saveWith {
-            dbs.removeAll { it.uuid == uuid }
+        store.transactional {
+            it.getEntity(it.toEntityId(uuid)).delete()
         }
     }
 
     fun all(): List<DBSummary> {
-        return dbs.toList()
+        return listDBs().toList()
+    }
+
+    fun close() {
+        return store.close()
     }
 
     internal fun find(uuid: String, error: () -> Nothing = {
         throw NotFoundException("Database not found by id '$uuid'")
-    }) = dbs.firstOrNull { it.uuid == uuid } ?: error()
+    }) = listDBs().firstOrNull { it.uuid == uuid } ?: error()
 
-
-    private fun saveWith(call: () -> Unit) {
-        synchronized(this) {
-            try {
-                call()
-                doSync()
-            } catch (e: Exception) {
-                revert()
-                throw e
+    private fun listDBs(): List<DBSummary> {
+        return store.computeInTransaction {
+            it.getAll(dbType).map { entity ->
+                DBEntity(entity).summary()
             }
         }
     }
 
-    private fun doSync() {
-        val copy = dbs.toList()
-        val distinct = copy.distinctBy { it.location to it.key }
-        mapper.writeValue(file, distinct)
-        dbs.clear()
-        dbs.addAll(distinct)
-    }
+    class DBEntity(val entity: Entity) {
+        val id = entity.toIdString()
+        var location by requiredString()
+        var key by string()
 
-    private fun revert() {
-        dbs.clear()
-        dbs.addAll(fileDBs())
-    }
+        var isOpened by boolean()
+        var isReadonly by boolean()
+        var isWatchReadonly by boolean()
 
-    private fun fileDBs(): List<DBSummary> {
-        try {
-            val type = mapper.typeFactory.constructCollectionType(List::class.java, DBSummary::class.java)
-            return mapper.readValue<List<DBSummary>>(File(file.canonicalPath), type)
-        } catch (e: Exception) {
-            // ignore
-            return arrayListOf<DBSummary>()
+        var isEncrypted by boolean()
+        var encryptionProvider by string()
+        var encryptionKey by string()
+        var encryptionIV by string()
+
+        private fun boolean(): ReadWriteProperty<DBEntity, Boolean> {
+            return object : ReadWriteProperty<DBEntity, Boolean> {
+
+                override fun getValue(thisRef: DBEntity, property: KProperty<*>): Boolean {
+                    return thisRef.entity.getProperty(property.name) as? Boolean ?: false
+                }
+
+                override fun setValue(thisRef: DBEntity, property: KProperty<*>, value: Boolean) {
+                    thisRef.entity.setProperty(property.name, value)
+                }
+            }
+        }
+
+        private fun string(): ReadWriteProperty<DBEntity, String?> {
+            return object : ReadWriteProperty<DBEntity, String?> {
+
+                override fun getValue(thisRef: DBEntity, property: KProperty<*>): String? {
+                    return thisRef.entity.getProperty(property.name) as? String
+                }
+
+                override fun setValue(thisRef: DBEntity, property: KProperty<*>, value: String?) {
+                    if (value != null) {
+                        thisRef.entity.setProperty(property.name, value)
+                    } else {
+                        thisRef.entity.deleteProperty(property.name)
+                    }
+                }
+            }
+        }
+
+        private fun requiredString(): ReadWriteProperty<DBEntity, String> {
+            return object : ReadWriteProperty<DBEntity, String> {
+
+                override fun getValue(thisRef: DBEntity, property: KProperty<*>): String {
+                    return thisRef.entity.getProperty(property.name) as String
+                }
+
+                override fun setValue(thisRef: DBEntity, property: KProperty<*>, value: String) {
+                    thisRef.entity.setProperty(property.name, value)
+                }
+            }
+        }
+
+        fun summary() = DBSummary(
+                uuid = id,
+                location = location,
+                key = key,
+                isOpened = isOpened,
+                isReadonly = isReadonly,
+                isWatchReadonly = isWatchReadonly,
+                isEncrypted = isEncrypted,
+                encryptionProvider = encryptionProvider?.let { EncryptionProvider.valueOf(it) },
+                encryptionIV = encryptionIV,
+                encryptionKey = encryptionKey
+        )
+
+        fun merge(dbSummary: DBSummary) = apply {
+            location = dbSummary.location
+            key = dbSummary.key
+
+            encryptionIV = dbSummary.encryptionIV
+            encryptionKey = dbSummary.encryptionKey
+            encryptionProvider = dbSummary.encryptionProvider?.name
+
+            isOpened = dbSummary.isOpened
+            isEncrypted = dbSummary.isEncrypted
+            isReadonly = dbSummary.isReadonly
+            isWatchReadonly = dbSummary.isWatchReadonly
         }
     }
 }
+
+

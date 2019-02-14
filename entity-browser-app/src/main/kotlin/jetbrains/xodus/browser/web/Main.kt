@@ -5,13 +5,13 @@ import io.ktor.server.jetty.Jetty
 import mu.KLogging
 
 fun main() {
-    val appPort = Integer.getInteger("server.port", 18443)
+    val appPort = Integer.getInteger("server.port", 18080)
     val appHost = System.getProperty("server.host", "localhost")
     val context = System.getProperty("server.context", "/")
-    Application.start()
 
     val server = embeddedServer(Jetty, port = appPort, host = appHost) {
-        HttpServer(context).setup(this, appPort)
+        Application.start()
+        HttpServer(context).setup(this)
     }
     server.start(false)
     OS.launchBrowser(appHost, appPort, context)

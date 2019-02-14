@@ -4,6 +4,7 @@ import jetbrains.xodus.browser.web.db.DatabaseService
 import jetbrains.xodus.browser.web.db.Databases
 import jetbrains.xodus.browser.web.db.JobsService
 import jetbrains.xodus.browser.web.db.StoreService
+import javax.xml.crypto.Data
 
 
 class Services(val storeService: StoreService,
@@ -23,6 +24,7 @@ object Application {
     private val databaseService: DatabaseService = DatabaseService()
 
     fun start() {
+        Databases.start()
         Databases.all().forEach { databaseService.tryStart(it.uuid) }
     }
 
@@ -58,8 +60,6 @@ object Application {
 
 
 fun servicesOf(dbUUID: String): Services = Application.allServices[dbUUID] ?: throw NotFoundException("no database founded for $dbUUID")
-
-infix fun String.systemOr(default: String): String = System.getProperty(this, default)
 
 fun String.system(): String = System.getProperty(this)
 

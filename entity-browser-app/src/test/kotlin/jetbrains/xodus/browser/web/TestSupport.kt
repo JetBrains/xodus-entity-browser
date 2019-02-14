@@ -1,5 +1,8 @@
 package jetbrains.xodus.browser.web
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.jetty.Jetty
 import io.ktor.server.jetty.JettyApplicationEngine
@@ -8,6 +11,9 @@ import jetbrains.exodus.entitystore.PersistentEntityStores
 import jetbrains.exodus.env.Environments
 import jetbrains.xodus.browser.web.db.DatabaseService
 import jetbrains.xodus.browser.web.db.Databases
+import mu.KLogging
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import org.junit.After
 import org.junit.Before
 import retrofit2.Retrofit
@@ -16,7 +22,16 @@ import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit
 
+
 open class TestSupport {
+    companion object : KLogging() {
+
+        val mapper = ObjectMapper().also {
+            it.registerModule(KotlinModule())
+            it.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        }
+    }
+
     protected val key = "teamsysdata"
     protected val lockedDBLocation = newLocation()
     private lateinit var store: PersistentEntityStoreImpl
@@ -27,7 +42,13 @@ open class TestSupport {
     private val port = 18443
 
     protected val retrofit: Retrofit by lazy {
-        Retrofit.Builder().baseUrl("http://localhost:$port/custom/").addConverterFactory(JacksonConverterFactory.create(mapper)).build()
+        val client = with(OkHttpClient().newBuilder()) {
+            interceptors().add(HttpLoggingInterceptor(HttpLoggingInterceptor.Logger { logger.info { it } }).apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            })
+            build()
+        }
+        Retrofit.Builder().client(client).baseUrl("http://localhost:$port/custom/").addConverterFactory(JacksonConverterFactory.create(mapper)).build()
     }
 
     protected val dbsResource by lazy {
@@ -47,7 +68,7 @@ open class TestSupport {
         store = PersistentEntityStores.newInstance(Environments.newInstance(lockedDBLocation), key)
         Application.start()
         server = embeddedServer(Jetty, port = port) {
-            HttpServer(context).setup(this, port)
+            HttpServer(context).setup(this)
         }
         server.start(wait = false)
 
@@ -77,7 +98,8 @@ open class TestSupport {
     fun after() {
         store.close()
         databaseService.deleteAll()
-        Databases.file.delete()
+        Databases.close()
+        File("db").delete()
         server.stop(gracePeriod = 20, timeout = 20, timeUnit = TimeUnit.SECONDS)
     }
 }

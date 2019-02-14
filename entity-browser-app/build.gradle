@@ -3,10 +3,7 @@ plugins {
 }
 
 apply plugin: 'kotlin'
-apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
-
-mainClassName = 'jetbrains.xodus.browser.web.MainKt'
 
 def javaCCFolder = "src/main/generated"
 
@@ -19,31 +16,34 @@ sourceSets {
 }
 
 dependencies {
-    compile lib('org.jetbrains.kotlin:kotlin-reflect')
-
-    compile lib('ch.qos.logback:logback-classic')
-    compile lib('ch.qos.logback:logback-core')
-
+    compile 'org.slf4j:jul-to-slf4j:1.7.25'
+    compile 'io.github.microutils:kotlin-logging:1.4.9'
+    
     compile project(':entity-browser-frontend')
 
-    compile lib('org.jetbrains.xodus:xodus-environment')
-    compile lib('org.jetbrains.xodus:xodus-entity-store')
-    compile lib('org.jetbrains.xodus:xodus-openAPI')
-    compile lib('org.jetbrains.xodus:xodus-crypto')
+    compile "org.jetbrains.xodus:xodus-environment:$xodusVersion"
+    compile "org.jetbrains.xodus:xodus-entity-store:$xodusVersion"
+    compile "org.jetbrains.xodus:xodus-openAPI:$xodusVersion"
+    compile "org.jetbrains.xodus:xodus-crypto:$xodusVersion"
 
-    compile "io.ktor:ktor-jackson:$ktorVersion"
-    compile "io.ktor:ktor-auth:$ktorVersion"
+    compile "io.ktor:ktor-gson:$ktorVersion"
+    compile "io.ktor:ktor-server-jetty:$ktorVersion"
     compile "io.ktor:ktor-server-jetty:$ktorVersion"
 
-    testCompile lib('org.mockito:mockito-all')
-    testCompile lib('junit:junit')
-    testCompile lib('junit:junit')
-    testCompile lib('com.squareup.retrofit2:retrofit')
-    testCompile lib('com.squareup.retrofit2:converter-jackson')
+    testCompile 'org.mockito:mockito-all:1.9.5'
+    testCompile 'junit:junit:4.11'
+    
+    testCompile 'com.squareup.retrofit2:retrofit:2.3.0'
+    testCompile 'com.squareup.retrofit2:converter-jackson:2.3.0'
+    testCompile 'com.squareup.okhttp3:okhttp:3.9.1'
+    testCompile 'com.squareup.okhttp3:logging-interceptor:3.9.1'
+
+    testCompile 'com.fasterxml.jackson.module:jackson-module-kotlin:2.9.8'
 }
 
 shadowJar {
-    archiveName = "xodus-entity-browser.jar"
+    baseName = "xodus-entity-browser"
+    version = null
     destinationDir = globalArtifactsBuildDir
     manifest {
         attributes 'Main-Class': 'jetbrains.xodus.browser.web.MainKt'

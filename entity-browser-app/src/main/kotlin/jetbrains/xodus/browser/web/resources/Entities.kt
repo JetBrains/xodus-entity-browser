@@ -1,6 +1,5 @@
 package jetbrains.xodus.browser.web.resources
 
-import com.fasterxml.jackson.core.JsonProcessingException
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.features.BadRequestException
@@ -12,7 +11,6 @@ import io.ktor.response.respondOutputStream
 import io.ktor.routing.*
 import jetbrains.xodus.browser.web.AppRoute
 import jetbrains.xodus.browser.web.ChangeSummary
-import jetbrains.xodus.browser.web.mapper
 import mu.KLogging
 
 
@@ -57,7 +55,6 @@ class Entities : AppRoute, ResourceSupport {
             put("/{entityId}") {
                 val changeSummary = call.receive(ChangeSummary::class)
                 val entityId = call.entityId
-                logger.debug { "updating entity for '$entityId'. ChangeSummary: ${toString(changeSummary)}" }
                 call.respond(
                         call.storeService.updateEntity(entityId, changeSummary)
                 )
@@ -67,7 +64,6 @@ class Entities : AppRoute, ResourceSupport {
                 val typeId = call.request.queryParameters["typeId"]?.toInt()
                         ?: throw BadRequestException("typeId is required")
 
-                logger.debug { "creating entity for '$typeId'. ChangeSummary: ${toString(changeSummary)}" }
                 call.respond(
                         call.storeService.newEntity(typeId, changeSummary)
                 )
@@ -111,13 +107,5 @@ class Entities : AppRoute, ResourceSupport {
                 }
             }
         }
-    }
-}
-
-private fun toString(vo: ChangeSummary): String {
-    return try {
-        mapper.writeValueAsString(vo)
-    } catch (e: JsonProcessingException) {
-        "Error converting vo to string. Check the server state this error should never happened"
     }
 }

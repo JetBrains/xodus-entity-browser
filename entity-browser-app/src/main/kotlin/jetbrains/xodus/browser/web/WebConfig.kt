@@ -1,20 +1,19 @@
 package jetbrains.xodus.browser.web
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.*
+import io.ktor.gson.gson
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.content.files
+import io.ktor.http.content.resources
 import io.ktor.http.content.static
-import io.ktor.jackson.jackson
 import io.ktor.request.httpMethod
 import io.ktor.request.path
 import io.ktor.response.respond
 import io.ktor.routing.Route
+import io.ktor.routing.get
 import io.ktor.routing.route
 import io.ktor.routing.routing
 import jetbrains.xodus.browser.web.resources.DB
@@ -26,11 +25,11 @@ import mu.KLogging
 import org.slf4j.event.Level
 
 
-lateinit var mapper: ObjectMapper
+//lateinit var mapper: ObjectMapper
 
-open class HttpServer(val context: String = "/") : KLogging() {
+open class HttpServer(val appContext: String = "/") : KLogging() {
 
-    internal val indexHtml = IndexHtmlPage(context)
+    open val indexHtml = IndexHtmlPage(appContext)
 
     private val resources = listOf(
             // rest api
@@ -39,26 +38,21 @@ open class HttpServer(val context: String = "/") : KLogging() {
             Entities()
     )
 
-    fun setup(application: Application, port: Int) {
+    fun setup(application: Application) {
         with(application) {
-//            install(HttpsRedirect) {
-//                sslPort = port
-//            }
             install(DefaultHeaders)
             install(Compression)
 
             install(ContentNegotiation) {
-                jackson {
-                    disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                    mapper = this
+                gson {
+//                    disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+//                    mapper = this
                 }
             }
 
             install(CallLogging) {
-                install(CallLogging) {
-                    level = Level.DEBUG
-                    filter { call -> call.request.path().startsWith("/$context/api") }
-                }
+                level = Level.DEBUG
+                filter { call -> call.request.path().startsWith("/$appContext/api") }
             }
             installStatusPages()
             installStatic()
@@ -71,30 +65,39 @@ open class HttpServer(val context: String = "/") : KLogging() {
 
     open fun Application.installStatic() {
         routing {
-            static(context) {
-                files("static")
+            static(appContext) {
+                resources("static")
             }
         }
     }
 
     open fun Application.installIndexHTML() {
         routing {
-            static {
-                files("static")
+            get(appContext) {
+                indexHtml.respondIndexHtml(call)
             }
         }
     }
 
     open fun Application.installRestApi() {
         routing {
-            route("$context/api") {
-                resources.forEach { with(it) { install() } }
+            route(appContext) {
+                route("/api") {
+                    resources.forEach { with(it) { install() } }
+                }
             }
         }
     }
 
     private fun Application.installStatusPages() {
         install(StatusPages) {
+            status(HttpStatusCode.NotFound) {
+                val prefix = if(appContext.length > 1) "$appContext/api" else "/api"
+                if (!call.request.path().startsWith(prefix)) {
+                    indexHtml.respondIndexHtml(call)
+                }
+            }
+
             exception<EntityNotFoundException> {
                 logger.error("getting entity failed", it)
                 call.respond(HttpStatusCode.NotFound, it)
@@ -126,7 +129,7 @@ open class HttpServer(val context: String = "/") : KLogging() {
             exception<io.ktor.features.NotFoundException> {
                 logger.error("unexpected exception", it)
                 if (!call.request.path().startsWith("/$context/api")) {
-                    with(indexHtml) { call.respondIndexHtml() }
+                    indexHtml.respondIndexHtml(call)
                 } else {
                     call.respond(HttpStatusCode.NotFound, it)
                 }

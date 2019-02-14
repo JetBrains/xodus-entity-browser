@@ -12,12 +12,12 @@ class IndexHtmlPage(val context: String) {
         if (context.isBlank()) {
             text
         } else {
-            text.replace("<base href=\"/\">", "<base href=\"/$context/\">")
+            text.replace("<base href=\"/\">", "<base href=\"$context\">")
         }
     }
 
-    suspend fun ApplicationCall.respondIndexHtml() {
-        respondText(ContentType.Text.Html) {
+    suspend fun respondIndexHtml(call: ApplicationCall) {
+        call.respondText(ContentType.Text.Html) {
             indexHtml
         }
     }

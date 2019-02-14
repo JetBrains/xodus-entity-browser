@@ -1,5 +1,6 @@
 package jetbrains.xodus.browser.web
 
+import com.google.gson.annotations.SerializedName
 import java.util.*
 
 interface Named {
@@ -86,10 +87,14 @@ data class DBSummary(
         var location: String,
         var key: String? = null,
 
+        @SerializedName(value = "opened")
         var isOpened: Boolean = false,
+        @SerializedName(value = "readonly")
         var isReadonly: Boolean = true,
+        @SerializedName(value = "watchReadonly")
         var isWatchReadonly: Boolean = true,
 
+        @SerializedName(value = "encrypted")
         var isEncrypted: Boolean = false,
         var encryptionProvider: EncryptionProvider? = null,
         var encryptionKey: String? = null,

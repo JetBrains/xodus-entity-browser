@@ -42,7 +42,6 @@ class EncryptedDatabasesTest : TestSupport() {
         val response = dbsResource.new(db).execute()
         assertEquals(400, response.code())
         assertTrue(Application.allServices.isEmpty())
-        assertTrue(Databases.all().isEmpty())
     }
 
     private fun newEncDB(): DBSummary {

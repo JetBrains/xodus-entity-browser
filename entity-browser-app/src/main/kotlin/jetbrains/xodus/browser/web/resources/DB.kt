@@ -22,6 +22,7 @@ class DB : AppRoute, ResourceSupport {
         route("/dbs/{uuid}") {
             delete {
                 databaseService.delete(call.db.uuid)
+                call.respond(HttpStatusCode.OK)
             }
             post {
                 val operation = call.request.queryParameters["op"]
@@ -49,6 +50,7 @@ class DB : AppRoute, ResourceSupport {
                         ?: throw BadRequestException("entity type required")
                 val term = call.request.queryParameters["q"]
                 call.jobsService.submit(call.storeService.deleteEntitiesJob(id, term))
+                call.respond(HttpStatusCode.OK)
             }
         }
     }

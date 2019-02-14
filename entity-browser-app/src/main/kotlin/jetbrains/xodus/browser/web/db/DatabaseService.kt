@@ -7,31 +7,29 @@ import jetbrains.xodus.browser.web.DBSummary
 class DatabaseService {
 
     fun add(dbSummary: DBSummary): DBSummary {
-        return Databases.add(dbSummary) {
-            if (dbSummary.isOpened) {
-                tryStart(uuid, false)
-            }
+        val newSummary = Databases.add(dbSummary)
+        if (dbSummary.isOpened) {
+            return tryStart(newSummary.uuid, false)
         }
+        return newSummary
     }
 
     fun tryStart(uuid: String, silent: Boolean = true): DBSummary {
-        return Databases.applyChange(uuid) {
-            val servicesStarted = Application.tryStartServices(this, silent)
-            isOpened = servicesStarted
-        }
+        val summary = Databases.find(uuid)
+        summary.isOpened = Application.tryStartServices(summary, silent)
+        return Databases.update(uuid, summary)
     }
 
     fun stop(uuid: String): DBSummary {
-        return Databases.applyChange(uuid) {
-            Application.stop(this)
-            isOpened = false
-        }
+        val summary = Databases.find(uuid)
+        Application.stop(summary)
+        summary.isOpened = false
+        return Databases.update(uuid, summary)
     }
 
     fun delete(uuid: String) {
-        Databases.applyChange(uuid) {
-            Application.stop(this)
-        }
+        val summary = Databases.find(uuid)
+        Application.stop(summary)
         return Databases.delete(uuid)
     }
 
