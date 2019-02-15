@@ -11,6 +11,7 @@ angular.module('xodus')
             service.deleteDB = deleteDB;
             service.startOrStop = startOrStop;
             service.databases = null;
+            service.readonly = null;
 
             function getDatabases() {
                 var hubKey = 'jetPassServerDb';
@@ -20,7 +21,10 @@ angular.module('xodus')
                     return $q.when(service.databases);
                 }
                 return $http.get('api/dbs').then(function (data) {
-                    service.databases = data.data.map(function (db) {
+                    service.readonly = data.data.readonly;
+                    service.databases = data.data.dbs.map(function (db) {
+                        db.readonly = db.readonly || service.readonly;
+
                         if (db.key === hubKey) {
                             db.description = 'HUB';
                         } else if (db.key === youtrackKey) {

@@ -12,13 +12,17 @@ import mu.KLogging
 import java.io.IOException
 import java.io.InputStream
 
-class StoreService(dbSummary: DBSummary) {
+class StoreService {
 
     companion object : KLogging()
 
     private val store: PersistentEntityStoreImpl
 
-    init {
+    constructor(store: PersistentEntityStoreImpl) {
+        this.store = store
+    }
+
+    constructor(dbSummary: DBSummary) {
         try {
             val config = EnvironmentConfig().also {
                 it.envIsReadonly = dbSummary.isReadonly

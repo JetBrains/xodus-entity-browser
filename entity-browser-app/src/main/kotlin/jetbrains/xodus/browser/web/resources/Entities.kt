@@ -11,10 +11,11 @@ import io.ktor.response.respondOutputStream
 import io.ktor.routing.*
 import jetbrains.xodus.browser.web.AppRoute
 import jetbrains.xodus.browser.web.ChangeSummary
+import jetbrains.xodus.browser.web.WebApplication
 import mu.KLogging
 
 
-class Entities : AppRoute, ResourceSupport {
+class Entities(webApp: WebApplication) : AppRoute, ResourceSupport(webApp) {
 
     companion object : KLogging()
 

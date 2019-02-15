@@ -24,7 +24,7 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group col-md-7">
+            <div class="form-group" ng-class="{'col-md-9': searchCtrl.fullDatabase.readonly, 'col-md-7': !searchCtrl.fullDatabase.readonly}">
                 <div class="input-group">
                     <input id="searchQuery" autofocus type="text"
                            data-ng-model="searchCtrl.searchQuery"
@@ -41,8 +41,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-2">
-                <div class="btn-group pull-right" ng-if="!searchCtrl.fullDatabase.readonly">
+            <div class="col-md-2" ng-if="!searchCtrl.fullDatabase.readonly">
+                <div class="btn-group pull-right">
                     <a class="btn btn-primary pull-left" data-ng-click="searchCtrl.newEntity()">New Entity</a>
                     <a class="btn btn-danger pull-left" data-ng-click="searchCtrl.deleteSearchResult()">Delete
                         results</a>

@@ -2,6 +2,7 @@ package jetbrains.xodus.browser.web
 
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.jetty.Jetty
+import jetbrains.xodus.browser.web.db.PersistentDatabaseService
 import mu.KLogging
 
 fun main() {
@@ -11,14 +12,14 @@ fun main() {
     val context = System.getProperty("server.context", "/")
 
     val server = embeddedServer(Jetty, port = appPort, host = appHost) {
-        Application.start()
-        HttpServer(context).setup(this)
+        val webApplication = PersistentWebApplication(PersistentDatabaseService()).also { it.start() }
+        HttpServer(webApplication, context).setup(this)
     }
     server.start(false)
     OS.launchBrowser(appHost, appPort, context)
 }
 
-private object OS : KLogging() {
+internal object OS : KLogging() {
 
     fun launchBrowser(host: String, port: Int, context: String) {
         val url = "http://$host:$port$context"

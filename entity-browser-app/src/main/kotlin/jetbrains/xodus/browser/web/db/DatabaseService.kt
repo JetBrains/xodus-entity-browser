@@ -1,40 +1,24 @@
 package jetbrains.xodus.browser.web.db
 
-import jetbrains.xodus.browser.web.Application
 import jetbrains.xodus.browser.web.DBSummary
 
 
-class DatabaseService {
+interface DatabaseService {
 
-    fun add(dbSummary: DBSummary): DBSummary {
-        val newSummary = Databases.add(dbSummary)
-        if (dbSummary.isOpened) {
-            return tryStart(newSummary.uuid, false)
-        }
-        return newSummary
-    }
+    val isReadonly: Boolean
 
-    fun tryStart(uuid: String, silent: Boolean = true): DBSummary {
-        val summary = Databases.find(uuid)
-        summary.isOpened = Application.tryStartServices(summary, silent)
-        return Databases.update(uuid, summary)
-    }
+    fun all(): List<DBSummary>
 
-    fun stop(uuid: String): DBSummary {
-        val summary = Databases.find(uuid)
-        Application.stop(summary)
-        summary.isOpened = false
-        return Databases.update(uuid, summary)
-    }
+    fun start()
+    fun stop()
 
-    fun delete(uuid: String) {
-        val summary = Databases.find(uuid)
-        Application.stop(summary)
-        return Databases.delete(uuid)
-    }
+    fun find(uuid: String): DBSummary?
 
-    fun deleteAll() {
-        Databases.all().forEach { delete(it.uuid) }
-    }
+    fun add(dbSummary: DBSummary): DBSummary
 
+    fun markStarted(uuid: String, started: Boolean): DBSummary
+
+    fun delete(uuid: String)
+
+    fun deleteAll()
 }

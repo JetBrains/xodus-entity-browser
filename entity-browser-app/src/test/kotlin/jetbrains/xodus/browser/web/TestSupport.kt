@@ -9,8 +9,7 @@ import io.ktor.server.jetty.JettyApplicationEngine
 import jetbrains.exodus.entitystore.PersistentEntityStoreImpl
 import jetbrains.exodus.entitystore.PersistentEntityStores
 import jetbrains.exodus.env.Environments
-import jetbrains.xodus.browser.web.db.DatabaseService
-import jetbrains.xodus.browser.web.db.Databases
+import jetbrains.xodus.browser.web.db.PersistentDatabaseService
 import mu.KLogging
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -24,6 +23,7 @@ import java.util.concurrent.TimeUnit
 
 
 open class TestSupport {
+
     companion object : KLogging() {
 
         val mapper = ObjectMapper().also {
@@ -35,7 +35,7 @@ open class TestSupport {
     protected val key = "teamsysdata"
     protected val lockedDBLocation = newLocation()
     private lateinit var store: PersistentEntityStoreImpl
-    private val databaseService = DatabaseService()
+    lateinit var webApp: PersistentWebApplication
 
     private lateinit var server: JettyApplicationEngine
     private val context = "/custom"
@@ -64,11 +64,13 @@ open class TestSupport {
 
     @Before
     fun before() {
-        System.setProperty("recent.dbs", newLocation() + File.separator + "recent.dbs.json")
+        System.setProperty("xodus.entity.browser.db.store", newLocation())
         store = PersistentEntityStores.newInstance(Environments.newInstance(lockedDBLocation), key)
-        Application.start()
+        webApp = PersistentWebApplication(PersistentDatabaseService())
+
         server = embeddedServer(Jetty, port = port) {
-            HttpServer(context).setup(this)
+            webApp.start()
+            HttpServer(webApp, context).setup(this)
         }
         server.start(wait = false)
 
@@ -97,8 +99,7 @@ open class TestSupport {
     @After
     fun after() {
         store.close()
-        databaseService.deleteAll()
-        Databases.close()
+        webApp.stop()
         File("db").delete()
         server.stop(gracePeriod = 20, timeout = 20, timeUnit = TimeUnit.SECONDS)
     }

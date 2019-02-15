@@ -2,30 +2,34 @@ package jetbrains.xodus.browser.web.resources
 
 
 import io.ktor.application.call
+import io.ktor.features.NotFoundException
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
-import jetbrains.xodus.browser.web.AppRoute
-import jetbrains.xodus.browser.web.DBSummary
-import jetbrains.xodus.browser.web.db.DatabaseService
-import jetbrains.xodus.browser.web.db.Databases
+import jetbrains.xodus.browser.web.*
 
-class DBs : AppRoute {
-
-    private val databaseService = DatabaseService()
+class DBs(webApp: WebApplication) : ResourceSupport(webApp), AppRoute {
 
     override fun Route.install() {
         route("/dbs") {
             get {
-                call.respond(Databases.all().map { it.secureCopy() })
+                call.respond(
+                        ApplicationSummary(
+                                isReadonly = webApp.isReadonly,
+                                dbs = webApp.databaseService.all().map { it.secureCopy() })
+                )
             }
             post {
                 val newSummary = call.receive(DBSummary::class)
+                val summary = webApp.databaseService.add(newSummary)
+                if (newSummary.isOpened) {
+                    webApp.tryStartServices(summary, false)
+                }
                 call.respond(
-                        databaseService.add(newSummary).secureCopy()
+                        webApp.databaseService.find(summary.uuid)?.secureCopy() ?: throw NotFoundException()
                 )
             }
         }

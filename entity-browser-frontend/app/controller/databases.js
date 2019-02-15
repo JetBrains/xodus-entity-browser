@@ -17,6 +17,7 @@ angular.module('xodus').controller('DatabasesController', [
                 {name: 'Hub', key: hubKey},
                 {name: 'YouTrack', key: youtrackKey}
             ];
+            databasesCtrl.readonly = databaseService.readonly;
             databasesCtrl.dbs = databaseService.databases.map(function (db) {
                 if (!db.title) {
                     if (db.key === hubKey) {

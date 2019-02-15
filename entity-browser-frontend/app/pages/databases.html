@@ -1,7 +1,7 @@
 <div>
     <div class="container-fluid" data-ng-controller="DatabasesController as databasesCtrl">
 
-        <h2>Databases <a class="btn btn-default" data-ng-click="databasesCtrl.openDialog()">
+        <h2>Databases <a data-ng-show="!databasesCtrl.readonly" class="btn btn-default" data-ng-click="databasesCtrl.openDialog()">
             <span class="fa fa-plus"></span> add
         </a></h2>
 
@@ -11,8 +11,10 @@
             <tr>
                 <th>#</th>
                 <th>Summary</th>
-                <th style="padding-left: 40px;">State</th>
-                <th>Actions</th>
+                <th style="padding-left: 40px;">
+                    <span data-ng-show="!databasesCtrl.readonly">State</span>
+                </th>
+                <th data-ng-if="!databasesCtrl.readonly">Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -31,18 +33,18 @@
                 <td>
                     <div style="display: flex;">
                         <div class="encrypted-icon-wrapper">
-                            <i ng-if="database.encrypted" class="fa fa-user-secret pull-right"></i>
-                            <i ng-if="!database.encrypted" class="fa fa-user-o pull-right"></i>
+                            <i ng-if="database.encrypted" class="fa fa-user-secret pull-right" title="Encrypted"></i>
+                            <i ng-if="!database.encrypted" class="fa fa-user-o pull-right"  title="Not encrypted"></i>
                         </div>
-                        <div>
+                        <div data-ng-if="!databasesCtrl.readonly">
                             <input type="checkbox" toggle-checkbox ng-model="database.opened"
                                    ng-change="databasesCtrl.startOrStop(database)" data-style="animation-disabled">
                         </div>
                     </div>
                 </td>
-                <td>
+                <td data-ng-if="!databasesCtrl.readonly">
                     <button style="height: 34px;" class="btn btn-danger fa fa-lg fa-trash"
-                            ng-click="databasesCtrl.deleteDB(database)">
+                            ng-click="databasesCtrl.deleteDB(database)" data-ng-show="!databasesCtrl.readonly">
                     </button>
                 </td>
             </tr>

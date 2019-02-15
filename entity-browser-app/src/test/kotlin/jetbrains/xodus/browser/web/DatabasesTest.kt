@@ -1,6 +1,5 @@
 package jetbrains.xodus.browser.web
 
-import jetbrains.xodus.browser.web.db.Databases
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -41,8 +40,8 @@ class DatabasesTest : TestSupport() {
         val location = newLocation()
         with(newDB(location)) {
             dbResource.delete(uuid).execute()
-            assertTrue(Databases.all().all { it.location != location })
-            assertFalse(Application.allServices.containsKey(uuid))
+            assertTrue(webApp.databaseService.all().all { it.location != location })
+            assertFalse(webApp.allServices.containsKey(uuid))
         }
     }
 
@@ -53,11 +52,11 @@ class DatabasesTest : TestSupport() {
 
             val resultOfStart = dbResource.startOrStop(uuid, "start").execute()
             assertFalse(resultOfStart.body()!!.isOpened)
-            assertFalse(Application.allServices.containsKey(uuid))
+            assertFalse(webApp.allServices.containsKey(uuid))
 
             val resultOfStop = dbResource.startOrStop(uuid, "stop").execute()
             assertFalse(resultOfStop.body()!!.isOpened)
-            assertFalse(Application.allServices.containsKey(uuid))
+            assertFalse(webApp.allServices.containsKey(uuid))
         }
     }
 
@@ -69,11 +68,11 @@ class DatabasesTest : TestSupport() {
 
             val resultOfStart = dbResource.startOrStop(uuid, "start").execute()
             assertTrue(resultOfStart.body()!!.isOpened)
-            assertTrue(Application.allServices.containsKey(uuid))
+            assertTrue(webApp.allServices.containsKey(uuid))
 
             val resultOfStop = dbResource.startOrStop(uuid, "stop").execute()
             assertFalse(resultOfStop.body()!!.isOpened)
-            assertFalse(Application.allServices.containsKey(uuid))
+            assertFalse(webApp.allServices.containsKey(uuid))
         }
     }
 

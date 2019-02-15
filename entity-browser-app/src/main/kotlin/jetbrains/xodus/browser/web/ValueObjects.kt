@@ -100,3 +100,10 @@ data class DBSummary(
         var encryptionKey: String? = null,
         var encryptionIV: String? = null // js can't in Long
 )
+
+data class ApplicationSummary(
+        val dbs: List<DBSummary>,
+
+        @SerializedName(value = "readonly")
+        var isReadonly: Boolean
+)

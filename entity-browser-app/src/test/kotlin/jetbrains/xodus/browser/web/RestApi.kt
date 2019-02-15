@@ -6,7 +6,7 @@ import retrofit2.http.*
 interface DBsApi {
 
     @GET("api/dbs")
-    fun all(): Call<List<DBSummary>>
+    fun all(): Call<ApplicationSummary>
 
     @POST("api/dbs")
     fun new(@Body dbSummary: DBSummary): Call<DBSummary>

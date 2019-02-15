@@ -3,29 +3,31 @@ package jetbrains.xodus.browser.web.resources
 import io.ktor.application.ApplicationCall
 import jetbrains.xodus.browser.web.DBSummary
 import jetbrains.xodus.browser.web.NotFoundException
-import jetbrains.xodus.browser.web.db.Databases
+import jetbrains.xodus.browser.web.WebApplication
 import jetbrains.xodus.browser.web.db.JobsService
 import jetbrains.xodus.browser.web.db.StoreService
 import jetbrains.xodus.browser.web.servicesOf
 
-interface ResourceSupport {
+open class ResourceSupport(
+        val webApp: WebApplication
+) {
 
     val ApplicationCall.db: DBSummary
         get() {
             val uuid = parameters["uuid"] ?: throw NotFoundException("database not found")
-            return Databases.find(uuid)
+            return webApp.databaseService.find(uuid) ?: throw NotFoundException("database not found")
         }
 
     val ApplicationCall.jobsService: JobsService
         get() {
             val uuid = parameters["uuid"] ?: throw NotFoundException("database not found")
-            return servicesOf(uuid).jobsService
+            return webApp.servicesOf(uuid).jobsService
         }
 
     val ApplicationCall.storeService: StoreService
         get() {
             val uuid = parameters["uuid"] ?: throw NotFoundException("database service not found")
-            return servicesOf(uuid).storeService
+            return webApp.servicesOf(uuid).storeService
         }
 
 }

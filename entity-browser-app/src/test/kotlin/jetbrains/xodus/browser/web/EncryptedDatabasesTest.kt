@@ -5,7 +5,6 @@ import jetbrains.exodus.entitystore.PersistentEntityStores
 import jetbrains.exodus.entitystore.PersistentStoreTransaction
 import jetbrains.exodus.env.EnvironmentConfig
 import jetbrains.exodus.env.Environments
-import jetbrains.xodus.browser.web.db.Databases
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -41,7 +40,7 @@ class EncryptedDatabasesTest : TestSupport() {
         }
         val response = dbsResource.new(db).execute()
         assertEquals(400, response.code())
-        assertTrue(Application.allServices.isEmpty())
+        assertTrue(webApp.allServices.isEmpty())
     }
 
     private fun newEncDB(): DBSummary {

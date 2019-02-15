@@ -8,34 +8,35 @@ import io.ktor.response.respond
 import io.ktor.routing.*
 import jetbrains.xodus.browser.web.AppRoute
 import jetbrains.xodus.browser.web.EntityType
-import jetbrains.xodus.browser.web.db.DatabaseService
+import jetbrains.xodus.browser.web.WebApplication
 import mu.KLogging
 
 
-class DB : AppRoute, ResourceSupport {
+class DB(webApp: WebApplication) : AppRoute, ResourceSupport(webApp) {
 
-    companion object : KLogging() {
-        private val databaseService = DatabaseService()
-    }
+    companion object : KLogging()
 
     override fun Route.install() {
         route("/dbs/{uuid}") {
             delete {
-                databaseService.delete(call.db.uuid)
+                webApp.databaseService.delete(call.db.uuid)
                 call.respond(HttpStatusCode.OK)
             }
             post {
                 val operation = call.request.queryParameters["op"]
+                val db = call.db
                 val result = when (operation) {
                     "start" -> {
-                        databaseService.tryStart(call.db.uuid, false)
+                        webApp.tryStartServices(db, false)
+                        db
                     }
                     "stop" -> {
-                        databaseService.stop(call.db.uuid)
+                        webApp.stop(db)
+                        db
                     }
                     else -> null
                 }
-                call.respond(result ?: HttpStatusCode.BadRequest)
+                call.respond(result?.let { webApp.databaseService.find(it.uuid) } ?: HttpStatusCode.BadRequest)
             }
             get("/types") {
                 call.respond(call.storeService.allTypes())

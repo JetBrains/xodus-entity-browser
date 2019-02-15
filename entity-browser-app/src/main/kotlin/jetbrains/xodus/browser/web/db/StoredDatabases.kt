@@ -14,7 +14,7 @@ import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 
-object Databases {
+class StoredDatabases {
 
     private val iv: Long = System.getProperty("xodus.entity.browser.env.iv", "0").toLong()
     private val key: String? = System.getProperty("xodus.entity.browser.env.key")
@@ -22,7 +22,7 @@ object Databases {
 
     private val location: String
         get() {
-            return Home.dbHome.absolutePath
+            return System.getProperty("xodus.entity.browser.db.store") ?: Home.dbHome.absolutePath
         }
 
     private val isEncrypted: Boolean get() = key != null
@@ -87,7 +87,7 @@ object Databases {
         return listDBs().toList()
     }
 
-    fun close() {
+    fun stop() {
         return store.close()
     }
 

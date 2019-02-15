@@ -27,15 +27,15 @@ import jetbrains.xodus.browser.web.search.SearchQueryException
 import mu.KLogging
 
 
-open class HttpServer(val appContext: String = "/") : KLogging() {
+open class HttpServer(val webApplication: WebApplication, val appContext: String = "/") : KLogging() {
 
     open val indexHtml = IndexHtmlPage(appContext)
 
-    private val resources = listOf(
+    private val resources = listOf<AppRoute>(
             // rest api
-            DBs(),
-            DB(),
-            Entities()
+            DBs(webApplication),
+            DB(webApplication),
+            Entities(webApplication)
     )
 
     fun setup(application: Application) {
@@ -85,7 +85,7 @@ open class HttpServer(val appContext: String = "/") : KLogging() {
     private fun Application.installStatusPages() {
         install(StatusPages) {
             status(HttpStatusCode.NotFound) {
-                val prefix = if(appContext.length > 1) "$appContext/api" else "/api"
+                val prefix = if (appContext.length > 1) "$appContext/api" else "/api"
                 if (!call.request.path().startsWith(prefix)) {
                     indexHtml.respondIndexHtml(call)
                 }
