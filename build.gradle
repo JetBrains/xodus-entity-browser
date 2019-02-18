@@ -24,6 +24,7 @@ ext.globalArtifactsBuildDir = buildDir
 
 allprojects {
     apply plugin: 'java'
+    apply plugin: 'kotlin'
     apply plugin: 'idea'
     apply plugin: 'maven-publish'
     sourceCompatibility = 1.8
@@ -58,6 +59,7 @@ allprojects {
         duplicatesStrategy 'exclude'
         includeEmptyDirs false
         from project.sourceSets.main.java
+        from project.sourceSets.main.kotlin
     }
 
 }
