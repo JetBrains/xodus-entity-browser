@@ -10,7 +10,7 @@ task runNpm(type: NpmTask, dependsOn: 'npmInstall') { args = ['run', 'build'] }
 
 task webContent(type: Copy, dependsOn: 'runNpm') {
     from 'dist'
-    into 'build/content/static'
+    into 'build/content/entity/browser/static'
 }
 
 task jarFrontend(type: Jar, dependsOn: 'webContent') {

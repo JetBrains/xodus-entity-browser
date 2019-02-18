@@ -7,7 +7,7 @@ import io.ktor.response.respondText
 class IndexHtmlPage(val context: String) {
 
     private val indexHtml by lazy {
-        val inputStream = javaClass.getResourceAsStream("/static/index.html")
+        val inputStream = javaClass.getResourceAsStream("/entity/browser/static/index.html")
         val text = inputStream.reader().readText()
         if (context.isBlank() || context == "/") {
             text

@@ -66,9 +66,26 @@ angular.module('xodus').config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.get['If-Modified-Since'] = 'Mon, 26 Jul 1997 05:00:00 GMT';
     $httpProvider.defaults.headers.get['Cache-Control'] = 'no-cache';
     $httpProvider.defaults.headers.get['Pragma'] = 'no-cache';
+    $httpProvider.interceptors.push('AuthInterceptor');
 }]).config(['$qProvider', function ($qProvider) {
     $qProvider.errorOnUnhandledRejections(false);
-}]);
+}]).factory('AuthInterceptor', function ($window, $q) {
+    return {
+        request: function(config) {
+            config.headers = config.headers || {};
+            if ($window.localStorage.getItem('Authorization')) {
+                config.headers.Authorization = $window.localStorage.getItem('Authorization');
+            }
+            return config || $q.when(config);
+        },
+        response: function(response) {
+            if (response.status === 401) {
+                //  implement login page?
+            }
+            return response || $q.when(response);
+        }
+    };
+});
 
 require('./styles/main.css');
 

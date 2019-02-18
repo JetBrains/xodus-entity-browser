@@ -31,7 +31,7 @@ open class HttpServer(val webApplication: WebApplication, val appContext: String
 
     open val indexHtml = IndexHtmlPage(appContext)
 
-    private val resources = listOf<AppRoute>(
+    open val resources = listOf<AppRoute>(
             // rest api
             DBs(webApplication),
             DB(webApplication),
@@ -53,13 +53,17 @@ open class HttpServer(val webApplication: WebApplication, val appContext: String
             installIndexHTML()
             installRestApi()
 
+            installAdditionalFeatures()
         }
+    }
+
+    open fun Application.installAdditionalFeatures() {
     }
 
     open fun Application.installStatic() {
         routing {
             static(appContext) {
-                resources("static")
+                resources("entity.browser.static")
             }
         }
     }
