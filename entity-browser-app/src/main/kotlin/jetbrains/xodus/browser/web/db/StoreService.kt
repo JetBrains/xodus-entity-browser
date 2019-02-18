@@ -17,9 +17,11 @@ class StoreService {
     companion object : KLogging()
 
     private val store: PersistentEntityStoreImpl
+    val isReadonly: Boolean
 
-    constructor(store: PersistentEntityStoreImpl) {
+    constructor(store: PersistentEntityStoreImpl, isReadonly: Boolean) {
         this.store = store
+        this.isReadonly = isReadonly
     }
 
     constructor(dbSummary: DBSummary) {
@@ -48,6 +50,7 @@ class StoreService {
                     PersistentEntityStores.newInstance(environment, it)
                 }
             }
+            isReadonly = store.environment.environmentConfig.envIsReadonly
         } catch (e: InvalidCipherParametersException) {
             val msg = "It seems that store encrypted with another parameters"
             logger.error(e) { msg }

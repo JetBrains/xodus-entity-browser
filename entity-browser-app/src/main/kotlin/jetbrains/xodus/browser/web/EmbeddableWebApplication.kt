@@ -12,7 +12,7 @@ open class EmbeddableWebApplication(open val lookup: () -> List<PersistentEntity
     }
 
     override val allServices: Map<String, Services>
-        get() = lookup().map { it.name to Services(StoreService(it)) }.toMap()
+        get() = lookup().map { it.name to Services(StoreService(it, false)) }.toMap()
 
     override fun start() {
     }

@@ -54,6 +54,7 @@ class Entities(webApp: WebApplication) : AppRoute, ResourceSupport(webApp) {
             }
 
             put("/{entityId}") {
+                call.assertEditable()
                 val changeSummary = call.receive(ChangeSummary::class)
                 val entityId = call.entityId
                 call.respond(
@@ -61,6 +62,7 @@ class Entities(webApp: WebApplication) : AppRoute, ResourceSupport(webApp) {
                 )
             }
             post {
+                call.assertEditable()
                 val changeSummary = call.receive(ChangeSummary::class)
                 val typeId = call.request.queryParameters["typeId"]?.toInt()
                         ?: throw BadRequestException("typeId is required")
@@ -70,6 +72,7 @@ class Entities(webApp: WebApplication) : AppRoute, ResourceSupport(webApp) {
                 )
             }
             delete("/{entityId}") {
+                call.assertEditable()
                 val entityId = call.entityId
                 call.respond(
                         call.storeService.deleteEntity(entityId)

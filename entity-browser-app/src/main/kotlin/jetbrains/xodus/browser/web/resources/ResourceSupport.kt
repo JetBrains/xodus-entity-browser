@@ -1,6 +1,7 @@
 package jetbrains.xodus.browser.web.resources
 
 import io.ktor.application.ApplicationCall
+import io.ktor.features.BadRequestException
 import jetbrains.xodus.browser.web.DBSummary
 import jetbrains.xodus.browser.web.NotFoundException
 import jetbrains.xodus.browser.web.WebApplication
@@ -29,5 +30,12 @@ open class ResourceSupport(
             val uuid = parameters["uuid"] ?: throw NotFoundException("database service not found")
             return webApp.servicesOf(uuid).storeService
         }
+
+    fun ApplicationCall.assertEditable() {
+        val uuid = parameters["uuid"] ?: throw NotFoundException("database service not found")
+        if (webApp.isReadonly || webApp.servicesOf(uuid).storeService.isReadonly) {
+            throw BadRequestException("store is readonly")
+        }
+    }
 
 }

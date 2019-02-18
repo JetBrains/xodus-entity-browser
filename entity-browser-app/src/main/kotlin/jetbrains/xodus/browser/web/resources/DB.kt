@@ -42,11 +42,13 @@ class DB(webApp: WebApplication) : AppRoute, ResourceSupport(webApp) {
                 call.respond(call.storeService.allTypes())
             }
             post("/types") {
+                call.assertEditable()
                 val type = call.receive(EntityType::class)
                 call.storeService.addType(type.name)
                 call.respond(call.storeService.allTypes())
             }
             delete("/entities") {
+                call.assertEditable()
                 val id = call.request.queryParameters["id"]?.toInt()
                         ?: throw BadRequestException("entity type required")
                 val term = call.request.queryParameters["q"]

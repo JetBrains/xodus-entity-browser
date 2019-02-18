@@ -40,7 +40,6 @@ open class HttpServer(val webApplication: WebApplication, val appContext: String
 
     fun setup(application: Application) {
         with(application) {
-            install(DefaultHeaders)
             install(Compression)
 
             install(ContentNegotiation) {

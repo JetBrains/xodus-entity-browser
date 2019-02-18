@@ -1,5 +1,8 @@
 package jetbrains.xodus.browser.web
 
+import io.ktor.application.Application
+import io.ktor.application.install
+import io.ktor.features.DefaultHeaders
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.jetty.Jetty
 import jetbrains.xodus.browser.web.db.PersistentDatabaseService
@@ -13,7 +16,13 @@ fun main() {
 
     val server = embeddedServer(Jetty, port = appPort, host = appHost) {
         val webApplication = PersistentWebApplication(PersistentDatabaseService()).also { it.start() }
-        HttpServer(webApplication, context).setup(this)
+        object : HttpServer(webApplication, context) {
+
+            override fun Application.installAdditionalFeatures() {
+                install(DefaultHeaders)
+            }
+
+        }.setup(this)
     }
     server.start(false)
     OS.launchBrowser(appHost, appPort, context)
