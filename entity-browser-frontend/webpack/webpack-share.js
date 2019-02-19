@@ -118,6 +118,7 @@ module.exports = {
             new HtmlWebpackPlugin({
                 template: 'app/index.html',
                 filename: 'index.html',
+                inject: 'head',
                 AppBuildConfig: AppBuildConfig
             })
         ];

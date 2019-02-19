@@ -4,16 +4,20 @@ import io.ktor.application.ApplicationCall
 import io.ktor.http.ContentType
 import io.ktor.response.respondText
 
-class IndexHtmlPage(val context: String) {
+open class IndexHtmlPage(val context: String) {
 
-    private val indexHtml by lazy {
+    open val indexHtml by lazy {
         val inputStream = javaClass.getResourceAsStream("/entity/browser/static/index.html")
         val text = inputStream.reader().readText()
         if (context.isBlank() || context == "/") {
-            text
+            text.postProcess()
         } else {
-            text.replace("<base href=\"/\">", "<base href=\"$context/\">")
+            text.replace("<base href=\"/\">", "<base href=\"$context/\">").postProcess()
         }
+    }
+
+    open fun String.postProcess(): String {
+        return this
     }
 
     suspend fun respondIndexHtml(call: ApplicationCall) {
