@@ -14,7 +14,7 @@ import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 
-class StoredDatabases {
+class DBDatabasesStore : DatabasesStore {
 
     private val iv: Long = System.getProperty("xodus.entity.browser.env.iv", "0").toLong()
     private val key: String? = System.getProperty("xodus.entity.browser.env.key")
@@ -30,7 +30,7 @@ class StoredDatabases {
 
     private lateinit var store: PersistentEntityStoreImpl
 
-    fun start() {
+    override fun start() {
         val config = EnvironmentConfig().also {
             if (isEncrypted) {
                 it.cipherBasicIV = iv
@@ -55,7 +55,7 @@ class StoredDatabases {
         }
     }
 
-    fun add(dbSummary: DBSummary): DBSummary {
+    override fun add(dbSummary: DBSummary): DBSummary {
         val id = store.computeInTransaction {
             val entity = it.newEntity(dbType)
             val dbEntity = DBEntity(entity).merge(dbSummary).also {
@@ -68,7 +68,7 @@ class StoredDatabases {
         }
     }
 
-    fun update(uuid: String, summary: DBSummary): DBSummary {
+    override fun update(uuid: String, summary: DBSummary): DBSummary {
         store.transactional {
             DBEntity(it.getEntity(it.toEntityId(uuid))).merge(summary)
         }
@@ -77,23 +77,21 @@ class StoredDatabases {
         }
     }
 
-    fun delete(uuid: String) {
+    override fun delete(uuid: String) {
         store.transactional {
             it.getEntity(it.toEntityId(uuid)).delete()
         }
     }
 
-    fun all(): List<DBSummary> {
+    override fun all(): List<DBSummary> {
         return listDBs().toList()
     }
 
-    fun stop() {
+    override fun stop() {
         return store.close()
     }
 
-    internal fun find(uuid: String, error: () -> Nothing = {
-        throw NotFoundException("Database not found by id '$uuid'")
-    }) = listDBs().firstOrNull { it.uuid == uuid } ?: error()
+    override fun find(uuid: String, error: () -> Nothing) = listDBs().firstOrNull { it.uuid == uuid } ?: error()
 
     private fun listDBs(): List<DBSummary> {
         return store.computeInTransaction {

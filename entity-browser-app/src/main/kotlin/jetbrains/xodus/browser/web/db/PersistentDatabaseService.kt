@@ -2,27 +2,25 @@ package jetbrains.xodus.browser.web.db
 
 import jetbrains.xodus.browser.web.DBSummary
 
-class PersistentDatabaseService : DatabaseService {
-
-    private val storedDatabases = StoredDatabases()
+open class PersistentDatabaseService(private val store: DatabasesStore = DBDatabasesStore()) : DatabaseService {
 
     override val isReadonly: Boolean
         get() = false
 
     override fun all(): List<DBSummary> {
-        return storedDatabases.all()
+        return store.all()
     }
 
     override fun start() {
-        storedDatabases.start()
+        store.start()
     }
 
     override fun find(uuid: String): DBSummary? {
-        return storedDatabases.find(uuid)
+        return store.find(uuid)
     }
 
     override fun add(dbSummary: DBSummary): DBSummary {
-        val newSummary = storedDatabases.add(dbSummary)
+        val newSummary = store.add(dbSummary)
         if (dbSummary.isOpened) {
             return markStarted(newSummary.uuid, false)
         }
@@ -30,21 +28,21 @@ class PersistentDatabaseService : DatabaseService {
     }
 
     override fun markStarted(uuid: String, started: Boolean): DBSummary {
-        val summary = storedDatabases.find(uuid)
+        val summary = store.find(uuid)
         summary.isOpened = started
-        return storedDatabases.update(uuid, summary)
+        return store.update(uuid, summary)
     }
 
     override fun delete(uuid: String) {
-        return storedDatabases.delete(uuid)
+        return store.delete(uuid)
     }
 
     override fun deleteAll() {
-        storedDatabases.all().forEach { delete(it.uuid) }
+        store.all().forEach { delete(it.uuid) }
     }
 
 
     override fun stop() {
-        storedDatabases.stop()
+        store.stop()
     }
 }
