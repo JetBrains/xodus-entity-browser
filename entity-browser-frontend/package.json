@@ -19,7 +19,7 @@
     "babel-plugin-transform-async-to-generator": "6.8.0",
     "babel-polyfill": "6.9.1",
     "babel-preset-es2015": "^6.24.1",
-    "bootstrap": "3.4.0",
+    "bootstrap": "3.4.1",
     "bootstrap-toggle": "2.2.2",
     "bundle-loader": "0.5.4",
     "concurrently": "2.0.0",
