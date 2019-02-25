@@ -12,7 +12,7 @@ fun main() {
     val appHost = System.getProperty("server.host", "localhost")
     val context = System.getProperty("server.context", "/")
 
-    val store = PersistentEntityStores.newInstance(Environments.newInstance("/Users/lehvolk/Downloads/teamsysdata-jira/youtrack"), "teamsysstore")
+    val store = PersistentEntityStores.newInstance(Environments.newInstance("some path to app"), "teamsysstore")
 
     val server = embeddedServer(Jetty, port = appPort, host = appHost) {
         val webApplication = object : EmbeddableWebApplication(lookup = { listOf(store) }) {
