@@ -38,13 +38,13 @@ open class EmbeddableDatabaseService(open val lookup: () -> List<DBSummary>) : D
 
 }
 
-fun PersistentEntityStoreImpl.asSummary(): DBSummary {
+fun PersistentEntityStoreImpl.asSummary(forcedReadonly: Boolean): DBSummary {
     return DBSummary(
             uuid = this.name,
             key = this.name,
             location = this.location,
             isOpened = true,
-            isReadonly = this.environment.environmentConfig.envIsReadonly,
+            isReadonly = if (forcedReadonly) forcedReadonly else this.environment.environmentConfig.envIsReadonly,
             isEncrypted = this.environment.environmentConfig.cipherId != null,
             isWatchReadonly = false,
 

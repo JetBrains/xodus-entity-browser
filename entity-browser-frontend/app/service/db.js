@@ -23,8 +23,6 @@ angular.module('xodus')
                 return $http.get('api/dbs').then(function (data) {
                     service.readonly = data.data.readonly;
                     service.databases = data.data.dbs.map(function (db) {
-                        db.readonly = db.readonly || service.readonly;
-
                         if (db.key === hubKey) {
                             db.description = 'HUB';
                         } else if (db.key === youtrackKey) {

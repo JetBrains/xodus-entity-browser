@@ -8,7 +8,10 @@ import jetbrains.xodus.browser.web.db.asSummary
 open class EmbeddableWebApplication(open val lookup: () -> List<PersistentEntityStoreImpl>) : WebApplication {
 
     override val databaseService = EmbeddableDatabaseService {
-        lookup().map { it.asSummary() }
+        lookup().map {
+            val readonly = it.isForcedlyReadonly()
+            it.asSummary(readonly)
+        }
     }
 
     override val allServices: Map<String, Services>
@@ -26,5 +29,7 @@ open class EmbeddableWebApplication(open val lookup: () -> List<PersistentEntity
     override fun tryStartServices(db: DBSummary, silent: Boolean): Boolean {
         return false
     }
+
+    open fun PersistentEntityStoreImpl.isForcedlyReadonly() = true
 
 }

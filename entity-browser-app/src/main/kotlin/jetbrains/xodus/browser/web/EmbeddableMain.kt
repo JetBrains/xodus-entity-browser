@@ -2,6 +2,7 @@ package jetbrains.xodus.browser.web
 
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.jetty.Jetty
+import jetbrains.exodus.entitystore.PersistentEntityStoreImpl
 import jetbrains.exodus.entitystore.PersistentEntityStores
 import jetbrains.exodus.env.Environments
 
@@ -11,10 +12,14 @@ fun main() {
     val appHost = System.getProperty("server.host", "localhost")
     val context = System.getProperty("server.context", "/")
 
-    val store = PersistentEntityStores.newInstance(Environments.newInstance("some path to app"), "teamsysstore")
+    val store = PersistentEntityStores.newInstance(Environments.newInstance("/Users/lehvolk/Downloads/teamsysdata-jira/youtrack"), "teamsysstore")
 
     val server = embeddedServer(Jetty, port = appPort, host = appHost) {
-        val webApplication = EmbeddableWebApplication( lookup = { listOf(store) })
+        val webApplication = object : EmbeddableWebApplication(lookup = { listOf(store) }) {
+
+            override fun PersistentEntityStoreImpl.isForcedlyReadonly() = true
+
+        }
         HttpServer(webApplication, context).setup(this)
     }
     server.start(false)

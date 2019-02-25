@@ -34,7 +34,7 @@ allprojects {
     repositories {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-        maven { url 'http://jetbrains.bintray.com/xodus' }
+        maven { url 'https://jetbrains.bintray.com/xodus' }
         maven { url 'https://kotlin.bintray.com/kotlinx' }
     }
 
