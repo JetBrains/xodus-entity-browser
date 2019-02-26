@@ -5,7 +5,7 @@ buildscript {
 
     repositories {
         mavenCentral()
-        maven { url 'http://jetbrains.bintray.com/xodus' }
+        maven { url 'https://jetbrains.bintray.com/xodus' }
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
