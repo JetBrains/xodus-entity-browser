@@ -48,7 +48,9 @@ fun PersistentEntityStoreImpl.asSummary(forcedReadonly: Boolean): DBSummary {
             isEncrypted = this.environment.environmentConfig.cipherId != null,
             isWatchReadonly = false,
 
-            encryptionProvider = this.environment.environmentConfig.cipherId?.let { EncryptionProvider.valueOf(it) },
+            encryptionProvider = this.environment.environmentConfig.cipherId?.let {
+                EncryptionProvider.values().first { pr -> pr.cipherId == it }
+            },
             encryptionIV = null,
             encryptionKey = null
     )
