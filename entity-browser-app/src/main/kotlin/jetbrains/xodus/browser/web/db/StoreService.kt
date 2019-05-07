@@ -135,7 +135,7 @@ class StoreService {
         }
     }
 
-    private fun PersistentEntity.applyValues(property: EntityProperty) {
+    private fun Entity.applyValues(property: EntityProperty) {
         property.value = safeTrim(property.value)
         val value = property.string2value()
         if (value != null) {
@@ -177,7 +177,7 @@ class StoreService {
 
     fun getEntity(id: String): EntityView {
         return transactional { t ->
-            val entity: PersistentEntity = getEntity(id, t)
+            val entity = getEntity(id, t)
             entity.asView()
         }
     }
@@ -208,7 +208,7 @@ class StoreService {
         }
     }
 
-    private fun getEntity(id: String, t: PersistentStoreTransaction): PersistentEntity {
+    private fun getEntity(id: String, t: PersistentStoreTransaction): Entity {
         try {
             return t.getEntity(PersistentEntityId.toEntityId(id))
         } catch (e: RuntimeException) {
@@ -218,7 +218,7 @@ class StoreService {
 
     }
 
-    private fun getEntityOrStub(id: String, t: PersistentStoreTransaction): PersistentEntity {
+    private fun getEntityOrStub(id: String, t: PersistentStoreTransaction): Entity {
         val entityId = PersistentEntityId.toEntityId(id)
         return try {
             t.getEntity(entityId)
