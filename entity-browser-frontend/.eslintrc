@@ -1,0 +1,10 @@
+{
+  "parser": "babel-eslint",
+  "env": {
+    "node": true,
+    "browser": true
+  },
+  "rules": {
+    "import/no-commonjs": "off"
+  }
+}
