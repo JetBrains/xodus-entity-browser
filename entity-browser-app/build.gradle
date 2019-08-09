@@ -36,8 +36,8 @@ dependencies {
 
     testCompile 'com.squareup.retrofit2:retrofit:2.3.0'
     testCompile 'com.squareup.retrofit2:converter-jackson:2.3.0'
-    testCompile 'com.squareup.okhttp3:okhttp:3.9.1'
-    testCompile 'com.squareup.okhttp3:logging-interceptor:3.9.1'
+    testCompile 'com.squareup.okhttp3:okhttp:3.12.1'
+    testCompile 'com.squareup.okhttp3:logging-interceptor:3.12.1'
 
     testCompile 'com.fasterxml.jackson.module:jackson-module-kotlin:2.9.8'
 }
