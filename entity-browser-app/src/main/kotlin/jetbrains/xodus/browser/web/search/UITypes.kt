@@ -10,17 +10,20 @@ import java.util.concurrent.ConcurrentHashMap
 
 object UIPropertyTypes : KLogging() {
 
-    class TypeTreeNode(val type: UIPropertyType<*>, val low: TypeTreeNode? = null) {
+    class TypeTreeNode(private val uiType: UIPropertyType<*>, private val low: TypeTreeNode? = null) {
 
         fun find(tr: StoreTransaction, type: String, property: String, value: String): EntityIterable {
             try {
-                val realValue = this.type.toValue(value)
+                if (!uiType.isValid(value)) {
+                    return EntityIterableBase.EMPTY
+                }
+                val realValue = uiType.toValue(value)
                 logger.debug { "searching property '$property' by type '${realValue?.javaClass?.name}' and value '$realValue' " }
                 return if (realValue != null) {
                     var result = tr.find(type, property, realValue)
                     logger.debug { "found: ${result.size()} results" }
                     if (low != null) {
-                        logger.debug { "searching children of " + low.type.clazz }
+                        logger.debug { "searching children of " + low.uiType.clazz }
                         result = result.union(low.find(tr, type, property, value))
                     }
                     result
@@ -35,8 +38,11 @@ object UIPropertyTypes : KLogging() {
 
         fun find(tr: StoreTransaction, type: String, property: String, start: String, end: String): EntityIterable {
             try {
-                val realStart = this.type.toValue(start)
-                val realEnd = this.type.toValue(end)
+                if (!uiType.isValid(start) || !uiType.isValid(end)) {
+                    return EntityIterableBase.EMPTY
+                }
+                val realStart = uiType.toValue(start)
+                val realEnd = uiType.toValue(end)
                 if (realStart != null && realEnd != null) {
                     val result = tr.find(type, property, realStart, realEnd)
                     if (low != null) {
@@ -56,7 +62,11 @@ object UIPropertyTypes : KLogging() {
     private val BY_NAME = ConcurrentHashMap<String, UIPropertyType<*>>()
 
     private val STRING = newType { it }
-    private val BOOLEAN = newType { java.lang.Boolean.valueOf(it) }
+    private val BOOLEAN = newType {
+        check(it == "true" || it == "false")
+
+        java.lang.Boolean.valueOf(it)
+    }
 
     private val BYTE = newType { java.lang.Byte.valueOf(it) }
     private val SHORT = newType { java.lang.Short.valueOf(it) }
@@ -105,22 +115,22 @@ object UIPropertyTypes : KLogging() {
         }
 
         fun isValid(value: String): Boolean {
-            try {
+            return try {
                 function(value)
-                return true
+                true
             } catch (e: RuntimeException) {
                 // ignore result if conversion failed
-                return false
+                false
             }
         }
     }
 
     @Suppress("UNCHECKED_CAST")
-    inline private fun <reified T : Comparable<*>> newType(noinline function: (String) -> T): UIPropertyType<T> {
+    private inline fun <reified T : Comparable<*>> newType(noinline function: (String) -> T): UIPropertyType<T> {
         val fullName = T::class.java.name
         val type = UIPropertyType(fullName, function)
-        BY_CLASS.put(Class.forName(fullName) as Class<out Comparable<*>>, type)
-        BY_NAME.put(fullName, type)
+        BY_CLASS[Class.forName(fullName) as Class<out Comparable<*>>] = type
+        BY_NAME[fullName] = type
         return type
     }
 
