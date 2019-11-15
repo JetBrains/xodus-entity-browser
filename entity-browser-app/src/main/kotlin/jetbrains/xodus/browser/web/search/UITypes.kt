@@ -29,6 +29,7 @@ object UIPropertyTypes : KLogging() {
                     result
                 } else {
                     EntityIterableBase.EMPTY
+                    
                 }
             } catch (e: Exception) {
                 //ignore
