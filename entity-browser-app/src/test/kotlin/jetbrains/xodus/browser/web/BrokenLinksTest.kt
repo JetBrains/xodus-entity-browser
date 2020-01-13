@@ -46,6 +46,7 @@ class BrokenLinksTest : TestSupport() {
             it.getEntity(brokenEntityId).delete()
         }
         store.close()
+        store.environment.close()
         db = newDB(location, true)
     }
 

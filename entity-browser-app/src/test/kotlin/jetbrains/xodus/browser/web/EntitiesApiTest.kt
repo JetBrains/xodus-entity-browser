@@ -50,6 +50,7 @@ class EntitiesApiTest : TestSupport() {
             }
         }
         store.close()
+        store.environment.close()
         db = newDB(location, true)
     }
 
