@@ -135,6 +135,17 @@ class StoreService {
         }
     }
 
+    @Throws(IOException::class)
+    fun getBlobString(id: String, blobName: String): String {
+        val tx = store.beginReadonlyTransaction()
+        try {
+            val entity = getEntity(id, tx)
+            return entity.getBlobString(blobName) ?: throw NotFoundException("there is no blob $blobName")
+        } finally {
+            tx.commit()
+        }
+    }
+
     private fun Entity.applyValues(property: EntityProperty) {
         property.value = safeTrim(property.value)
         val value = property.string2value()
