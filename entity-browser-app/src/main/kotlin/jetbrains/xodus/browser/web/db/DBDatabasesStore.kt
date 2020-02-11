@@ -18,7 +18,7 @@ class DBDatabasesStore : DatabasesStore {
 
     private val iv: Long = System.getProperty("xodus.entity.browser.env.iv", "0").toLong()
     private val key: String? = System.getProperty("xodus.entity.browser.env.key")
-    private val cipherId: String = System.getProperty("xodus.entity.browser.env.cipherId", EncryptionProvider.CHACHA.cipherId)
+    private val cipherId: String = System.getProperty("xodus.entity.browser.env.cipherId", EncryptionProvider.CHACHA.cipherIds.first())
 
     private val location: String
         get() {
