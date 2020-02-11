@@ -39,7 +39,7 @@ class StoreService {
                     }
                     it.cipherBasicIV = initialization ?: throw InvalidCipherParametersException()
                     it.setCipherKey(dbSummary.encryptionKey)
-                    it.cipherId = dbSummary.encryptionProvider?.cipherId ?: throw InvalidCipherParametersException()
+                    it.cipherId = dbSummary.encryptionProvider?.cipherIds?.first() ?: throw InvalidCipherParametersException()
                 }
             }
             val environment = Environments.newInstance(dbSummary.location, config)
