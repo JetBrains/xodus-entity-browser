@@ -1,63 +1,39 @@
 import React from 'react';
-import {ThemeProvider} from '@material-ui/core/styles';
+import {createStyles, ThemeProvider, withStyles, WithStyles,} from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Hidden from '@material-ui/core/Hidden';
-import withStyles, {WithStyles} from "@material-ui/core/styles/withStyles";
-import createStyles from "@material-ui/core/styles/createStyles";
+import Header from './Header';
 import {observer} from "mobx-react";
-import Navigator from "./Navigator";
+import store from "../../store/store";
+import {Theme} from "@material-ui/core/styles/createMuiTheme";
+import theme from "./theme";
 
-import store from '../../store/store';
-
-import theme from './theme';
-
-const drawerWidth = 256;
-
-const styles = createStyles({
+const styles = (theme: Theme) => createStyles({
   root: {
     display: 'flex',
     minHeight: '100vh',
   },
-  drawer: {
-    [theme.breakpoints.up('md')]: {
-      width: drawerWidth,
-      flexShrink: 0,
-    },
-  },
-  appContent: {
+  app: {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
   },
-  mainContent: {
+  main: {
     flex: 1,
-    background: '#efeff3',
-    padding: theme.spacing()
+    padding: theme.spacing(6, 4),
+    background: '#eaeff1',
   }
 });
 
 interface AppLayoutProps extends WithStyles<typeof styles> {
   classes: {
     root: string,
-    drawer: string,
-    appContent: string,
-    mainContent: string
+    app: string,
+    main: string
   }
 }
 
-type AppLayoutState = {
-  mobileOpen: boolean
-};
-
 @observer
-class AppLayout extends React.Component<AppLayoutProps, AppLayoutState> {
-  state = {
-    mobileOpen: false,
-  };
-
-  handleDrawerToggle = () => {
-    this.setState(state => ({mobileOpen: !state.mobileOpen}));
-  };
+class AppLayout extends React.Component<AppLayoutProps> {
 
   render() {
     const {classes, children} = this.props;
@@ -66,25 +42,9 @@ class AppLayout extends React.Component<AppLayoutProps, AppLayoutState> {
       <ThemeProvider theme={theme}>
         <div className={classes.root}>
           <CssBaseline/>
-          <nav className={classes.drawer}>
-            <Hidden mdUp implementation="js">
-              <Navigator
-                PaperProps={{style: {width: drawerWidth}}}
-                variant="temporary"
-                open={this.state.mobileOpen}
-                onClose={this.handleDrawerToggle}
-                pageId={store.pageId}
-              />
-            </Hidden>
-            <Hidden smDown implementation="css">
-              <Navigator
-                PaperProps={{style: {width: drawerWidth}}}
-                pageId={store.pageId}
-              />
-            </Hidden>
-          </nav>
-          <div className={classes.appContent}>
-            <main className={classes.mainContent}>
+          <div className={classes.app}>
+            <Header pageTitle={store.pageId}/>
+            <main className={classes.main}>
               {children}
             </main>
           </div>

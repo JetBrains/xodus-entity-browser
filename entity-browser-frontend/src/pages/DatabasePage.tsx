@@ -39,7 +39,6 @@ class DatabasePage extends BasePage<PageParams> {
   }
 
   renderContent(): any {
-    // const link = `/databases/${localStore.database.uuid}/entities/12-12`;
     const link = `/entities`;
     return (
         <div>

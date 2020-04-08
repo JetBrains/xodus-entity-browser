@@ -28,7 +28,7 @@ const theme = createMuiTheme({
   overrides: {
     MuiDrawer: {
       paper: {
-        backgroundColor: '#18202c',
+        backgroundColor: '#24292e',
       },
     },
     MuiButton: {
