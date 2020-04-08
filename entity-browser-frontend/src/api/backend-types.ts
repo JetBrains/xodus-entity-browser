@@ -102,11 +102,11 @@ export interface ChangeSummary {
 
 
 export const isYoutrack = (database: Database) => {
-  return database.key === 'teamsysdata';
+  return database.key === 'teamsysstore';
 };
 
 export const isHub = (database: Database) => {
-  return database.key === 'jetpass';
+  return database.key === 'jetPassServerDb';
 };
 
 

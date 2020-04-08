@@ -9,7 +9,7 @@ import AppLayout from './components/app-layout/AppLayout';
 import {NotificationsWrapper} from './components/notifications/notifications';
 import routerStore from './store/router-store';
 
-// import './styles/styles.scss';
+import './styles/styles.scss';
 import {ConfirmationWrapper} from "./components/confirmation/ConfirmationWrapper";
 
 document.addEventListener('DOMContentLoaded', function() {
