@@ -1,5 +1,5 @@
 import ExtendableError from 'es6-error';
-
+import queryString from 'querystring';
 
 export const defaultFetchConfig = {
   headers: {
@@ -31,14 +31,14 @@ export class Http {
   }
 
   async get(url: string, fetchConfig: any) {
-    return fetch(this.url + url, {
+    return fetch(this.urlOf(url, fetchConfig), {
       ...defaultFetchConfig, ...fetchConfig,
       ...{method: 'GET'}
     }).then((resp: Response) => this._processResponse(resp));
   }
 
   async post(url: string, body: any, fetchConfig: any) {
-    return fetch(this.url + url, {
+    return fetch(this.urlOf(url, fetchConfig), {
       ...defaultFetchConfig, ...fetchConfig,
       ...{
         method: 'POST',
@@ -48,7 +48,7 @@ export class Http {
   }
 
   async put(url: string, body: any, fetchConfig: any) {
-    return fetch(this.url + url, {
+    return fetch(this.urlOf(url, fetchConfig), {
       ...defaultFetchConfig, ...fetchConfig,
       ...{
         method: 'PUT',
@@ -58,10 +58,15 @@ export class Http {
   }
 
   async delete(url: string, fetchConfig: any) {
-    return fetch(this.url + url, {
+    return fetch(this.urlOf(url, fetchConfig), {
       ...defaultFetchConfig, ...fetchConfig,
       ...{method: 'DELETE'}
     });
+  }
+
+  private urlOf(url: string, fetchConfig: any): string {
+    let queryParams = (fetchConfig || {}).params ? (queryString.stringify(fetchConfig.params)) : "";
+    return this.url + url + "?" + queryParams;
   }
 
   static _isErrorStatus(status: number) {

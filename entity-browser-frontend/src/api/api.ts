@@ -1,5 +1,5 @@
 import {BaseAPI, Http} from "./http";
-import {ApplicationState} from "./backend-types";
+import {ApplicationState, Database} from "./backend-types";
 
 class Api {
 
@@ -13,6 +13,7 @@ class Api {
   get system(): SystemStateApi {
     return new SystemStateApi(this.http);
   }
+
 }
 
 class SystemStateApi extends BaseAPI {
@@ -23,6 +24,18 @@ class SystemStateApi extends BaseAPI {
 
   async state(): Promise<ApplicationState> {
     return this.get()
+  }
+
+  async deleteDB(db: Database) {
+    return this.http.delete(this.url + "/" + db.uuid, null);
+  }
+
+  async startOrStop(db: Database) {
+    return this.http.post(this.url + "/" + db.uuid, JSON.stringify(db), {
+        params : {
+          op: db.opened ? "start" : "stop"
+        }
+    });
   }
 
 }
