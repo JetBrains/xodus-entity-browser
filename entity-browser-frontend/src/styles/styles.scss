@@ -9,3 +9,24 @@
 .database-tags {
   float: right;
 }
+
+.search-query-root {
+  padding: 2px 4px;
+  display: flex;
+  align-items: center;
+}
+
+.search-query-input {
+  margin-left: 8px;
+  flex: 1;
+  margin-right: -40px !important;
+}
+
+.search-query-iconButton {
+  padding: 10px;
+}
+
+.entity-type-select {
+  padding-left: 20px;
+  margin-top: 2px;
+}

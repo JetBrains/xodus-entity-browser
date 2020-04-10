@@ -42,6 +42,7 @@
   "dependencies": {
     "@material-ui/core": "^4.9.9",
     "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.48",
     "@types/classnames": "^2.2.7",
     "@types/jest": "^24.0.9",
     "@types/node": "^11.9.5",
@@ -50,6 +51,7 @@
     "@types/react-select": "^3.0.5",
     "awesome-debounce-promise": "^2.1.0",
     "clsx": "^1.0.3",
+    "es6-error": "latest",
     "filesize": "^5.0.3",
     "history": "4.10.1",
     "mobx": "^5.15.4",
@@ -66,7 +68,6 @@
     "react-router-dom": "^5.1.2",
     "react-select": "^3.0.8",
     "shallow-equal-object": "^1.1.1",
-    "typescript": "^3.8.3",
-    "es6-error": "latest"
+    "typescript": "^3.8.3"
   }
 }

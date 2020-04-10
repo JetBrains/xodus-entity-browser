@@ -57,7 +57,6 @@ export interface LinkPager extends Named {
 
 export interface EntityBlob extends Named {
   blobSize: number
-
 }
 
 export interface EntityView {
@@ -109,5 +108,7 @@ export const isHub = (database: Database) => {
   return database.key === 'jetPassServerDb';
 };
 
-
+export const keyInfo =  (database: Database) => {
+  return ((isYoutrack(database) && "YouTrack") || (isHub(database) && "Hub") || database.key)
+};
 

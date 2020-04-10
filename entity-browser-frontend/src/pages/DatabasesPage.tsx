@@ -1,13 +1,13 @@
-import {observer} from "mobx-react";
+import {inject, observer} from "mobx-react";
 import BasePage from "./BasePage";
 import {Button, Card, CardActionArea, CardActions, CardHeader, Chip, Fab} from "@material-ui/core";
 import * as React from "react";
 import {Component} from "react";
 import store from "../store/store";
 import AddIcon from "@material-ui/icons/Add";
-import {Database, isHub, isYoutrack} from "../api/backend-types";
+import {Database, keyInfo} from "../api/backend-types";
 import api from "../api/api";
-import {info, error} from "../components/notifications/notifications";
+import {error, info} from "../components/notifications/notifications";
 import {confirm} from "../components/confirmation/confirmation.store";
 
 @observer
@@ -35,20 +35,21 @@ type DatabaseProps = {
 }
 
 @observer
+@inject('routing')
 class DatabaseCard extends Component<DatabaseProps> {
 
-  async open(db: Database) {
+  private static async open(db: Database) {
     db.opened = true;
     try {
       await api.system.startOrStop(db);
-      info("database environement opened");
+      info("database environment opened");
     } catch (e) {
-      error("fail to open database environement");
+      error("fail to open database environment");
       db.opened = false;
     }
   }
 
-  async delete(db: Database) {
+  private static async delete(db: Database) {
     confirm({
       text: "Close and remove " + db.location + "?",
       onConfirm: async () => {
@@ -63,7 +64,7 @@ class DatabaseCard extends Component<DatabaseProps> {
     })
   }
 
-  async close(db: Database) {
+  private static async close(db: Database) {
     db.opened = false;
     try {
       await api.system.startOrStop(db);
@@ -74,14 +75,20 @@ class DatabaseCard extends Component<DatabaseProps> {
     }
   }
 
+  private navigate() {
+    // @ts-ignore
+    this.props.routing.push("/databases/" + this.props.db.uuid);
+  }
+
   render(): React.ReactNode {
     const db = this.props.db;
-    const title = ((isYoutrack(db) && "YouTrack") || (isHub(db) && "Hub") || db.key)
+    const title = keyInfo(db);
 
     return (
         <Card className={"database-card"}>
           <CardActionArea>
             <CardHeader
+                onClick={() => this.navigate()}
                 title={title}
                 subheader={<div>
                   <span>{db.location}</span>
@@ -98,6 +105,7 @@ class DatabaseCard extends Component<DatabaseProps> {
                     />}
                     {!db.opened && <Chip
                       label="Closed"
+                      variant="outlined"
                       size="small"
                     />}
                   </div>
@@ -105,13 +113,13 @@ class DatabaseCard extends Component<DatabaseProps> {
             />
           </CardActionArea>
           {!store.readonly && <CardActions>
-            {db.opened && <Button color="primary" onClick={() => this.close(db)}>
+            {db.opened && <Button color="primary" onClick={() => DatabaseCard.close(db)}>
               Close environment
             </Button>}
-            {!db.opened && <Button color="primary" onClick={() => this.open(db)}>
+            {!db.opened && <Button color="primary" onClick={() => DatabaseCard.open(db)}>
               Open environment
             </Button>}
-            <Button color="secondary" className={"remove-database-button"} onClick={() => this.delete(db)}>
+            <Button color="secondary" className={"remove-database-button"} onClick={() => DatabaseCard.delete(db)}>
               Close and Remove
             </Button>
           </CardActions>

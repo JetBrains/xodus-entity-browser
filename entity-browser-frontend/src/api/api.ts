@@ -1,5 +1,5 @@
 import {BaseAPI, Http} from "./http";
-import {ApplicationState, Database} from "./backend-types";
+import {ApplicationState, Database, EntityType} from "./backend-types";
 
 class Api {
 
@@ -12,6 +12,10 @@ class Api {
 
   get system(): SystemStateApi {
     return new SystemStateApi(this.http);
+  }
+
+  database(db: Database): DatabaseApi {
+    return new DatabaseApi(this.http, db.uuid);
   }
 
 }
@@ -32,10 +36,24 @@ class SystemStateApi extends BaseAPI {
 
   async startOrStop(db: Database) {
     return this.http.post(this.url + "/" + db.uuid, JSON.stringify(db), {
-        params : {
-          op: db.opened ? "start" : "stop"
-        }
+      params: {
+        op: db.opened ? "start" : "stop"
+      }
     });
+  }
+}
+
+export class DatabaseApi extends BaseAPI {
+
+  databaseUuid: string
+
+  constructor(http: Http, databaseId: string) {
+    super(http, '/dbs');
+    this.databaseUuid = databaseId;
+  }
+
+  async entityTypes(): Promise<EntityType[]> {
+    return this.http.get(this.url + "/" + this.databaseUuid + "/types", null);
   }
 
 }
