@@ -2,8 +2,9 @@ import {observer} from "mobx-react";
 import BasePage from "./BasePage";
 import {Database, EntityType, keyInfo} from "../api/backend-types";
 import store from "../store/store";
-import {Grid, NoSsr, Paper, TextField} from "@material-ui/core";
+import {Grid, LinearProgress, Paper, TextField} from "@material-ui/core";
 import * as React from "react";
+import {KeyboardEvent} from "react";
 import {observable} from "mobx";
 import api, {DatabaseApi} from "../api/api";
 import * as queryString from "querystring";
@@ -11,12 +12,15 @@ import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
 import HelpIcon from '@material-ui/icons/Help';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import EntitiesList from "../components/entities/EntitiesList";
 
 
 class DatabasePageStore {
   @observable database: Database = store.databases[0];
   @observable types: EntityType[] = [];
   @observable q: string = '';
+  @observable tempQ: string = '';
+  @observable loading: boolean = true;
 
   // @ts-ignore
   @observable selectedType: EntityType = {};
@@ -24,7 +28,7 @@ class DatabasePageStore {
   api: DatabaseApi = {}
 }
 
-const localStore = new DatabasePageStore();
+const databaseStore = new DatabasePageStore();
 
 @observer
 class DatabasePage extends BasePage<any> {
@@ -36,14 +40,15 @@ class DatabasePage extends BasePage<any> {
     const id = this.props.match.params.databaseId;
 
     if (id) {
-      localStore.database = store.databases.filter((it) => it.uuid === id)[0];
+      databaseStore.database = store.databases.filter((it) => it.uuid === id)[0];
     } else {
-      localStore.database = store.databases[0];
+      databaseStore.database = store.databases[0];
     }
-    localStore.api = api.database(localStore.database);
-    this.pageId = keyInfo(localStore.database) + " " + localStore.database.location;
+    databaseStore.api = api.database(databaseStore.database);
+    this.pageId = keyInfo(databaseStore.database) + " " + databaseStore.database.location;
     this.syncPage();
     await this.setupFromQueryParams();
+    databaseStore.loading = false;
     return super.componentDidMount();
   }
 
@@ -55,14 +60,38 @@ class DatabasePage extends BasePage<any> {
     const typeId = parseInt(holdMyBeer(params.typeId, "-1"));
     const q = holdMyBeer(params.q, "");
 
-    localStore.types = await localStore.api.entityTypes();
-    localStore.selectedType = localStore.types.find((type) => type.id === typeId) || localStore.types[0];
-    localStore.q = q;
+    databaseStore.types = await databaseStore.api.entityTypes();
+    databaseStore.selectedType = databaseStore.types.find((type) => type.id === typeId) || databaseStore.types[0];
+    databaseStore.q = q;
+    databaseStore.tempQ = q;
+  }
+
+  syncWithQueryParams() {
+    this.props.history.push({
+      pathname: this.props.location.pathname,
+      search: `?typeId=${databaseStore.selectedType.id}&q=${databaseStore.q}`
+    });
   }
 
   renderContent(): any {
+    if (databaseStore.loading) {
+      return (<LinearProgress/>)
+    }
+
     const typeChanged = (event: any, value: string) => {
-      localStore.selectedType = localStore.types.find((type) => type.name === value) || localStore.types[0];
+      databaseStore.selectedType = databaseStore.types.find((type) => type.name === value) || databaseStore.types[0];
+      this.syncWithQueryParams();
+    }
+
+    const qChanged = () => {
+      databaseStore.q = databaseStore.tempQ;
+      this.syncWithQueryParams();
+    }
+
+    const onEnter = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        qChanged();
+      }
     }
 
     return (
@@ -78,8 +107,8 @@ class DatabasePage extends BasePage<any> {
                                        label="Entity type"
                                        size={"small"}
                             />}
-                      options={localStore.types}
-                      defaultValue={localStore.selectedType}
+                      options={databaseStore.types}
+                      defaultValue={databaseStore.selectedType}
                       getOptionLabel={(type: EntityType) => type.name}
                       disableClearable={true}
                       onInputChange={typeChanged}
@@ -93,9 +122,12 @@ class DatabasePage extends BasePage<any> {
                       id="outlined-basic"
                       placeholder="try <12> or <name != John> or <name ~ Sam and age = [35,40]> or press the (?) icon for details >>>"
                       label="search query"
+                      value={databaseStore.tempQ}
+                      onChange={(event) => databaseStore.tempQ = event.target.value}
+                      onKeyDown={onEnter}
                       fullWidth
                       size={"small"}/>
-                  <IconButton aria-label="search" className="search-query-iconButton">
+                  <IconButton aria-label="search" className="search-query-iconButton" onClick={qChanged}>
                     <SearchIcon/>
                   </IconButton>
                   <IconButton color="primary" className="search-query-iconButton" aria-label="directions">
@@ -105,6 +137,12 @@ class DatabasePage extends BasePage<any> {
               </Grid>
             </Grid>
           </Paper>
+          <EntitiesList
+              q={databaseStore.q}
+              typeId={databaseStore.selectedType.id}
+              dbApi={databaseStore.api}
+          />
+
         </div>
     );
   }

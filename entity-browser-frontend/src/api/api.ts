@@ -1,5 +1,5 @@
 import {BaseAPI, Http} from "./http";
-import {ApplicationState, Database, EntityType} from "./backend-types";
+import {ApplicationState, Database, EntityType, SearchPager} from "./backend-types";
 
 class Api {
 
@@ -43,6 +43,8 @@ class SystemStateApi extends BaseAPI {
   }
 }
 
+export const PAGE_SIZE = 50
+
 export class DatabaseApi extends BaseAPI {
 
   databaseUuid: string
@@ -54,6 +56,16 @@ export class DatabaseApi extends BaseAPI {
 
   async entityTypes(): Promise<EntityType[]> {
     return this.http.get(this.url + "/" + this.databaseUuid + "/types", null);
+  }
+
+  async searchEntities(q: string, typeId: number): Promise<SearchPager> {
+    return this.http.get(this.url + "/" + this.databaseUuid + "/entities",{
+      params: {
+        q: q,
+        id: typeId,
+        pageSize: PAGE_SIZE
+      }
+    });
   }
 
 }

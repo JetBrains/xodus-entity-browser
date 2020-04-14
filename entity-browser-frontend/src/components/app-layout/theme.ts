@@ -161,11 +161,6 @@ const theme = createMuiTheme({
         borderRadius: 0
       }
     },
-    MuiChip: {
-      root: {
-        backgroundColor: "transparent"
-      }
-    },
     MuiDialogActions: {
       root: {
         padding: baseTheme.spacing(2)
