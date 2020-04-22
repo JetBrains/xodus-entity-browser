@@ -37,6 +37,10 @@ class BasePage extends Component<RouteComponentProps> {
     return this.load();
   };
 
+  renderHeaderPlugin() {
+    return (<div/>)
+  }
+
   render() {
     if (this.state.loading) {
       return (
@@ -50,7 +54,9 @@ class BasePage extends Component<RouteComponentProps> {
     const title = this.state.title
     return (
         <div>
-          <Header pageTitle={title}/>
+          <Header pageTitle={title}>
+            {this.renderHeaderPlugin()}
+          </Header>
           <div className={"main"}>
             {this.renderContent()}
           </div>

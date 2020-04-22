@@ -1,12 +1,12 @@
 import {observer} from "mobx-react";
 import BasePage from "./BasePage";
-import {Database, EntityType, keyInfo} from "../api/backend-types";
+import {Database, EntityType, EntityView, keyInfo} from "../api/backend-types";
 import store from "../store/store";
-import {Fab, Grid, LinearProgress, Paper, TextField} from "@material-ui/core";
+import {Fab, Grid, LinearProgress, Paper, TextField, Typography} from "@material-ui/core";
 import * as React from "react";
 import {KeyboardEvent} from "react";
 import {observable} from "mobx";
-import api, {DatabaseApi} from "../api/api";
+import api, {DatabaseApi, PAGE_SIZE} from "../api/api";
 import * as queryString from "querystring";
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
@@ -14,7 +14,15 @@ import AddIcon from '@material-ui/icons/Add';
 import HelpIcon from '@material-ui/icons/Help';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import EntitiesList from "../components/entities/EntitiesList";
+import {error} from "../components/notifications/notifications";
+import {Pagination} from "@material-ui/lab";
 
+
+class EntitiesPager {
+  @observable entities: EntityView[] = []
+  @observable total: number = 0
+  @observable currentPage: number = 0
+}
 
 class DatabasePageStore {
   @observable database: Database = store.databases[0];
@@ -23,6 +31,7 @@ class DatabasePageStore {
   @observable tempQ: string = '';
   @observable loading: boolean = true;
 
+  @observable pager: EntitiesPager = new EntitiesPager()
   // @ts-ignore
   @observable selectedType: EntityType = {};
   // @ts-ignore
@@ -34,6 +43,7 @@ class DatabasePageStore {
     this.q = '';
     this.tempQ = '';
     this.loading = true;
+    this.pager = new EntitiesPager()
     // @ts-ignore
     this.selectedType = {};
     // @ts-ignore
@@ -65,6 +75,7 @@ class DatabasePage extends BasePage {
     this.withTitle(keyInfo(databaseStore.database) + " " + databaseStore.database.location);
 
     await this.setupFromQueryParams();
+    await this.searchEntities();
     databaseStore.loading = false;
     return super.componentDidMount();
   }
@@ -83,31 +94,63 @@ class DatabasePage extends BasePage {
     databaseStore.tempQ = q;
   }
 
-  syncWithQueryParams() {
+  async syncWithQueryParams() {
     this.props.history.push({
       pathname: this.props.location.pathname,
       search: `?typeId=${databaseStore.selectedType.id}&q=${databaseStore.q}`
     });
+    await this.searchEntities();
   }
+
+  renderHeaderPlugin() {
+    const total = databaseStore.pager.total
+    if (total > 1) {
+      const pages = Math.ceil(Math.max(total / PAGE_SIZE, 1))
+      return (<div>
+            {pages > 1 && <Pagination count={pages} variant={"outlined"}/>}
+            <Typography variant={"h6"}
+                        className={"search-total-number"}>Total: {total}</Typography>
+          </div>
+      )
+    }
+    return super.renderHeaderPlugin()
+  }
+
+  async searchEntities(): Promise<void> {
+    const {q, selectedType, api} = databaseStore
+    try {
+      databaseStore.loading = true
+      let pager = await api.searchEntities(q, selectedType.id)
+
+      databaseStore.pager.entities = pager.items
+      databaseStore.pager.total = pager.totalCount
+      databaseStore.loading = false
+    } catch (e) {
+      error("Can't fetch entities: " + e)
+    }
+  }
+
 
   renderContent(): any {
     if (databaseStore.loading) {
       return (<LinearProgress/>)
     }
 
-    const typeChanged = (event: any, value: string) => {
-      databaseStore.selectedType = databaseStore.types.find((type) => type.name === value) || databaseStore.types[0];
-      this.syncWithQueryParams();
+    const typeChanged = async (event: any, value: EntityType | null) => {
+      if (value && value.id !== databaseStore.selectedType.id) {
+        databaseStore.selectedType = value || databaseStore.types[0];
+        await this.syncWithQueryParams();
+      }
     }
 
-    const qChanged = () => {
+    const qChanged = async () => {
       databaseStore.q = databaseStore.tempQ;
-      this.syncWithQueryParams();
+      await this.syncWithQueryParams();
     }
 
-    const onEnter = (e: KeyboardEvent) => {
+    const onEnter = async (e: KeyboardEvent) => {
       if (e.key === 'Enter') {
-        qChanged();
+        await qChanged();
       }
     }
 
@@ -128,7 +171,7 @@ class DatabasePage extends BasePage {
                       defaultValue={databaseStore.selectedType}
                       getOptionLabel={(type: EntityType) => type.name}
                       disableClearable={true}
-                      onInputChange={typeChanged}
+                      onChange={typeChanged}
                   />
                 </div>
               </Grid>
@@ -157,11 +200,7 @@ class DatabasePage extends BasePage {
           <Fab color={"secondary"}>
             <AddIcon/>
           </Fab>
-          <EntitiesList
-              q={databaseStore.q}
-              typeId={databaseStore.selectedType.id}
-              dbApi={databaseStore.api}
-          />
+          <EntitiesList entities={databaseStore.pager.entities} dbApi={databaseStore.api}/>
         </div>
     );
   }

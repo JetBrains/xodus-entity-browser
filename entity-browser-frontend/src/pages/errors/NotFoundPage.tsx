@@ -7,10 +7,8 @@ import {Grid, Typography} from "@material-ui/core";
 @observer
 class NotFoundPage extends BasePage {
 
-  pageId = 'users-not-found';
-
-  get pageTitle() {
-    return 'Not found';
+  async doLoad(): Promise<void> {
+    this.withTitle("Not Found")
   }
 
   renderContent(): any {
