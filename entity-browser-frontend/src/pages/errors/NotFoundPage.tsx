@@ -5,7 +5,7 @@ import {Grid, Typography} from "@material-ui/core";
 
 
 @observer
-class NotFoundPage extends BasePage<{}> {
+class NotFoundPage extends BasePage {
 
   pageId = 'users-not-found';
 

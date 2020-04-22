@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import {Theme} from '@material-ui/core/styles/createMuiTheme';
 import withStyles, {WithStyles} from "@material-ui/core/styles/withStyles";
 import createStyles from "@material-ui/core/styles/createStyles";
+import {inject, observer} from "mobx-react";
 import store from "../../store/store";
 
 const lightColor = 'rgba(255, 255, 255, 0.7)';
@@ -42,36 +43,52 @@ interface HeaderProps extends WithStyles<typeof styles> {
   pageTitle: string
 }
 
-function Header(props: HeaderProps) {
-  const {classes, onDrawerToggle, pageTitle} = props;
+@inject("routing")
+class Header extends React.Component<HeaderProps> {
 
-  return (
-      <React.Fragment>
-        <AppBar color="primary" position="sticky" elevation={0}>
-          <Toolbar>
-            <Grid container spacing={8} alignItems="center" className={classes.gridSpacing}>
-              <Hidden mdUp>
-                <Grid item>
-                  <IconButton
-                      color="inherit"
-                      aria-label="Open drawer"
-                      onClick={onDrawerToggle}
-                      className={classes.menuButton}
-                  >
-                    <MenuIcon/>
-                  </IconButton>
+  render() {
+    const {classes, onDrawerToggle, pageTitle, children} = this.props;
+
+    const redirectToHomePage = () => {
+      //@ts-ignore
+      this.props.routing.history.push("/");
+    }
+
+    return (
+        <React.Fragment>
+          <AppBar color="primary" position="sticky" elevation={0}>
+            <Toolbar>
+              <Grid container spacing={8} alignItems="center" className={classes.gridSpacing}>
+                <Hidden mdUp>
+                  <Grid item>
+                    <IconButton
+                        color="inherit"
+                        aria-label="Open drawer"
+                        onClick={onDrawerToggle}
+                        className={classes.menuButton}
+                    >
+                      <MenuIcon/>
+                    </IconButton>
+                  </Grid>
+                </Hidden>
+                <Grid item xs>
+                  <div style={{display: "flex"}}>
+                    <IconButton edge="start" color="inherit" aria-label="open drawer"
+                                onClick={() => redirectToHomePage()}>
+                      <MenuIcon/>
+                    </IconButton>
+                    <Typography color="inherit" variant="h6" className={"page-title-text"}>
+                      {pageTitle}
+                    </Typography>
+                    {children}
+                  </div>
                 </Grid>
-              </Hidden>
-              <Grid item xs>
-                <Typography color="inherit" variant="h5">
-                  {pageTitle}
-                </Typography>
               </Grid>
-            </Grid>
-          </Toolbar>
-        </AppBar>
-      </React.Fragment>
-  );
+            </Toolbar>
+          </AppBar>
+        </React.Fragment>
+    );
+  }
 }
 
 

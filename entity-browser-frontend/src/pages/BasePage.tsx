@@ -1,16 +1,16 @@
 import React, {Component} from "react";
 import {observer} from 'mobx-react';
-import store from "../store/store";
 import {LinearProgress} from "@material-ui/core";
+import Header from "../components/app-layout/Header";
+import {RouteComponentProps} from "react-router-dom";
 
 @observer
-class BasePage<P> extends Component<P> {
+class BasePage extends Component<RouteComponentProps> {
 
   state = {
-    loading: false
+    loading: false,
+    title: ''
   };
-
-  pageId = '';
 
   componentDidMount() {
     return this.reload();
@@ -20,15 +20,13 @@ class BasePage<P> extends Component<P> {
     if (this.state.loading) {
       return;
     }
-    this.syncPage();
     this.setState({loading: true});
     await this.doLoad();
-    this.syncPage();
     this.setState({loading: false});
   };
 
-  syncPage() {
-    store.pageId = this.pageId;
+  withTitle(title: string) {
+    this.setState({title: title})
   }
 
   async doLoad() {
@@ -36,17 +34,8 @@ class BasePage<P> extends Component<P> {
   }
 
   reload = () => {
-    this.clear();
     return this.load();
   };
-
-  clear() {
-  }
-
-  canEdit = () => {
-    return !store.readonly;
-  };
-
 
   render() {
     if (this.state.loading) {
@@ -57,7 +46,16 @@ class BasePage<P> extends Component<P> {
           </div>
       )
     }
-    return this.renderContent();
+
+    const title = this.state.title
+    return (
+        <div>
+          <Header pageTitle={title}/>
+          <div className={"main"}>
+            {this.renderContent()}
+          </div>
+        </div>
+    );
   }
 
   renderContent() {

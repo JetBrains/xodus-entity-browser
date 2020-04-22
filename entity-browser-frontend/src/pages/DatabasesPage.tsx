@@ -11,9 +11,11 @@ import {error, info} from "../components/notifications/notifications";
 import {confirm} from "../components/confirmation/confirmation.store";
 
 @observer
-class DatabasesPage extends BasePage<any> {
+class DatabasesPage extends BasePage {
 
-  pageId = 'databases';
+  async doLoad(): Promise<void> {
+    this.withTitle("Databases")
+  }
 
   renderContent(): any {
     return (

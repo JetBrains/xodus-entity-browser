@@ -2,7 +2,7 @@ import {observer} from "mobx-react";
 import BasePage from "./BasePage";
 import {Database, EntityType, keyInfo} from "../api/backend-types";
 import store from "../store/store";
-import {Grid, LinearProgress, Paper, TextField} from "@material-ui/core";
+import {Fab, Grid, LinearProgress, Paper, TextField} from "@material-ui/core";
 import * as React from "react";
 import {KeyboardEvent} from "react";
 import {observable} from "mobx";
@@ -10,6 +10,7 @@ import api, {DatabaseApi} from "../api/api";
 import * as queryString from "querystring";
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
+import AddIcon from '@material-ui/icons/Add';
 import HelpIcon from '@material-ui/icons/Help';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import EntitiesList from "../components/entities/EntitiesList";
@@ -26,14 +27,29 @@ class DatabasePageStore {
   @observable selectedType: EntityType = {};
   // @ts-ignore
   api: DatabaseApi = {}
+
+  reset() {
+    this.database = store.databases[0];
+    this.types = [];
+    this.q = '';
+    this.tempQ = '';
+    this.loading = true;
+    // @ts-ignore
+    this.selectedType = {};
+    // @ts-ignore
+    this.api = {}
+  }
 }
 
 const databaseStore = new DatabasePageStore();
 
 @observer
-class DatabasePage extends BasePage<any> {
+class DatabasePage extends BasePage {
 
-  pageId = 'Database';
+  constructor(props: any) {
+    super(props);
+    databaseStore.reset();
+  }
 
   async componentDidMount(): Promise<void> {
     // @ts-ignore
@@ -45,8 +61,9 @@ class DatabasePage extends BasePage<any> {
       databaseStore.database = store.databases[0];
     }
     databaseStore.api = api.database(databaseStore.database);
-    this.pageId = keyInfo(databaseStore.database) + " " + databaseStore.database.location;
-    this.syncPage();
+
+    this.withTitle(keyInfo(databaseStore.database) + " " + databaseStore.database.location);
+
     await this.setupFromQueryParams();
     databaseStore.loading = false;
     return super.componentDidMount();
@@ -137,12 +154,14 @@ class DatabasePage extends BasePage<any> {
               </Grid>
             </Grid>
           </Paper>
+          <Fab color={"secondary"}>
+            <AddIcon/>
+          </Fab>
           <EntitiesList
               q={databaseStore.q}
               typeId={databaseStore.selectedType.id}
               dbApi={databaseStore.api}
           />
-
         </div>
     );
   }

@@ -25,13 +25,13 @@ const localStore = new DatabasePageStore();
 
 
 @observer
-class EntityPage extends BasePage<{}> {
+class EntityPage extends BasePage {
 
   entityId: string;
 
   // pageId = 'entity from ' + localStore.database.uuid;
 
-  constructor(props: RouteChildrenProps<PageParams>) {
+  constructor(props: any) {
     super(props);
     const id = routerStore.location.pathname;
     const entityId = props.match?.params.entityId;
@@ -39,11 +39,9 @@ class EntityPage extends BasePage<{}> {
     if (id) {
       localStore.database = store.databases.filter((it) => it.uuid === id)[0];
     }
-    // this.pageId = 'entity ' + this.entityId + ' from ' + localStore.database.uuid;
   }
 
   async doLoad(): Promise<void> {
-    this.syncPage();
   }
 
   renderContent(): any {

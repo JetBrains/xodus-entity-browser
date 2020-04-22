@@ -5,7 +5,7 @@ import {Grid, Typography} from "@material-ui/core";
 
 
 @observer
-class EmptyStore extends BasePage<{}> {
+class EmptyStore extends BasePage {
 
   pageId = 'empty-store';
 

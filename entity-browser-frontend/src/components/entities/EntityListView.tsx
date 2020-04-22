@@ -90,7 +90,7 @@ class EntityListView extends Component<EntityListViewProps> {
                     <TableCell>
                       {link.entities.map((entityLink: EntityLink) => (
                           <Chip size="small" clickable label={entityLink.label}
-                                color={entityLink.notExists ? "secondary" : "default"}/>
+                                color={entityLink.notExists ? "secondary" : "default"} variant={"outlined"}/>
                       ))}
                     </TableCell>
                   </TableRow>
