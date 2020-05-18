@@ -39,7 +39,8 @@ class StoreService {
                     }
                     it.cipherBasicIV = initialization ?: throw InvalidCipherParametersException()
                     it.setCipherKey(dbSummary.encryptionKey)
-                    it.cipherId = dbSummary.encryptionProvider?.cipherIds?.first() ?: throw InvalidCipherParametersException()
+                    it.cipherId = dbSummary.encryptionProvider?.cipherIds?.first()
+                            ?: throw InvalidCipherParametersException()
                 }
             }
             val environment = Environments.newInstance(dbSummary.location, config)
@@ -126,23 +127,17 @@ class StoreService {
 
     @Throws(IOException::class)
     fun getBlob(id: String, blobName: String): InputStream {
-        val tx = store.beginReadonlyTransaction()
-        try {
-            val entity = getEntity(id, tx)
-            return entity.getBlob(blobName) ?: throw NotFoundException("there is no blob $blobName")
-        } finally {
-            tx.commit()
+        return readonly {
+            val entity = getEntity(id, it)
+            entity.getBlob(blobName) ?: throw NotFoundException("there is no blob $blobName")
         }
     }
 
     @Throws(IOException::class)
     fun getBlobString(id: String, blobName: String): String {
-        val tx = store.beginReadonlyTransaction()
-        try {
-            val entity = getEntity(id, tx)
-            return entity.getBlobString(blobName) ?: throw NotFoundException("there is no blob $blobName")
-        } finally {
-            tx.commit()
+        return readonly {
+            val entity = getEntity(id, it)
+            entity.getBlobString(blobName) ?: throw NotFoundException("there is no blob $blobName")
         }
     }
 
