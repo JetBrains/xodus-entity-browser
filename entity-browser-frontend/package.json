@@ -6,7 +6,7 @@
     "{app}/**/*"
   ],
   "dependencies": {
-    "angular": "1.7.9",
+    "angular": "1.8.0",
     "angular-file-upload": "2.2.0",
     "angular-mocks": "1.6.8",
     "angular-resource": "1.6.8",
