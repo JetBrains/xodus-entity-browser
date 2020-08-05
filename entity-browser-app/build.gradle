@@ -55,6 +55,10 @@ shadowJar {
     }
 }
 
+task runShadow(type: JavaExec) {
+    classpath(shadowJar.archiveFile)
+}
+
 artifacts {
     archives shadowJar
 }
