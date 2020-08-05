@@ -51,6 +51,7 @@ class StoreService {
                     PersistentEntityStores.newInstance(environment, it)
                 }
             }
+            store.setCloseEnvironment(true)
             isReadonly = store.environment.environmentConfig.envIsReadonly
         } catch (e: InvalidCipherParametersException) {
             val msg = "It seems that store encrypted with another parameters"
