@@ -6,12 +6,12 @@
     "{app}/**/*"
   ],
   "dependencies": {
-    "angular": "1.7.9",
+    "angular": "1.8.2",
     "angular-file-upload": "2.2.0",
-    "angular-mocks": "1.6.8",
-    "angular-resource": "1.6.8",
-    "angular-route": "1.6.8",
-    "angular-sanitize": "1.6.8",
+    "angular-mocks": "1.8.2",
+    "angular-resource": "1.8.2",
+    "angular-route": "1.8.2",
+    "angular-sanitize": "1.8.2",
     "angular-ui-bootstrap": "2.5.6",
     "autoprefixer-loader": "3.1.0",
     "babel-core": "^6.26.3",
