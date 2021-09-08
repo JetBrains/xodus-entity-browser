@@ -1,5 +1,9 @@
 package jetbrains.xodus.browser.web
 
+import jetbrains.exodus.entitystore.PersistentEntityStores
+import jetbrains.exodus.env.EnvironmentConfig
+import jetbrains.exodus.env.Environments
+import jetbrains.xodus.browser.web.db.transactional
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -73,6 +77,17 @@ class DatabasesTest : TestSupport() {
             val resultOfStop = dbResource.startOrStop(uuid, "stop").execute()
             assertFalse(resultOfStop.body()!!.isOpened)
             assertFalse(webApp.allServices.containsKey(uuid))
+
+            val env = Environments.newInstance(location, EnvironmentConfig().setEnvIsReadonly(false))
+            val store = PersistentEntityStores.newInstance(env)
+            try {
+                store.transactional {
+                    store.getEntityTypeId(it, "BlaBlaBla", true)
+                }
+            } finally {
+                store.close()
+                env.close()
+            }
         }
     }
 

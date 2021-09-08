@@ -9,6 +9,10 @@ angular.module('xodus').factory('navigationService', [
                 return 'api/dbs/' + db.uuid + '/entities/' + entityId + "/blob/" + name;
             }
 
+            function blobStringLink(entityId, name) {
+                return 'api/dbs/' + db.uuid + '/entities/' + entityId + "/blobString/" + name;
+            }
+
             function toType(typeId) {
                 return angular.isDefined(typeId) ? $location.path(prefix).search({typeId: typeId.toString()}) : toType(0);
             }
@@ -40,7 +44,8 @@ angular.module('xodus').factory('navigationService', [
                 toEntity: toEntity,
                 forceReload: forceReload,
                 api: {
-                    blobLink: blobLink
+                    blobLink: blobLink,
+                    blobStringLink: blobStringLink
                 }
             };
         };

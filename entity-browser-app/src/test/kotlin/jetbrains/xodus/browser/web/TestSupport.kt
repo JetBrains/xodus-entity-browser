@@ -101,6 +101,6 @@ open class TestSupport {
         store.close()
         webApp.stop()
         File("db").delete()
-        server.stop(gracePeriod = 20, timeout = 20, timeUnit = TimeUnit.SECONDS)
+        server.stop(gracePeriodMillis = 20, timeoutMillis = 20)
     }
 }

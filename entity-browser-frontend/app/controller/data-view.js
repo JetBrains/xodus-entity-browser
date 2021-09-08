@@ -70,6 +70,10 @@ angular.module('xodus').controller('DataViewController', [
             dataViewCtrl.blobLink = function (entity, blob) {
                 return navigation.api.blobLink(entity.id, blob.name);
             };
+
+            dataViewCtrl.blobStringLink = function (entity, blob) {
+                return navigation.api.blobStringLink(entity.id, blob.name);
+            };
         };
 
         function newPager(searchTerm) {

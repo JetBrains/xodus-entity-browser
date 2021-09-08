@@ -1,7 +1,7 @@
 buildscript {
-    ext.xodusVersion = '1.2.3523'
-    ext.kotlinVersion = '1.3.21'
-    ext.ktorVersion = '1.2.5'
+    ext.xodusVersion = '1.3.232'
+    ext.kotlinVersion = '1.5.20'
+    ext.ktorVersion = '1.4.0'
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
@@ -25,13 +25,11 @@ allprojects {
     apply plugin: 'maven-publish'
     sourceCompatibility = 1.8
     group = 'org.jetbrains.xodus'
-    version = '1.3.0' + ((project.hasProperty("teamcity")) ? project.teamcity["build.number"] : '')
+    version = '1.4.0' + ((project.hasProperty("teamcity")) ? project.teamcity["build.number"] : '')
 
     repositories {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-        maven { url 'https://jetbrains.bintray.com/xodus' }
-        maven { url 'https://kotlin.bintray.com/kotlinx' }
     }
 
     idea {

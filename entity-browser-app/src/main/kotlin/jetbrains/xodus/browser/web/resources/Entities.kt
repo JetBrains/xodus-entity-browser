@@ -13,6 +13,11 @@ import jetbrains.xodus.browser.web.AppRoute
 import jetbrains.xodus.browser.web.ChangeSummary
 import jetbrains.xodus.browser.web.WebApplication
 import mu.KLogging
+import java.io.BufferedWriter
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
+import java.net.URI
+import java.nio.charset.StandardCharsets
 
 
 class Entities(webApp: WebApplication) : AppRoute, ResourceSupport(webApp) {
@@ -86,6 +91,19 @@ class Entities(webApp: WebApplication) : AppRoute, ResourceSupport(webApp) {
                     call.storeService.getBlob(entityId, blobName).use {
                         it.copyTo(this)
                     }
+                }
+            }
+            get("/{entityId}/blobString/{blobName}") {
+                val entityId = call.entityId
+                val blobName = call.parameters["blobName"] ?: ""
+                logger.debug { "getting entity by entity id '$entityId'" }
+                val encodedBlobName =  URI(null, null, blobName, null).toASCIIString().replace(",".toRegex(), "%2C")
+                call.response.headers.append("Content-Disposition", "attachment; filename=$encodedBlobName.txt")
+                call.respondOutputStream(ContentType.parse("text/plain;charset=utf-8")) {
+                    val blobString = call.storeService.getBlobString(entityId, blobName)
+                    val writer = BufferedWriter(OutputStreamWriter(this, StandardCharsets.UTF_8))
+                    writer.write(blobString)
+                    writer.flush()
                 }
             }
             get("/{entityId}/links/{linkName}") {

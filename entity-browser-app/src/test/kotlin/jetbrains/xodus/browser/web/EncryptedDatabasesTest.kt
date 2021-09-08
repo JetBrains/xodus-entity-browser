@@ -75,6 +75,7 @@ class EncryptedDatabasesTest : TestSupport() {
             }
         }
         store.close()
+        store.environment.close()
     }
 
     @After

@@ -1,6 +1,5 @@
 # Xodus entity browser
 [![official JetBrains project](https://jb.gg/badges/official.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
-[![Build Status](https://travis-ci.org/JetBrains/xodus-entity-browser.svg?branch=master)](https://travis-ci.org/JetBrains/xodus-entity-browser)
 
 Web UI entity browser for Xodus database stores. Used in support activities for YouTrack and Hub applications. Highly desirable to use entity browser shipped with the same Xodus version as used in application which works with database.
 
@@ -18,7 +17,7 @@ Web UI entity browser for Xodus database stores. Used in support activities for 
 
 ## Run
 
-* get [latest release](https://github.com/JetBrains/xodus-entity-browser/releases/download/v1.2.0/xodus-entity-browser-1.2.0.zip) and unpack it
+* get [latest release](https://github.com/JetBrains/xodus-entity-browser/releases/download/v1.3/xodus-entity-browser-1.3.zip) and unpack it
 * execute run.bat or run.sh
 * browser should open automatically. Otherwise goto http://localhost:18080
 

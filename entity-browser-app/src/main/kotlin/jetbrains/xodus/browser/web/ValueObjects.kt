@@ -1,6 +1,9 @@
 package jetbrains.xodus.browser.web
 
 import com.google.gson.annotations.SerializedName
+import jetbrains.exodus.crypto.streamciphers.CHACHA_CIPHER_ID
+import jetbrains.exodus.crypto.streamciphers.JB_CHACHA_CIPHER_ID
+import jetbrains.exodus.crypto.streamciphers.SALSA20_CIPHER_ID
 import java.util.*
 
 interface Named {
@@ -76,9 +79,9 @@ data class ChangeSummary(
 )
 
 
-enum class EncryptionProvider(val cipherId: String) {
-    SALSA("jetbrains.exodus.crypto.streamciphers.Salsa20StreamCipherProvider"),
-    CHACHA("jetbrains.exodus.crypto.streamciphers.ChaChaStreamCipherProvider")
+enum class EncryptionProvider(val cipherIds: List<String>) {
+    SALSA(listOf(SALSA20_CIPHER_ID)),
+    CHACHA(listOf(CHACHA_CIPHER_ID, JB_CHACHA_CIPHER_ID))
 }
 
 data class DBSummary(

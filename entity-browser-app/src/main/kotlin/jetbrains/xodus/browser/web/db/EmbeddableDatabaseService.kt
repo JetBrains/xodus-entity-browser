@@ -49,7 +49,7 @@ fun PersistentEntityStoreImpl.asSummary(forcedReadonly: Boolean): DBSummary {
             isWatchReadonly = false,
 
             encryptionProvider = this.environment.environmentConfig.cipherId?.let {
-                EncryptionProvider.values().first { pr -> pr.cipherId == it }
+                EncryptionProvider.values().first { pr -> pr.cipherIds.contains(it) }
             },
             encryptionIV = null,
             encryptionKey = null
