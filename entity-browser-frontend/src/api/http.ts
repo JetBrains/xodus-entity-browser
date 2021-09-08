@@ -42,7 +42,7 @@ export class Http {
       ...defaultFetchConfig, ...fetchConfig,
       ...{
         method: 'POST',
-        body: body
+        body: JSON.stringify(body)
       }
     }).then((resp: Response) => this._processResponse(resp));
   }

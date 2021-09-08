@@ -6,7 +6,7 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import {Theme} from '@material-ui/core/styles/createMuiTheme';
+import {Theme} from '@material-ui/core/styles/createTheme';
 import withStyles, {WithStyles} from "@material-ui/core/styles/withStyles";
 import createStyles from "@material-ui/core/styles/createStyles";
 import {inject, observer} from "mobx-react";

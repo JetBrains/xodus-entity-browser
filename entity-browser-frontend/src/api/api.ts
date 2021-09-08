@@ -1,5 +1,6 @@
 import {BaseAPI, Http} from "./http";
 import {ApplicationState, Database, EntityType, SearchPager} from "./backend-types";
+import {error} from '../components/notifications/notifications';
 
 class Api {
 
@@ -18,6 +19,22 @@ class Api {
     return new DatabaseApi(this.http, db.uuid);
   }
 
+  errorHandler = (r: Response) => {
+    const invalidTokenErrorCode = 401;
+
+    if (r.status === invalidTokenErrorCode) {
+      error('Invalid token');
+    } else if (r.status) {
+      //@ts-ignore
+      const data = r.data;
+      if (data) {
+        error(`Server respond with ${r.status}: ${data.message}`);
+      }
+    }
+
+    return r;
+  };
+
 }
 
 class SystemStateApi extends BaseAPI {
@@ -32,6 +49,10 @@ class SystemStateApi extends BaseAPI {
 
   async deleteDB(db: Database) {
     return this.http.delete(this.url + "/" + db.uuid, null);
+  }
+
+  async newDB(db: Database) {
+    return this.http.post(this.url, db, null);
   }
 
   async startOrStop(db: Database) {

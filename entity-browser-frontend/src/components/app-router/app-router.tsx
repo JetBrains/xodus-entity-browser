@@ -1,14 +1,13 @@
-import React, {Component} from "react";
+import React, {Component} from 'react';
 import {Route, RouteComponentProps, Switch, withRouter} from 'react-router-dom'
-import {inject, observer} from "mobx-react";
+import {observer} from 'mobx-react';
 
 import store from '../../store/store';
 import NotFoundPage from '../../pages/errors/NotFoundPage';
-import api from "../../api/api";
-import EmptyStore from "../../pages/errors/EmptyStore";
-import DatabasePage from "../../pages/DatabasePage";
-import EntityPage from "../../pages/EntityPage";
-import DatabasesPage from "../../pages/DatabasesPage";
+import api from '../../api/api';
+import DatabasePage from '../../pages/DatabasePage';
+import EntityPage from '../../pages/EntityPage';
+import DatabasesPage from '../../pages/DatabasesPage';
 
 @observer
 class AppRouter extends Component<RouteComponentProps> {
@@ -33,7 +32,7 @@ class AppRouter extends Component<RouteComponentProps> {
     } else {
       return (
           <Switch>
-            <Route component={EmptyStore}/>
+            <Route component={DatabasesPage}/>
           </Switch>
       );
     }

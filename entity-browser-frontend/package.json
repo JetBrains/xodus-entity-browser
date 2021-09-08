@@ -37,19 +37,23 @@
     "ts-loader": "^5.3.3",
     "webpack": "^4.39.3",
     "webpack-cli": "^3.3.7",
-    "webpack-dev-server": "^3.8.0"
+    "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
-    "@material-ui/core": "^4.9.9",
+    "@material-ui/core": "^4.10.2",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "^4.0.0-alpha.48",
+    "@material-ui/lab": "5.0.0-alpha.1",
+    "@material-ui/pickers": "^3.3.10",
     "@types/classnames": "^2.2.7",
     "@types/jest": "^24.0.9",
     "@types/node": "^11.9.5",
-    "@types/react": "^16.8.5",
-    "@types/react-dom": "^16.8.2",
-    "@types/react-select": "^3.0.5",
+    "@types/react": "^16.9.41",
+    "@types/react-dom": "^16.9.8",
+    "@types/react-select": "^3.0.13",
+    "@typescript-eslint/eslint-plugin": "^2.25.0",
+    "@typescript-eslint/parser": "^2.25.0",
     "awesome-debounce-promise": "^2.1.0",
+    "axios": "^0.21.4",
     "clsx": "^1.0.3",
     "es6-error": "latest",
     "filesize": "^5.0.3",
@@ -68,6 +72,6 @@
     "react-router-dom": "^5.1.2",
     "react-select": "^3.0.8",
     "shallow-equal-object": "^1.1.1",
-    "typescript": "^3.8.3"
+    "typescript": "^3.9.10"
   }
 }
