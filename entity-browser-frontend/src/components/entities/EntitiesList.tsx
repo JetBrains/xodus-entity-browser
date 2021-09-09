@@ -3,6 +3,7 @@ import {EntityView} from "../../api/backend-types";
 import {DatabaseApi} from "../../api/api";
 import {observer} from "mobx-react";
 import EntityListView from "./EntityListView";
+import {Grid, Paper, Typography} from '@material-ui/core';
 
 interface EntitiesListProps {
   entities: EntityView[],
@@ -13,28 +14,15 @@ interface EntitiesListProps {
 class EntitiesList extends Component<EntitiesListProps> {
 
   render() {
+    const entities = this.props.entities;
     return (
         <div>
-          {/*<Paper className={"search-pagination-row"}>*/}
-          {/*  <Grid container spacing={0} direction={"row"}>*/}
-          {/*    <Grid item xs={4}/>*/}
-          {/*    <Grid item xs={5}>*/}
-          {/*    </Grid>*/}
-          {/*  </Grid>*/}
-          {/*</Paper>*/}
-          {this.props.entities.map((entity: EntityView) => (
+          {(entities.length > 0) && entities.map((entity: EntityView) => (
               <div className={"entity-view-panel"} key={entity.id}>
                 <EntityListView entity={entity} dbApi={this.props.dbApi}/>
               </div>
           ))}
-          {/*<AppBar position="fixed" color="primary" style={{top: 'auto', bottom: 0}}>*/}
-          {/*  <Toolbar>*/}
-          {/*    {pages > 1 && <Pagination count={pages} variant={"outlined"}/>}*/}
-          {/*    <Typography variant={"h6"}*/}
-          {/*                className={"search-total-number"}>Total: {entitiesListStore.totalCount}</Typography>*/}
-
-          {/*  </Toolbar>*/}
-          {/*</AppBar>*/}
+          {(entities.length === 0) && <Typography style={{textAlign: 'center'}} variant={"h6"}>Nothing found</Typography>}
         </div>
     )
   }

@@ -13,6 +13,7 @@ const styles = () => createStyles({
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
+    background: '#eaeff1'
   }
 });
 

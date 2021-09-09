@@ -112,7 +112,7 @@ class DatabasePage extends BasePage {
 
   renderHeaderPlugin() {
     const total = databaseStore.pager.total
-    if (total > 1) {
+    if (total >= 1) {
       const pages = Math.ceil(Math.max(total / PAGE_SIZE, 1))
       return (<div className={"search-counter"}>
             {pages > 1 && <Pagination count={pages} variant={"outlined"} onChange={async (event, page) => this.goToPage(page)}/>}
