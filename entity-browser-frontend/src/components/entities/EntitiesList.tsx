@@ -1,9 +1,9 @@
-import React, {Component} from "react";
-import {EntityView} from "../../api/backend-types";
-import {DatabaseApi} from "../../api/api";
-import {observer} from "mobx-react";
-import EntityListView from "./EntityListView";
-import {Grid, Paper, Typography} from '@material-ui/core';
+import React, {Component} from 'react';
+import {EntityView} from '../../api/backend-types';
+import {DatabaseApi} from '../../api/api';
+import {observer} from 'mobx-react';
+import EntityListView from './EntityListView';
+import {Typography} from '@material-ui/core';
 
 interface EntitiesListProps {
   entities: EntityView[],
