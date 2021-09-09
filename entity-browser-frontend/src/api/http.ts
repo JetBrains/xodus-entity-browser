@@ -130,22 +130,24 @@ export class BaseAPI {
 
   async download(path: String, params: any, errorMessage: string) {
     // Fetch the dynamically generated document from the server.
+    let response;
     try {
-      const response = await axios.get(
-        `${this.url}/${path}`,
+      response = await axios.get(
+        `${this.http.url}${this.url}${path}`,
         {
           params,
           responseType: 'blob',
         }
       );
-      // Log somewhat to show that the browser actually exposes the custom HTTP header
-      const fileNameHeader = 'content-disposition';
-      const suggestedFileName = response.headers[fileNameHeader];
-      const effectiveFileName = suggestedFileName.split('"')[1];
-      // Let the user save the file.
-      FileSaver.saveAs(response.data, effectiveFileName);
     } catch (response) {
       error(errorMessage, response);
+      return;
     }
+    // Log somewhat to show that the browser actually exposes the custom HTTP header
+    const fileNameHeader = 'content-disposition';
+    const suggestedFileName = response.headers[fileNameHeader];
+    const effectiveFileName = suggestedFileName ? suggestedFileName.split('"')[1] : "unknown";
+    // Let the user save the file.
+    FileSaver.saveAs(response.data, effectiveFileName);
   }
 }

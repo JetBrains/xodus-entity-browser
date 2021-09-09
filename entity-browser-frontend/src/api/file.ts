@@ -1,6 +1,6 @@
 import fileSize from 'filesize';
 
-export function formatFileSize(size: number, exponent = 2): string {
+export function formatFileSize(size: number, exponent = 1): string {
   if (!size) {
     return '-';
   }

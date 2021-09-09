@@ -80,7 +80,8 @@ export class DatabaseApi extends BaseAPI {
   }
 
   async downloadBlob(entityId: string, blobName: string, asString: boolean) {
-    return this.download(`api/dbs/${this.databaseUuid}/entities/${entityId}/blobString/$blobName`,
+    const link = asString ? 'blobString' : 'blob';
+    return this.download(`/${this.databaseUuid}/entities/${entityId}/${link}/${blobName}`,
       null, 'Can\'t download blob');
   }
 

@@ -71,7 +71,7 @@ class EntityListView extends Component<EntityListViewProps> {
       </TableHead>
       <TableBody>
         {entity.properties.map((property) => (
-          <StyledTableRow key={property.name}>
+          <StyledTableRow key={entity.id + '_property_' + property.name}>
             <StyledTableCell component="th" scope="row">
               {property.name}
             </StyledTableCell>
@@ -83,7 +83,7 @@ class EntityListView extends Component<EntityListViewProps> {
     </Table>)
   }
 
-   renderLinks(entity: EntityView) {
+  renderLinks(entity: EntityView) {
     if (!entity.links.length) {
       return (<div>
         <Typography>Links</Typography>
@@ -102,7 +102,7 @@ class EntityListView extends Component<EntityListViewProps> {
           </TableHead>
           <TableBody>
             {entity.links.map((link) => (
-              <StyledTableRow key={link.name}>
+              <StyledTableRow key={entity.id + '_link_' + link.name}>
                 <StyledTableCell component="th" scope="row">
                   {link.name}
                 </StyledTableCell>
@@ -143,7 +143,7 @@ class EntityListView extends Component<EntityListViewProps> {
           </TableHead>
           <TableBody>
             {entity.blobs.map((blob) => (
-              <StyledTableRow key={blob.name}>
+              <StyledTableRow key={entity.id + '_blob_' + blob.name}>
                 <StyledTableCell component="th" scope="row">
                   {blob.name}
                 </StyledTableCell>
@@ -151,7 +151,7 @@ class EntityListView extends Component<EntityListViewProps> {
                   Download {formatFileSize(blob.blobSize)}
                   <ButtonGroup>
                     <Button onClick={async () => onDownloadBlob(blob, false)}>Binary</Button>
-                    <Button  onClick={async () => onDownloadBlob(blob, true)}>UTF</Button>
+                    <Button onClick={async () => onDownloadBlob(blob, true)}>UTF</Button>
                   </ButtonGroup>
                 </StyledTableCell>
               </StyledTableRow>
