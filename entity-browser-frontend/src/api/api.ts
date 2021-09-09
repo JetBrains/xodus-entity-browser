@@ -1,5 +1,5 @@
-import {BaseAPI, Http} from "./http";
-import {ApplicationState, Database, EntityType, SearchPager} from "./backend-types";
+import {BaseAPI, Http} from './http';
+import {ApplicationState, Database, EntityType, SearchPager} from './backend-types';
 import {error} from '../components/notifications/notifications';
 
 class Api {
@@ -48,7 +48,7 @@ class SystemStateApi extends BaseAPI {
   }
 
   async deleteDB(db: Database) {
-    return this.http.delete(this.url + "/" + db.uuid, null);
+    return this.http.delete(this.url + '/' + db.uuid, null);
   }
 
   async newDB(db: Database) {
@@ -56,9 +56,9 @@ class SystemStateApi extends BaseAPI {
   }
 
   async startOrStop(db: Database) {
-    return this.http.post(this.url + "/" + db.uuid, JSON.stringify(db), {
+    return this.http.post(this.url + '/' + db.uuid, JSON.stringify(db), {
       params: {
-        op: db.opened ? "start" : "stop"
+        op: db.opened ? 'start' : 'stop'
       }
     });
   }
@@ -76,11 +76,16 @@ export class DatabaseApi extends BaseAPI {
   }
 
   async entityTypes(): Promise<EntityType[]> {
-    return this.http.get(this.url + "/" + this.databaseUuid + "/types", null);
+    return this.http.get(this.url + '/' + this.databaseUuid + '/types', null);
+  }
+
+  async downloadBlob(entityId: string, blobName: string, asString: boolean) {
+    return this.download(`api/dbs/${this.databaseUuid}/entities/${entityId}/blobString/$blobName`,
+      null, 'Can\'t download blob');
   }
 
   async searchEntities(q: string, typeId: number): Promise<SearchPager> {
-    return this.http.get(this.url + "/" + this.databaseUuid + "/entities",{
+    return this.http.get(this.url + '/' + this.databaseUuid + '/entities', {
       params: {
         q: q,
         id: typeId,

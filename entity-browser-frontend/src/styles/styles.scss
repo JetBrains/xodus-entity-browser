@@ -68,3 +68,24 @@
   padding: 24px;
   background: #eaeff1;
 }
+
+.search-counter {
+  float: right;
+  right: 32px;
+  top: 12px;
+  position: fixed;
+  display: flex
+}
+
+.search-counter button {
+  background: white;
+}
+
+.search-counter .Mui-selected {
+  opacity: 0.38;
+  background: white !important;
+}
+
+.search-counter .MuiPaginationItem-ellipsis {
+  color: white;
+}

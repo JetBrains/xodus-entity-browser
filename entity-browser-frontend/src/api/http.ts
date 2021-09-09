@@ -1,5 +1,8 @@
 import ExtendableError from 'es6-error';
 import queryString from 'querystring';
+import axios from 'axios';
+import FileSaver from 'file-saver';
+import {error} from '../components/notifications/notifications';
 
 export const defaultFetchConfig = {
   headers: {
@@ -124,4 +127,25 @@ export class BaseAPI {
     return this.http.delete(this.url, fetchConfig);
   }
 
+
+  async download(path: String, params: any, errorMessage: string) {
+    // Fetch the dynamically generated document from the server.
+    try {
+      const response = await axios.get(
+        `${this.url}/${path}`,
+        {
+          params,
+          responseType: 'blob',
+        }
+      );
+      // Log somewhat to show that the browser actually exposes the custom HTTP header
+      const fileNameHeader = 'content-disposition';
+      const suggestedFileName = response.headers[fileNameHeader];
+      const effectiveFileName = suggestedFileName.split('"')[1];
+      // Let the user save the file.
+      FileSaver.saveAs(response.data, effectiveFileName);
+    } catch (response) {
+      error(errorMessage, response);
+    }
+  }
 }

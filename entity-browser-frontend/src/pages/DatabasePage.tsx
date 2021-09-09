@@ -102,12 +102,20 @@ class DatabasePage extends BasePage {
     await this.searchEntities();
   }
 
+  async goToPage(page: number) {
+    this.props.history.push({
+      pathname: this.props.location.pathname,
+      search: `?typeId=${databaseStore.selectedType.id}&q=${databaseStore.q}`
+    });
+    await this.searchEntities();
+  }
+
   renderHeaderPlugin() {
     const total = databaseStore.pager.total
     if (total > 1) {
       const pages = Math.ceil(Math.max(total / PAGE_SIZE, 1))
-      return (<div>
-            {pages > 1 && <Pagination count={pages} variant={"outlined"}/>}
+      return (<div className={"search-counter"}>
+            {pages > 1 && <Pagination count={pages} variant={"outlined"} onChange={async (event, page) => this.goToPage(page)}/>}
             <Typography variant={"h6"}
                         className={"search-total-number"}>Total: {total}</Typography>
           </div>
@@ -157,7 +165,7 @@ class DatabasePage extends BasePage {
     return (
         <div>
           <Paper>
-            <Grid container spacing={2}>
+            <Grid container spacing={2} style={{marginBottom: 20}}>
               <Grid item xs={4}>
                 <div className={"entity-type-select"}>
                   <Autocomplete

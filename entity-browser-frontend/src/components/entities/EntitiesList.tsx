@@ -24,8 +24,7 @@ class EntitiesList extends Component<EntitiesListProps> {
           {/*</Paper>*/}
           {this.props.entities.map((entity: EntityView) => (
               <div className={"entity-view-panel"} key={entity.id}>
-                <EntityListView entity={entity}>
-                </EntityListView>
+                <EntityListView entity={entity} dbApi={this.props.dbApi}/>
               </div>
           ))}
           {/*<AppBar position="fixed" color="primary" style={{top: 'auto', bottom: 0}}>*/}
