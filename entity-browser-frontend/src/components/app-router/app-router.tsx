@@ -25,7 +25,7 @@ class AppRouter extends Component<RouteComponentProps> {
             <Route exact path='/' component={DatabasesPage}/>
             <Route exact path='/databases' component={DatabasesPage}/>
             <Route exact path='/databases/:databaseId'  component={DatabasePage}/>
-            <Route exact path='/entities' component={EntityPage}/>
+            <Route exact path='/databases/:databaseId/:entityId/' component={EntityPage}/>
             <Route component={NotFoundPage}/>
           </Switch>
       );

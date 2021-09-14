@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
-import {Database, EntityBlob, EntityLink, EntityView} from '../../api/backend-types';
+import {EntityBlob, EntityLink, EntityView} from '../../api/backend-types';
 import {
   Button,
   ButtonGroup,
   Chip,
-  Grid, Link,
+  Grid,
   Paper,
   Table,
   TableBody,
@@ -18,7 +18,8 @@ import PencilIcon from '@material-ui/icons/Create';
 import DehazeIcon from '@material-ui/icons/Dehaze';
 import {withStyles} from '@material-ui/core/styles';
 import {formatFileSize} from '../../api/file';
-import api, {DatabaseApi} from '../../api/api';
+import {DatabaseApi} from '../../api/api';
+import {EntityLinkWrapper} from './EntityLinkWrapper';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -108,8 +109,10 @@ class EntityListView extends Component<EntityListViewProps> {
                 </StyledTableCell>
                 <StyledTableCell>
                   {link.entities.map((entityLink: EntityLink) => (
-                    <Chip size="small" clickable label={entityLink.label}
-                          color={entityLink.notExists ? 'secondary' : 'default'} variant={'outlined'}/>
+                    <EntityLinkWrapper entity={entityLink} dbApi={this.props.dbApi}>
+                      <Chip size="small" clickable label={entityLink.label}
+                            color={entityLink.notExists ? 'secondary' : 'default'} variant={'outlined'}/>
+                    </EntityLinkWrapper>
                   ))}
                 </StyledTableCell>
               </StyledTableRow>

@@ -85,11 +85,16 @@ export class DatabaseApi extends BaseAPI {
       null, 'Can\'t download blob');
   }
 
-  async searchEntities(q: string, typeId: number): Promise<SearchPager> {
+  async entity(entityId: string) {
+    return this.http.get(`${this.url}/${this.databaseUuid}/entities/${entityId}`, null);
+  }
+
+  async searchEntities(q: string, typeId: number, page: number = 1): Promise<SearchPager> {
     return this.http.get(this.url + '/' + this.databaseUuid + '/entities', {
       params: {
         q: q,
         id: typeId,
+        offset: (page - 1) * PAGE_SIZE,
         pageSize: PAGE_SIZE
       }
     });

@@ -21,13 +21,14 @@ import {Pagination} from "@material-ui/lab";
 class EntitiesPager {
   @observable entities: EntityView[] = []
   @observable total: number = 0
-  @observable currentPage: number = 0
 }
 
 class DatabasePageStore {
+
   @observable database: Database = store.databases[0];
   @observable types: EntityType[] = [];
   @observable q: string = '';
+  @observable page: number = 0;
   @observable tempQ: string = '';
   @observable loading: boolean = true;
 
@@ -83,29 +84,31 @@ class DatabasePage extends BasePage {
   async setupFromQueryParams() {
     const holdMyBeer = (param: string | string[], def: string) => (param || def).toString();
 
-    let search = this.props.location.search;
-    const params = queryString.parse(search ? search.substring(1, search.length) : search);
-    const typeId = parseInt(holdMyBeer(params.typeId, "-1"));
-    const q = holdMyBeer(params.q, "");
+    let search = this.props.location.search
+    const params = queryString.parse(search ? search.substring(1, search.length) : search)
+    const typeId = parseInt(holdMyBeer(params.typeId, "-1"))
+    const q = holdMyBeer(params.q, "")
 
-    databaseStore.types = await databaseStore.api.entityTypes();
-    databaseStore.selectedType = databaseStore.types.find((type) => type.id === typeId) || databaseStore.types[0];
-    databaseStore.q = q;
-    databaseStore.tempQ = q;
+    databaseStore.types = await databaseStore.api.entityTypes()
+    databaseStore.selectedType = databaseStore.types.find((type) => type.id === typeId) || databaseStore.types[0]
+    databaseStore.q = q
+    databaseStore.tempQ = q
+    databaseStore.page = parseInt(holdMyBeer(params.page, "0"))
   }
 
   async syncWithQueryParams() {
     this.props.history.push({
       pathname: this.props.location.pathname,
-      search: `?typeId=${databaseStore.selectedType.id}&q=${databaseStore.q}`
+      search: `?typeId=${databaseStore.selectedType.id}&q=${databaseStore.q}&page=${databaseStore.page}`
     });
     await this.searchEntities();
   }
 
   async goToPage(page: number) {
+    databaseStore.page = page;
     this.props.history.push({
       pathname: this.props.location.pathname,
-      search: `?typeId=${databaseStore.selectedType.id}&q=${databaseStore.q}`
+      search: `?typeId=${databaseStore.selectedType.id}&q=${databaseStore.q}&page=${databaseStore.page}`
     });
     await this.searchEntities();
   }
@@ -128,7 +131,7 @@ class DatabasePage extends BasePage {
     const {q, selectedType, api} = databaseStore
     try {
       databaseStore.loading = true
-      let pager = await api.searchEntities(q, selectedType.id)
+      const pager = await api.searchEntities(q, selectedType.id, databaseStore.page)
 
       databaseStore.pager.entities = pager.items
       databaseStore.pager.total = pager.totalCount
