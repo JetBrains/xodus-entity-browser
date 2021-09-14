@@ -29,6 +29,7 @@ dependencies {
     compile "org.jetbrains.xodus:xodus-crypto:$xodusVersion"
 
     compile "io.ktor:ktor-gson:$ktorVersion"
+    compile "io.ktor:ktor-utils:$ktorVersion"
     compile "io.ktor:ktor-server-jetty:$ktorVersion"
 
     testCompile 'org.mockito:mockito-all:1.9.5'
