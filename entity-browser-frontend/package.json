@@ -82,7 +82,8 @@
     "webpack": "2.7.0",
     "webpack-config-merger": "0.1.0",
     "webpack-dev-server": "2.11.2",
-    "webpack-split-by-path": "0.0.8"
+    "webpack-split-by-path": "0.0.8",
+    "file-saver": "^2.0.2"
   },
   "devDependencies": {},
   "engines": {

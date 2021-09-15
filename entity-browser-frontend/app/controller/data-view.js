@@ -1,3 +1,5 @@
+var FileSaver = require('file-saver');
+
 angular.module('xodus').controller('DataViewController', [
     'EntityTypeService',
     'entitiesService',
@@ -6,7 +8,8 @@ angular.module('xodus').controller('DataViewController', [
     '$uibModal',
     '$routeParams',
     'currentDatabase',
-    function (typeService, entitiesService, navigationService, $scope, $uibModal, $routeParams, currentDatabase) {
+    '$http',
+    function (typeService, entitiesService, navigationService, $scope, $uibModal, $routeParams, currentDatabase, $http) {
         var dataViewCtrl = this;
         dataViewCtrl.$onInit = function () {
             var navigation = navigationService(currentDatabase.get());
@@ -67,13 +70,28 @@ angular.module('xodus').controller('DataViewController', [
                 dataViewCtrl.pager.pageChanged();
             };
 
-            dataViewCtrl.blobLink = function (entity, blob) {
-                return navigation.api.blobLink(entity.id, blob.name);
-            };
+          function blobLink(entity, name) {
+            return 'api/dbs/' + dataViewCtrl.fullDatabase.uuid + '/entities/' + entity.id + "/blob/" + name.name;
+          }
 
-            dataViewCtrl.blobStringLink = function (entity, blob) {
-                return navigation.api.blobStringLink(entity.id, blob.name);
-            };
+          function blobStringLink(entity, name) {
+            return 'api/dbs/' + dataViewCtrl.fullDatabase.uuid + '/entities/' + entity.id + "/blobString/" + name.name;
+          }
+
+
+          dataViewCtrl.downloadBlob = function (entity, blob) {
+              return $http.get(blobLink(entity, blob)).then(function(response) {
+                  var file = new Blob([response.data], { type: 'application/octet.stream' });
+                  return FileSaver.saveAs(file, blob.name);
+              });
+          };
+
+          dataViewCtrl.downloadBlobString = function (entity, blob) {
+            return $http.get(blobStringLink(entity, blob)).then(function(response) {
+              var file = new Blob([response.data], { type: 'application/octet.stream' });
+              return FileSaver.saveAs(file, blob.name);
+            });
+          };
         };
 
         function newPager(searchTerm) {

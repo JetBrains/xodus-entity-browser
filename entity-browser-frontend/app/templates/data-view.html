@@ -122,11 +122,11 @@
                                         <td>{{p.name}}</td>
                                         <td>
                                             <a class="btn btn-default" target="_self"
-                                               data-ng-href="{{dataViewCtrl.blobLink(item, p)}}">
+                                               data-ng-click="dataViewCtrl.downloadBlob(item, p)">
                                                 <i class="fa fa-download"> Binary</i>
                                             </a>
                                             <a class="btn btn-default" target="_self"
-                                               data-ng-href="{{dataViewCtrl.blobStringLink(item, p)}}">
+                                               data-ng-click="dataViewCtrl.downloadBlobString(item, p)">
                                                 <i class="fa fa-download"> UTF</i>
                                             </a>
                                         </td>
