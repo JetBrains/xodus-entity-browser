@@ -32,5 +32,6 @@ module.exports = {
                 }
             }
         }
-    }
+    },
+    plugins: webpackShare.getPlugins()
 };

@@ -1,12 +1,21 @@
 plugins {
-    id "com.moowork.node" version "1.2.0"
+    id "com.github.node-gradle.node" version "2.2.4"
 }
 
 node {
-    version = '16.13.0'
+    download = true
+    version = new File("$projectDir/.nvmrc").text.trim()
 }
 
-task runNpm(type: NpmTask, dependsOn: 'npmInstall') { args = ['run', 'build'] }
+task cleanFrontend(type: Delete) {
+    delete 'dist'
+}
+
+task runNpm(type: NpmTask) {
+    dependsOn cleanFrontend
+    args = ["run", "build"]
+}
+
 
 task webContent(type: Copy, dependsOn: 'runNpm') {
     from 'dist'

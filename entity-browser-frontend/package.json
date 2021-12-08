@@ -68,7 +68,7 @@
     "properties": "1.2.1",
     "protractor": "3.2.2",
     "rimraf": "2.5.2",
-    "sass-loader": "6.0.0",
+    "sass-loader": "7.1.0",
     "scrollbar-width": "3.1.1",
     "sinon": "1.12.1",
     "style-loader": "^0.8.2",
