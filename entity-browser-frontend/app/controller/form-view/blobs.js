@@ -3,15 +3,16 @@ angular.module('xodus').controller('BlobsController', [
     'navigationService',
     'currentDatabase',
     function ($scope, navigationService, currentDatabase) {
+        const blobs = this;
         $scope.uiBlobs = $scope.state.current.blobs;
-        var navigation = navigationService(currentDatabase.get());
+        const navigation = navigationService(currentDatabase.get());
 
-        $scope.downloadLink = function (blob) {
-            return navigation.api.blobLink($scope.state.current.id, blob.name);
+        blobs.downloadBlob = function (blob) {
+            return navigation.downloadBlob($scope.state.current, blob);
         };
 
-        $scope.downloadStringLink = function (blob) {
-            return navigation.api.blobStringLink($scope.state.current.id, blob.name);
+        blobs.downloadBlobString = function (blob) {
+            return navigation.downloadBlobString($scope.state.current, blob);
         };
 
     }]

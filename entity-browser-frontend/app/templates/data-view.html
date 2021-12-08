@@ -33,10 +33,12 @@
                             {{item.label}}</h4>
 
                         <div class="btn-group pull-right" ng-if="!dataViewCtrl.fullDatabase.readonly">
-                                <button class="btn btn-primary fa fa-lg fa-pencil"
-                                   data-ng-click="dataViewCtrl.edit(item)"></button>
-                                <button class="btn btn-danger fa fa-lg fa-trash"
-                                   data-ng-click="dataViewCtrl.deleteItem(item)"></button>
+                                <button class="btn btn-primary" data-ng-click="dataViewCtrl.edit(item)">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                                <button class="btn btn-danger" data-ng-click="dataViewCtrl.deleteItem(item)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                         </div>
 
                         <div class="btn-group pull-right" ng-if="dataViewCtrl.fullDatabase.readonly">
@@ -123,11 +125,11 @@
                                         <td>
                                             <a class="btn btn-default" target="_self"
                                                data-ng-click="dataViewCtrl.downloadBlob(item, p)">
-                                                <i class="fa fa-download"> Binary</i>
+                                                Binary <i class="fas fa-arrow-circle-down"></i>
                                             </a>
                                             <a class="btn btn-default" target="_self"
                                                data-ng-click="dataViewCtrl.downloadBlobString(item, p)">
-                                                <i class="fa fa-download"> UTF</i>
+                                                UTF <i class="fas fa-arrow-circle-down"></i>
                                             </a>
                                         </td>
                                     </tr>

@@ -242,8 +242,13 @@
                                 {{blob.blobSize}}
                             </div>
                             <div class="col-md-7">
-                                <a class="btn btn-default" target="_self" data-ng-href="{{downloadLink(blob)}}">
-                                    <i class="fa fa-download"></i>
+                                <a class="btn btn-default" target="_self"
+                                   data-ng-click="blobs.downloadBlob(blob)">
+                                    Binary <i class="fas fa-arrow-circle-down"></i>
+                                </a>
+                                <a class="btn btn-default" target="_self"
+                                   data-ng-click="blobs.downloadBlobString(blob)">
+                                    UTF <i class="fas fa-arrow-circle-down"></i>
                                 </a>
                             </div>
                         </div>

@@ -7,7 +7,7 @@ function getJavaScriptLoaders() {
     return [{
         test: /\.js/,
         include: [path.resolve(projectDirectory, 'app')],
-        loaders: ['ng-annotate-loader']
+        use: [require.resolve('ng-annotate-loader')]
     }];
 }
 function getStyleLoaders() {
@@ -15,11 +15,16 @@ function getStyleLoaders() {
         {
             test: /\.scss$/,
             include: [path.resolve(projectDirectory, 'app')],
-            loaders: [
-                'style-loader',
-                'css-loader',
-                'autoprefixer?{browsers:["last 2 version", "safari 5", "ie > 9", "iOS > 7", "Android > 4"]}',
-                'sass-loader?outputStyle=expanded'
+            use: [
+                require.resolve('style-loader'),
+                require.resolve('css-loader'),
+                require.resolve('autoprefixer'),
+                {
+                    loader: require.resolve('sass-loader'),
+                    options: {
+                        outputStyle: 'expanded'
+                    }
+                }
             ]
         }, {
             test: /\.css$/,
@@ -30,7 +35,7 @@ function getStyleLoaders() {
                 path.resolve(projectDirectory, 'node_modules/bootstrap-toggle'),
                 path.resolve(projectDirectory, 'node_modules/ui-select')
             ],
-            loader: 'style-loader!css-loader'
+            use: ["style-loader", "css-loader"]
         },
         {
             test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
@@ -52,7 +57,10 @@ function getStyleLoaders() {
         },
         {
             test: /\.jpe?g$|\.ico$|\.gif$|\.png$|\.svg$|\.woff$|\.ttf$|\.wav$|\.mp3$/,
-            loader: 'file-loader?name=[name].[ext]'
+            use: [{
+                loader: 'file-loader',
+                options: { name: '[name].[ext]' }
+            }]
         }
     ];
 }
@@ -61,19 +69,23 @@ function getImageLoaders() {
     return [{
         test: /\.png$/,
         include: path.resolve(projectDirectory, 'app'),
-        loader: 'url-loader?limit=10000'
+        use: [{
+            loader: 'url-loader',
+            options: { limit: 10000 }
+        }]
     }];
 }
 
 function getTemplateLoaders() {
     return [{
         test: /\.html$/,
-        loaders: [
-            'html-loader?' + JSON.stringify({
+        use: [{
+            loader: 'html-loader',
+            options: {
                 collapseBooleanAttributes: false,
                 collapseWhitespace: false
-            })
-        ]
+            }
+        }]
     }];
 }
 
@@ -103,7 +115,7 @@ module.exports = {
         noParse: [
             /app\/lib\/.*\.js$/
         ],
-        loaders: getJavaScriptLoaders()
+        rules: getJavaScriptLoaders()
             .concat(getStyleLoaders())
             .concat(getImageLoaders())
             .concat(getTemplateLoaders())
@@ -139,7 +151,11 @@ module.exports = {
         return [
             new webpack.DefinePlugin({
                 AppBuildConfig: toJson(AppBuildConfig)
-            })
+            }),
+            new webpack.ProvidePlugin({
+                $: 'jquery',
+                jQuery: 'jquery'
+            }),
         ];
     },
 

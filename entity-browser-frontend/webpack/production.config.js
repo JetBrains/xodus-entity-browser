@@ -13,16 +13,24 @@ module.exports = {
     resolve: webpackShare.resolve,
     resolveLoader: webpackShare.resolveLoader,
     module: webpackShare.module,
-    plugins: webpackShare.getPlugins().concat([
-        new webpack.optimize.UglifyJsPlugin({
-            minimize: true,
-            sourceMap: false,
-            compress: {
-                warnings: false
+    optimization: {
+        minimize: true,
+        splitChunks: {
+            cacheGroups: {
+                vendor: {
+                    test: function(module) {
+                        let userRequest = module.userRequest;
+                        return typeof userRequest !== 'string' ?
+                          false :
+                          (/jquery/.test(userRequest) ||
+                            /angular/.test(userRequest) ||
+                            /react/.test(userRequest));
+                    },
+                    chunks: 'all',
+                    name: 'vendor',
+                    enforce: true
+                }
             }
-        }),
-        new webpack.optimize.CommonsChunkPlugin({
-            name: 'vendor'
-        })
-    ])
+        }
+    }
 };

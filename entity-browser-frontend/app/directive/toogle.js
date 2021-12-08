@@ -1,5 +1,5 @@
 angular.module('xodus')
-    .directive('toggleCheckbox', [function () {
+    .directive('xxxToggleCheckbox', [function () {
         return {
             restrict: 'A',
             transclude: true,
@@ -18,10 +18,10 @@ angular.module('xodus')
                 }
 
                 function updateElementFromModel() {
-                    $element.trigger('change');
+                    $($element).trigger('change');
                 }
 
-                $element.on('change', updateModelFromElement);
+                $($element).on('change', updateModelFromElement);
 
                 $scope.$watch(function () {
                     return ngModel.$viewValue;
@@ -30,10 +30,10 @@ angular.module('xodus')
                 $scope.$watch(function () {
                     return $element.attr('disabled');
                 }, function (newVal) {
-                    $element.bootstrapToggle(!newVal ? "enable" : "disable");
+                    $($element).bootstrapToggle(!newVal ? "enable" : "disable");
                 });
 
-                $element.bootstrapToggle();
+                $($element).bootstrapToggle();
             }
         };
     }]);

@@ -1,4 +1,4 @@
-var FileSaver = require('file-saver');
+const FileSaver = require('file-saver');
 
 angular.module('xodus').controller('DataViewController', [
     'EntityTypeService',
@@ -10,15 +10,15 @@ angular.module('xodus').controller('DataViewController', [
     'currentDatabase',
     '$http',
     function (typeService, entitiesService, navigationService, $scope, $uibModal, $routeParams, currentDatabase, $http) {
-        var dataViewCtrl = this;
+        const dataViewCtrl = this;
         dataViewCtrl.$onInit = function () {
-            var navigation = navigationService(currentDatabase.get());
+            const navigation = navigationService(currentDatabase.get());
 
             dataViewCtrl.searchQuery = searchQuery();
             dataViewCtrl.pageSize = 50;
             dataViewCtrl.type = databaseType();
             dataViewCtrl.fullDatabase = currentDatabase.get();
-            var entities = entitiesService(currentDatabase.get());
+            const entities = entitiesService(currentDatabase.get());
 
             $scope.$on('$routeUpdate', function () {
                 dataViewCtrl.searchQuery = searchQuery();
@@ -70,28 +70,13 @@ angular.module('xodus').controller('DataViewController', [
                 dataViewCtrl.pager.pageChanged();
             };
 
-          function blobLink(entity, name) {
-            return 'api/dbs/' + dataViewCtrl.fullDatabase.uuid + '/entities/' + entity.id + "/blob/" + name.name;
-          }
+            dataViewCtrl.downloadBlob = function (entity, blob) {
+              return navigation.downloadBlob(entity, blob);
+            };
 
-          function blobStringLink(entity, name) {
-            return 'api/dbs/' + dataViewCtrl.fullDatabase.uuid + '/entities/' + entity.id + "/blobString/" + name.name;
-          }
-
-
-          dataViewCtrl.downloadBlob = function (entity, blob) {
-              return $http.get(blobLink(entity, blob)).then(function(response) {
-                  var file = new Blob([response.data], { type: 'application/octet.stream' });
-                  return FileSaver.saveAs(file, blob.name);
-              });
-          };
-
-          dataViewCtrl.downloadBlobString = function (entity, blob) {
-            return $http.get(blobStringLink(entity, blob)).then(function(response) {
-              var file = new Blob([response.data], { type: 'application/octet.stream' });
-              return FileSaver.saveAs(file, blob.name);
-            });
-          };
+            dataViewCtrl.downloadBlobString = function (entity, blob) {
+                return navigation.downloadBlobString(entity, blob);
+            };
         };
 
         function newPager(searchTerm) {
@@ -102,9 +87,9 @@ angular.module('xodus').controller('DataViewController', [
                 currentPage: 1,
                 expanded: {},
                 pageChanged: function () {
-                    var pageNo = this.currentPage;
-                    var offset = (pageNo - 1) * dataViewCtrl.pageSize;
-                    var self = this;
+                    const pageNo = this.currentPage;
+                    const offset = (pageNo - 1) * dataViewCtrl.pageSize;
+                    const self = this;
                     self.currentPage = pageNo;
                     typeService.search(currentDatabase.get(), dataViewCtrl.type.id, searchTerm, offset)
                         .then(function (data) {
@@ -139,7 +124,7 @@ angular.module('xodus').controller('DataViewController', [
         }
 
         function databaseType() {
-            var typeId = $routeParams.typeId ? $routeParams.typeId : currentDatabase.get().types[0].id;
+            const typeId = $routeParams.typeId ? $routeParams.typeId : currentDatabase.get().types[0].id;
             return currentDatabase.get().types.find(function (type) {
                 return type.id === parseInt(typeId);
             });

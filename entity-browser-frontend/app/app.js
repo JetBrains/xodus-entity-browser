@@ -1,17 +1,18 @@
-global.$ = global.jQuery = require('jquery/dist/jquery');
-require('angular');
+require('jquery');
+import 'angular';
 
-require('angular-route/angular-route');
-require('angular-sanitize/angular-sanitize');
-require('bootstrap');
-require('angular-ui-bootstrap');
-require('ui-select');
-require('bootstrap-toggle/js/bootstrap-toggle.js');
+import '@fortawesome/fontawesome-free/js/all'
 
-require('bootstrap/dist/css/bootstrap.css');
-require('ui-select/dist/select.css');
-require('bootstrap-toggle/css/bootstrap-toggle.css');
-require("font-awesome-sass-loader");
+import 'angular-route/angular-route';
+import 'angular-sanitize/angular-sanitize';
+import 'bootstrap';
+import 'angular-ui-bootstrap';
+import 'ui-select';
+import 'bootstrap-toggle/js/bootstrap-toggle';
+
+import 'bootstrap/dist/css/bootstrap.css';
+import 'ui-select/dist/select.css';
+import 'bootstrap-toggle/css/bootstrap-toggle.css';
 
 angular.module('xodus', [
     'ngRoute',

@@ -82,7 +82,7 @@ angular.module('xodus').directive('formView', [
                 }
 
                 function getForm(name) {
-                    return element.find('form[name="' + name + '"]').scope()[name];
+                    return angular.element($('form[name="' + name + '"]')).scope()[name];
                 }
 
                 function confirmExit(callback) {

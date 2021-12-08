@@ -1,7 +1,10 @@
+import FileSaver from 'file-saver';
+
 angular.module('xodus').factory('navigationService', [
     '$location',
     '$window',
-    function ($location, $window) {
+    '$http',
+    function ($location, $window, $http) {
         return function (db) {
             var prefix = 'databases/' + db.uuid + '/';
 
@@ -31,10 +34,35 @@ angular.module('xodus').factory('navigationService', [
                 $window.location.reload();
             }
 
+            function blobLink(entity, name) {
+                return 'api/dbs/' + db.uuid + '/entities/' + entity.id + "/blob/" + name.name;
+            }
+
+            function blobStringLink(entity, name) {
+                return 'api/dbs/' + db.uuid + '/entities/' + entity.id + "/blobString/" + name.name;
+            }
+
+
+            function downloadBlob(entity, blob) {
+                return $http.get(blobLink(entity, blob)).then(function(response) {
+                    var file = new Blob([response.data], { type: 'application/octet.stream' });
+                    return FileSaver.saveAs(file, blob.name);
+                });
+            }
+
+            function downloadBlobString(entity, blob) {
+                return $http.get(blobStringLink(entity, blob)).then(function(response) {
+                    var file = new Blob([response.data], { type: 'application/octet.stream' });
+                    return FileSaver.saveAs(file, blob.name);
+                });
+            }
+
             return {
                 toType: toType,
                 toEntity: toEntity,
-                forceReload: forceReload
+                forceReload: forceReload,
+                downloadBlob: downloadBlob,
+                downloadBlobString: downloadBlobString,
             };
         };
     }]

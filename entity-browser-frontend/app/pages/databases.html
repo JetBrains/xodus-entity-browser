@@ -33,18 +33,19 @@
                 <td>
                     <div style="display: flex;">
                         <div class="encrypted-icon-wrapper">
-                            <i ng-if="database.encrypted" class="fa fa-user-secret pull-right" title="Encrypted"></i>
-                            <i ng-if="!database.encrypted" class="fa fa-user-o pull-right"  title="Not encrypted"></i>
+                            <i ng-if="database.encrypted" class="fas fa-user-secret pull-right" title="Encrypted"></i>
+                            <i ng-if="!database.encrypted" class="fal fa-user pull-right"  title="Not encrypted"></i>
                         </div>
                         <div data-ng-if="!databasesCtrl.readonly">
-                            <input type="checkbox" toggle-checkbox ng-model="database.opened"
+                            <input type="checkbox" xxx-toggle-checkbox ng-model="database.opened"
                                    ng-change="databasesCtrl.startOrStop(database)" data-style="animation-disabled">
                         </div>
                     </div>
                 </td>
                 <td data-ng-if="!databasesCtrl.readonly">
-                    <button style="height: 34px;" class="btn btn-danger fa fa-lg fa-trash"
+                    <button style="height: 34px;" class="btn btn-danger"
                             ng-click="databasesCtrl.deleteDB(database)" data-ng-show="!databasesCtrl.readonly">
+                        <i class="fas fa-trash"></i>
                     </button>
                 </td>
             </tr>

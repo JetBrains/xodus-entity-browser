@@ -47,14 +47,13 @@ var getServerContext = function() {
 
 webpackShare.setupFixForBuildNodeSass();
 
-var webpackConfig = require('webpack-config-merger')(
+var webpackConfig = require('webpack-merge')(
   {
     entry: require('mout/object/merge')(webpackShare.entryPoints, {
       vendor: ['node-noop']
     }),
 
     output: {
-      path: webpackShare.outputPath,
       publicPath: getServerContext(),
       filename: '[name].js'
     },
@@ -62,7 +61,7 @@ var webpackConfig = require('webpack-config-merger')(
     resolve: webpackShare.resolve,
     resolveLoader: webpackShare.resolveLoader,
     module: webpackShare.module,
-    devtool: 'sourcemap',
+    devtool: 'eval-source-map',
     plugins: webpackShare.getPlugins(),
     devServer: {
       port: argv.port,
