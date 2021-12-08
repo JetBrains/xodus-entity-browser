@@ -3,7 +3,7 @@ plugins {
 }
 
 node {
-    version = '14.15.3'
+    version = '16.13.0'
 }
 
 task runNpm(type: NpmTask, dependsOn: 'npmInstall') { args = ['run', 'build'] }
