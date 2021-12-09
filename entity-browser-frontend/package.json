@@ -84,12 +84,10 @@
     "node": ">=0.8.0"
   },
   "scripts": {
-    "clean": "rimraf dist",
     "test": "karma start",
     "start": "webpack serve --config=webpack/development.config.js --mode development --progress --inline",
     "lint": "eslint '**/*.js' --quiet=true",
     "build": "npm run parallel -- 'npm run build:browser' ",
-    "prebuild": "npm run clean",
     "build:browser": "npm run parallel -- 'npm run build:browser:js'",
     "build:browser:js": "webpack --config=webpack/production.config.js",
     "parallel": "concurrently --no-color"
