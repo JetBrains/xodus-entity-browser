@@ -11,14 +11,9 @@ module.exports = function(config) {
       watched: false
     }],
 
-    exclude: [
-      'app/**/e2e/**/*.js',
-      'app/**/analytics/raw/**/*.js'
-    ],
-
     preprocessors: [
       'app/vendor.js',
-      'test/unit/test-bundle.webpack.js'
+      'test/test-bundle.webpack.js'
     ].reduce(function(preprocessors, fileMask) {
       preprocessors[fileMask] = ['webpack'];
       return preprocessors;

@@ -56,10 +56,20 @@ function getStyleLoaders() {
             ]
         },
         {
-            test: /\.jpe?g$|\.ico$|\.gif$|\.png$|\.svg$|\.woff$|\.ttf$|\.wav$|\.mp3$/,
+            test: /\.jpe?g$|\.gif$|\.png$|\.svg$|\.woff$|\.ttf$|\.wav$|\.mp3$/,
             use: [{
                 loader: 'file-loader',
                 options: { name: '[name].[ext]' }
+            }]
+        },
+        {
+            test: /\.ico$/,
+            use: [{
+                loader: 'file-loader',
+                options: {
+                    name: '[name].[ext]',
+                    esModule: false,
+                }
             }]
         }
     ];
@@ -131,6 +141,7 @@ module.exports = {
                 template: 'app/index.html',
                 filename: 'index.html',
                 inject: 'head',
+                minify: false, // Do not minify html to keep the <!--context--> comments
                 AppBuildConfig: AppBuildConfig
             })
         ];
