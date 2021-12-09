@@ -141,6 +141,7 @@ module.exports = {
                 template: 'app/index.html',
                 filename: 'index.html',
                 inject: 'head',
+                scriptLoading: 'blocking',
                 minify: false, // Do not minify html to keep the <!--context--> comments
                 AppBuildConfig: AppBuildConfig
             })
