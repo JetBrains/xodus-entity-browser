@@ -1,5 +1,6 @@
 package jetbrains.xodus.browser.web
 
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -47,5 +48,12 @@ interface EntitiesApi {
             @Path("uuid") uuid: String,
             @Path("id") id: String,
             @Body changeSummary: ChangeSummary): Call<Void>
+
+}
+
+interface FrontendApi {
+
+    @GET("databases/teamsysstore")
+    fun get(): Call<ResponseBody>
 
 }
