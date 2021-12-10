@@ -16,7 +16,7 @@ import jetbrains.xodus.browser.web.search.SearchQueryException
 import mu.KLogging
 
 
-open class HttpServer(val webApplication: WebApplication, private val appContext: String = "/") : KLogging() {
+open class HttpServer(val webApplication: WebApplication, val appContext: String = "/") : KLogging() {
 
     open val indexHtml = IndexHtmlPage(appContext)
 
