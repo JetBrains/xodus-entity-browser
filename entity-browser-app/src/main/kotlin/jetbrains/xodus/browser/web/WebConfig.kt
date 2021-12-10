@@ -1,24 +1,13 @@
 package jetbrains.xodus.browser.web
 
-import io.ktor.application.Application
-import io.ktor.application.ApplicationCall
-import io.ktor.application.call
-import io.ktor.application.install
-import io.ktor.features.Compression
-import io.ktor.features.ContentNegotiation
-import io.ktor.features.DefaultHeaders
-import io.ktor.features.StatusPages
-import io.ktor.gson.gson
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.content.resources
-import io.ktor.http.content.static
-import io.ktor.request.httpMethod
-import io.ktor.request.path
-import io.ktor.response.respond
-import io.ktor.routing.Route
-import io.ktor.routing.get
-import io.ktor.routing.route
-import io.ktor.routing.routing
+import io.ktor.application.*
+import io.ktor.features.*
+import io.ktor.gson.*
+import io.ktor.http.*
+import io.ktor.http.content.*
+import io.ktor.request.*
+import io.ktor.response.*
+import io.ktor.routing.*
 import jetbrains.xodus.browser.web.resources.DB
 import jetbrains.xodus.browser.web.resources.DBs
 import jetbrains.xodus.browser.web.resources.Entities
@@ -27,7 +16,7 @@ import jetbrains.xodus.browser.web.search.SearchQueryException
 import mu.KLogging
 
 
-open class HttpServer(val webApplication: WebApplication, val appContext: String = "/") : KLogging() {
+open class HttpServer(val webApplication: WebApplication, private val appContext: String = "/") : KLogging() {
 
     open val indexHtml = IndexHtmlPage(appContext)
 
@@ -70,6 +59,14 @@ open class HttpServer(val webApplication: WebApplication, val appContext: String
     open fun Application.installIndexHTML() {
         routing {
             get(appContext) {
+                indexHtml.respondIndexHtml(call)
+            }
+
+            //damn ktor StatusPages is not working in war
+            get("$appContext/databases/*") {
+                indexHtml.respondIndexHtml(call)
+            }
+            get("$appContext/databases") {
                 indexHtml.respondIndexHtml(call)
             }
         }
