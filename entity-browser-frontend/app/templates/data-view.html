@@ -42,8 +42,9 @@
                         </div>
 
                         <div class="btn-group pull-right" ng-if="dataViewCtrl.fullDatabase.readonly">
-                                <button class="btn btn-primary fa fa-lg fa-external-link"
-                                   data-ng-click="dataViewCtrl.edit(item)"></button>
+                                <button class="btn btn-primary" data-ng-click="dataViewCtrl.edit(item)">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </button>
                         </div>
                     </div>
                     <div class="panel-body">
