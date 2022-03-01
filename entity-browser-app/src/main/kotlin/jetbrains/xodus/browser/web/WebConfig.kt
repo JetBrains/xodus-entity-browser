@@ -63,7 +63,7 @@ open class HttpServer(val webApplication: WebApplication, val appContext: String
             }
 
             //damn ktor StatusPages is not working in war
-            get("$appContext/databases/*") {
+            get("$appContext/databases/{...}") {
                 indexHtml.respondIndexHtml(call)
             }
             get("$appContext/databases") {
