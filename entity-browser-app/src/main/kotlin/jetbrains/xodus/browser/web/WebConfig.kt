@@ -56,18 +56,17 @@ open class HttpServer(val webApplication: WebApplication, val appContext: String
         }
     }
 
+    private fun Routing.installIndexHtml(url: String) {
+        get("$appContext$url") {
+            indexHtml.respondIndexHtml(call)
+        }
+    }
+
     open fun Application.installIndexHTML() {
         routing {
-            get(appContext) {
-                indexHtml.respondIndexHtml(call)
-            }
-
             //damn ktor StatusPages is not working in war
-            get("$appContext/databases/{...}") {
-                indexHtml.respondIndexHtml(call)
-            }
-            get("$appContext/databases") {
-                indexHtml.respondIndexHtml(call)
+            listOf("", "/", "/databases/{...}", "/databases").forEach {
+                installIndexHtml(it)
             }
         }
     }
