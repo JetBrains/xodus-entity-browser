@@ -3,6 +3,8 @@ dependencies {
 }
 
 tasks.register('zipLauncher', Zip) {
+    dependsOn(':entity-browser-app:shadowJar')
+
     archiveFileName.set("xodus-entity-browser-${archiveVersion.get()}.zip")
 
     into("xodus-entity-browser-${archiveVersion.get()}") {
