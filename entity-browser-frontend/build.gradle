@@ -15,6 +15,10 @@ tasks.register('cleanFrontend', Delete) {
     delete 'dist'
 }
 
+generateMetadataFileForMavenJavaPublication {
+    dependsOn('jarFrontend')
+}
+
 tasks.register('runNpm', NpmTask) {
     dependsOn cleanFrontend
     args = ["run", "build"]
