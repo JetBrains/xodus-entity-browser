@@ -1,24 +1,24 @@
 dependencies {
-    compile project(':entity-browser-app')
+    implementation project(':entity-browser-app')
 }
 
-task zipLauncher(type: Zip) {
-    archiveName "xodus-entity-browser-${version}.zip"
+tasks.register('zipLauncher', Zip) {
+    archiveFileName.set("xodus-entity-browser-${archiveVersion.get()}.zip")
 
-    into("xodus-entity-browser-${version}") {
+    into("xodus-entity-browser-${archiveVersion.get()}") {
         from 'src/main/resources', {
             include '*.bat'
             include '*.sh'
         }
     }
 
-    into("xodus-entity-browser-${version}") {
+    into("xodus-entity-browser-${archiveVersion.get()}") {
         from globalArtifactsBuildDir, {
             include '*.jar'
         }
     }
 
-    destinationDir globalArtifactsBuildDir
+    destinationDirectory.set(globalArtifactsBuildDir)
 }
 
 artifacts {

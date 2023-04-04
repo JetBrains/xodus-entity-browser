@@ -6,6 +6,7 @@ import jetbrains.exodus.entitystore.*
 import jetbrains.exodus.env.EnvironmentConfig
 import jetbrains.exodus.env.Environments
 import jetbrains.exodus.io.WatchingFileDataReaderWriterProvider
+import jetbrains.exodus.log.DataCorruptionException
 import jetbrains.xodus.browser.web.*
 import jetbrains.xodus.browser.web.search.smartSearch
 import mu.KLogging
@@ -57,6 +58,10 @@ class StoreService {
             val msg = "It seems that store encrypted with another parameters"
             logger.error(e) { msg }
             throw DatabaseException("Database is ciphered with different/unknown cipher parameters")
+        } catch (e: DataCorruptionException){
+            val msg = "Cannot open database because of data corruption"
+            logger.error(e) { msg }
+            throw DatabaseException("Database is ciphered with different/unknown cipher parameters or corrupted")
         } catch (e: RuntimeException) {
             val msg = "Can't get valid Xodus entity store location and store key. Check the configuration"
             logger.error(e) { msg }

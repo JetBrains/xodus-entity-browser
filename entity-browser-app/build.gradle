@@ -1,50 +1,47 @@
 import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 
 plugins {
-    id "ca.coglinc.javacc" version "2.3.1"
+    id 'com.intershop.gradle.javacc' version '4.1.3'
+}
+
+configurations {
+    frontend
+    frontend_libs
+    hub_libs
 }
 
 apply plugin: 'kotlin'
 apply plugin: 'com.github.johnrengelman.shadow'
 
-def javaCCFolder = "src/main/generated"
-
-sourceSets {
-    main {
-        java {
-            srcDir file(javaCCFolder)
-        }
-    }
-}
-
 dependencies {
-    compile 'org.slf4j:slf4j-simple:1.7.25'
-    compile 'io.github.microutils:kotlin-logging:1.7.9'
+    implementation 'org.slf4j:slf4j-simple:1.7.25'
+    implementation 'io.github.microutils:kotlin-logging:1.7.9'
 
-    compile project(':entity-browser-frontend')
+    frontend project(path: ':entity-browser-frontend', configuration: 'frontend_build')
 
-    compile "org.jetbrains.xodus:xodus-environment:$xodusVersion"
-    compile "org.jetbrains.xodus:xodus-entity-store:$xodusVersion"
-    compile "org.jetbrains.xodus:xodus-openAPI:$xodusVersion"
-    compile "org.jetbrains.xodus:xodus-crypto:$xodusVersion"
+    implementation "org.jetbrains.xodus:xodus-environment:$xodusVersion"
+    implementation "org.jetbrains.xodus:xodus-entity-store:$xodusVersion"
+    implementation "org.jetbrains.xodus:xodus-openAPI:$xodusVersion"
+    implementation "org.jetbrains.xodus:xodus-crypto:$xodusVersion"
 
-    compile "io.ktor:ktor-gson:$ktorVersion"
-    compile "io.ktor:ktor-server-jetty:$ktorVersion"
+    implementation "io.ktor:ktor-gson:$ktorVersion"
+    implementation "io.ktor:ktor-server-jetty:$ktorVersion"
 
-    testCompile 'org.mockito:mockito-all:1.9.5'
-    testCompile 'junit:junit:4.11'
-    testCompile 'com.squareup.retrofit2:retrofit:2.3.0'
-    testCompile 'com.squareup.retrofit2:converter-jackson:2.3.0'
-    testCompile 'com.squareup.okhttp3:okhttp:3.12.1'
-    testCompile 'com.squareup.okhttp3:logging-interceptor:3.12.1'
+    testImplementation 'org.mockito:mockito-all:1.9.5'
+    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'com.squareup.retrofit2:retrofit:2.5.0'
+    testImplementation 'com.squareup.retrofit2:converter-jackson:2.5.0'
+    testImplementation 'com.squareup.okhttp3:okhttp:3.12.1'
+    testImplementation 'com.squareup.okhttp3:logging-interceptor:3.12.1'
 
-    testCompile 'com.fasterxml.jackson.module:jackson-module-kotlin:2.9.8'
+    testImplementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.9.8'
 }
 
 shadowJar {
-    baseName = "xodus-entity-browser"
-    version = null
-    destinationDir = globalArtifactsBuildDir
+    dependsOn = ['buildFrontend']
+    archiveBaseName.set("xodus-entity-browser")
+    archiveVersion.set(null)
+    getDestinationDirectory().set(globalArtifactsBuildDir)
     manifest {
         attributes 'Main-Class': 'jetbrains.xodus.browser.web.MainKt'
     }
@@ -52,9 +49,14 @@ shadowJar {
         path = 'META-INF/services'
         include 'org.eclipse.jetty.http.HttpFieldPreEncoder'
     }
+    from { project.configurations.frontend.collect { zipTree(it) } }
 }
 
-task runShadow(type: JavaExec) {
+tasks.register('buildFrontend'){
+    dependsOn(project.configurations.frontend)
+}
+
+tasks.register('runShadow', JavaExec) {
     classpath(shadowJar.archiveFile)
 }
 
@@ -62,12 +64,12 @@ artifacts {
     archives shadowJar
 }
 
-clean {
-    delete javaCCFolder
-}
-
-compileJavacc {
-    inputDirectory = file('src/main/javacc')
-    outputDirectory = file(javaCCFolder + '/jetbrains/xodus/browser/web/search')
-    // plugin wont create package for generated classes
+javacc {
+    configs {
+        template {
+            inputFile = file('src/main/javacc/smart-search.jj')
+            packageName = 'jetbrains.xodus.browser.web.search'
+            lookahead = '2'
+        }
+    }
 }

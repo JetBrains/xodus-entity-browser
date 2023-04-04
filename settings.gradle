@@ -1,3 +1,12 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+    }
+    plugins {
+        id 'com.github.johnrengelman.shadow' version '8.1.1'
+    }
+}
+
 rootProject.name = 'xodus-entity-browser'
 // application modules
 include 'entity-browser-frontend',

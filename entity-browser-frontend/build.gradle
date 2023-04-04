@@ -2,32 +2,38 @@ plugins {
     id "com.github.node-gradle.node" version "2.2.4"
 }
 
+configurations {
+    frontend_build
+}
+
 node {
     download = true
     version = new File("$projectDir/.nvmrc").text.trim()
 }
 
-task cleanFrontend(type: Delete) {
+tasks.register('cleanFrontend', Delete) {
     delete 'dist'
 }
 
-task runNpm(type: NpmTask) {
+tasks.register('runNpm', NpmTask) {
     dependsOn cleanFrontend
     args = ["run", "build"]
 }
 
 
-task webContent(type: Copy, dependsOn: 'runNpm') {
+tasks.register('webContent', Copy) {
+    dependsOn 'runNpm'
     from 'dist'
     into 'build/content/entity/browser/static'
 }
 
-task jarFrontend(type: Jar, dependsOn: 'webContent') {
+tasks.register('jarFrontend', Jar) {
+    dependsOn 'webContent'
     from 'build/content'
 }
 
 artifacts {
-    compile file: jarFrontend.archivePath, builtBy: jarFrontend
+    frontend_build file: jarFrontend.archiveFile.get().asFile, builtBy: jarFrontend
 }
 
 clean {
