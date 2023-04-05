@@ -15,8 +15,9 @@ tasks.register('cleanFrontend', Delete) {
     delete 'dist'
 }
 
-generateMetadataFileForMavenJavaPublication {
-    dependsOn('jarFrontend')
+jar {
+    dependsOn('webContent')
+    from 'build/content'
 }
 
 tasks.register('runNpm', NpmTask) {
