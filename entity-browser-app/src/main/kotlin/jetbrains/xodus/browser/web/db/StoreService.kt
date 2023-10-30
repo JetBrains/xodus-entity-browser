@@ -92,7 +92,7 @@ class StoreService {
     }
 
     fun allTypes(): Array<EntityType> {
-        return readonly { tx -> tx.entityTypes.map { it.asEntityType(tx.store) }.sortedBy { it.name }.toTypedArray() }
+        return readonly { tx -> tx.entityTypes.map { it.asEntityType(tx.store) }.sortedBy { it.name }.distinct().toTypedArray() }
     }
 
     fun searchType(typeId: Int, q: String?, offset: Int, pageSize: Int): SearchPager {
