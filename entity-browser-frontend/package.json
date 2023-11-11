@@ -65,7 +65,7 @@
     "phantomjs": "^2.1.7",
     "po2json": "0.4.1",
     "properties": "1.2.1",
-    "protractor": "3.2.2",
+    "protractor": "7.0.0",
     "rimraf": "2.5.2",
     "scrollbar-width": "3.1.1",
     "sinon": "1.12.1",
