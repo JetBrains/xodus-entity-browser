@@ -1,6 +1,7 @@
 package jetbrains.xodus.browser.web.db
 
 
+import jetbrains.exodus.bindings.IntegerBinding
 import jetbrains.exodus.crypto.InvalidCipherParametersException
 import jetbrains.exodus.entitystore.*
 import jetbrains.exodus.env.EnvironmentConfig
@@ -92,7 +93,19 @@ class StoreService {
     }
 
     fun allTypes(): Array<EntityType> {
-        return readonly { tx -> tx.entityTypes.map { it.asEntityType(tx.store) }.sortedBy { it.name }.distinct().toTypedArray() }
+        return readonly { txn ->
+            val store = txn.store
+            val typeIds = arrayListOf<Int>()
+            store.entityTypesTable.getSecondIndexCursor(txn.environmentTransaction).use { entityTypesCursor ->
+                while (entityTypesCursor.next) {
+                    typeIds.add(IntegerBinding.compressedEntryToInt(entityTypesCursor.key))
+                }
+            }
+
+            typeIds.map {
+                EntityType(it, store.getEntityType(txn, it))
+            }.sortedBy { it.name }.toTypedArray()
+        }
     }
 
     fun searchType(typeId: Int, q: String?, offset: Int, pageSize: Int): SearchPager {

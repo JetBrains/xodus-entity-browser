@@ -1,6 +1,6 @@
 buildscript {
-    ext.xodusVersion = '3.0.131'
-    ext.kotlinVersion = '1.8.10'
+    ext.xodusVersion = '3.0.133'
+    ext.kotlinVersion = '1.9.21'
     ext.ktorVersion = '1.6.7'
 
     dependencies {
