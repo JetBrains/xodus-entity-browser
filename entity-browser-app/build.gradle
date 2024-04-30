@@ -24,8 +24,15 @@ dependencies {
     implementation "org.jetbrains.xodus:xodus-openAPI:$xodusVersion"
     implementation "org.jetbrains.xodus:xodus-crypto:$xodusVersion"
 
-    implementation "io.ktor:ktor-gson:$ktorVersion"
-    implementation "io.ktor:ktor-server-jetty:$ktorVersion"
+//    implementation "io.ktor:ktor-gson:$ktorVersion"
+    //implementation "io.ktor:ktor-server-jetty:$ktorVersion"
+
+    implementation "com.google.code.gson:gson:2.10.1"
+
+    implementation "org.eclipse.jetty:jetty-server:$jettyVersion"
+    implementation "org.eclipse.jetty:jetty-servlet:$jettyVersion"
+    implementation "org.eclipse.jetty:jetty-webapp:$jettyVersion"
+
 
     testImplementation 'org.mockito:mockito-all:1.9.5'
     testImplementation 'junit:junit:4.13.1'

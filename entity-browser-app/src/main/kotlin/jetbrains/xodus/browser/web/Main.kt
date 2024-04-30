@@ -1,12 +1,18 @@
 package jetbrains.xodus.browser.web
 
-import io.ktor.application.Application
-import io.ktor.application.install
-import io.ktor.features.DefaultHeaders
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.jetty.Jetty
+//import io.ktor.application.Application
+//import io.ktor.application.install
+//import io.ktor.features.DefaultHeaders
+//import io.ktor.server.engine.embeddedServer
+//import io.ktor.server.jetty.Jetty
+import javax.servlet.Servlet
 import jetbrains.xodus.browser.web.db.PersistentDatabaseService
 import mu.KLogging
+import org.eclipse.jetty.server.Server
+import org.eclipse.jetty.server.ServerConnector
+import org.eclipse.jetty.servlet.ServletHandler
+import org.eclipse.jetty.util.thread.QueuedThreadPool
+
 
 fun main() {
     Home.setup()
@@ -14,18 +20,43 @@ fun main() {
     val appHost = System.getProperty("server.host", "localhost")
     val context = System.getProperty("server.context", "/")
 
-    val server = embeddedServer(Jetty, port = appPort, host = appHost) {
-        val webApplication = PersistentWebApplication(PersistentDatabaseService()).also { it.start() }
-        object : HttpServer(webApplication, context) {
 
-            override fun Application.installAdditionalFeatures() {
-                install(DefaultHeaders)
-            }
+//    val server = embeddedServer(Jetty, port = appPort, host = appHost) {
+//        val webApplication = PersistentWebApplication(PersistentDatabaseService()).also { it.start() }
+//        object : HttpServer(webApplication, context) {
+//
+//            override fun Application.installAdditionalFeatures() {
+//                install(DefaultHeaders)
+//            }
+//
+//        }.setup(this)
+//    }
+//    server.start(false)
 
-        }.setup(this)
-    }
-    server.start(false)
-    OS.launchBrowser(appHost, appPort, context)
+    val maxThreads = 100
+    val minThreads = 10
+    val idleTimeout = 120
+
+    val threadPool = QueuedThreadPool(maxThreads, minThreads, idleTimeout)
+
+    val server = Server(threadPool)
+    val connector = ServerConnector(server);
+    connector.port = appPort
+    connector.host = appHost
+    server.connectors = arrayOf(connector)
+
+    val servletHandler = ServletHandler()
+    server.handler = servletHandler
+
+    servletHandler.addServletWithMapping(BlockingServlet::class.java, "/status")
+
+    server.start()
+    // TODO default headers
+    //
+
+
+//    OS.launchBrowser(appHost, appPort, context)
+    OS.launchBrowser(appHost, appPort, "/status")
 }
 
 internal object OS : KLogging() {
@@ -46,8 +77,10 @@ internal object OS : KLogging() {
             } else {
                 // Unix or Linux
                 logger.info("linux detected")
-                val browsers = arrayOf("google-chrome", "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape")
-                val selectedBrowser: String? = browsers.firstOrNull { Runtime.getRuntime().exec(arrayOf("which", it)).waitFor() == 0 }
+                val browsers =
+                    arrayOf("google-chrome", "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape")
+                val selectedBrowser: String? =
+                    browsers.firstOrNull { Runtime.getRuntime().exec(arrayOf("which", it)).waitFor() == 0 }
                 if (selectedBrowser == null) {
                     throw Exception("Couldn't find web browser")
                 } else {

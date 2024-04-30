@@ -5,6 +5,7 @@
 /entity-browser-frontend/entity-browser-frontend.iml
 /entity-browser-frontend/dist/
 /entity-browser-frontend/.idea/
+/entity-browser-frontend/.gradle/
 /deploy-to-bintray.sh
 /entity-browser-app/src/main/generated/
 /entity-browser-app/recent-dbs.json

@@ -3,9 +3,9 @@ package jetbrains.xodus.browser.web
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.jetty.Jetty
-import io.ktor.server.jetty.JettyApplicationEngine
+//import io.ktor.server.engine.embeddedServer
+//import io.ktor.server.jetty.Jetty
+//import io.ktor.server.jetty.JettyApplicationEngine
 import jetbrains.exodus.entitystore.PersistentEntityStoreImpl
 import jetbrains.exodus.entitystore.PersistentEntityStores
 import jetbrains.exodus.env.Environments
@@ -37,7 +37,7 @@ open class TestSupport {
     private lateinit var store: PersistentEntityStoreImpl
     lateinit var webApp: PersistentWebApplication
 
-    private lateinit var server: JettyApplicationEngine
+    private lateinit var server: Any//JettyApplicationEngine
     private val context = "/custom"
     private val port = 18443
 
@@ -68,11 +68,12 @@ open class TestSupport {
         store = PersistentEntityStores.newInstance(Environments.newInstance(lockedDBLocation), key)
         webApp = PersistentWebApplication(PersistentDatabaseService())
 
-        server = embeddedServer(Jetty, port = port) {
-            webApp.start()
-            HttpServer(webApp, context).setup(this)
-        }
-        server.start(wait = false)
+        server = Object()
+//        embeddedServer(Jetty, port = port) {
+//            webApp.start()
+//            HttpServer(webApp, context).setup(this)
+//        }
+        //server.start(wait = false)
 
         var setuped = false
         var times = 0
@@ -101,6 +102,6 @@ open class TestSupport {
         store.close()
         webApp.stop()
         File("db").delete()
-        server.stop(gracePeriodMillis = 20, timeoutMillis = 20)
+        //server.stop(gracePeriodMillis = 20, timeoutMillis = 20)
     }
 }
