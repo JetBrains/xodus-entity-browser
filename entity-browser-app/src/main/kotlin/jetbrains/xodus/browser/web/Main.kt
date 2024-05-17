@@ -5,13 +5,16 @@ package jetbrains.xodus.browser.web
 //import io.ktor.features.DefaultHeaders
 //import io.ktor.server.engine.embeddedServer
 //import io.ktor.server.jetty.Jetty
-import javax.servlet.Servlet
-import jetbrains.xodus.browser.web.db.PersistentDatabaseService
 import mu.KLogging
+import org.eclipse.jetty.server.Handler
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.ServerConnector
-import org.eclipse.jetty.servlet.ServletHandler
+import org.eclipse.jetty.server.handler.ContextHandlerCollection
 import org.eclipse.jetty.util.thread.QueuedThreadPool
+import org.eclipse.jetty.webapp.Configuration.ClassList
+import org.eclipse.jetty.webapp.JettyWebXmlConfiguration
+import org.eclipse.jetty.webapp.WebAppContext
+import java.nio.file.Paths
 
 
 fun main() {
@@ -40,15 +43,18 @@ fun main() {
     val threadPool = QueuedThreadPool(maxThreads, minThreads, idleTimeout)
 
     val server = Server(threadPool)
-    val connector = ServerConnector(server);
+    val connector = ServerConnector(server)
     connector.port = appPort
     connector.host = appHost
     server.connectors = arrayOf(connector)
 
-    val servletHandler = ServletHandler()
-    server.handler = servletHandler
 
-    servletHandler.addServletWithMapping(BlockingServlet::class.java, "/status")
+    println(Paths.get("").toAbsolutePath().toString() )
+    val webContext = WebAppContext()
+    webContext.war = "entity-browser-app/build/libs/entity-browser-app-3.0.0.war"
+    val handlers = ContextHandlerCollection()
+    handlers.handlers = arrayOf<Handler>(webContext)
+    server.handler = handlers
 
     server.start()
     // TODO default headers

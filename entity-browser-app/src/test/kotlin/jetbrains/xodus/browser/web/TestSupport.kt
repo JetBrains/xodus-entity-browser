@@ -68,6 +68,9 @@ open class TestSupport {
         store = PersistentEntityStores.newInstance(Environments.newInstance(lockedDBLocation), key)
         webApp = PersistentWebApplication(PersistentDatabaseService())
 
+        //server =
+
+
         server = Object()
 //        embeddedServer(Jetty, port = port) {
 //            webApp.start()

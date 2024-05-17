@@ -1,0 +1,27 @@
+<web-app metadata-complete="true" version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+	      http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <display-name>Xodus Entity Browser</display-name>
+
+    <servlet>
+        <servlet-name>status-servlet</servlet-name>
+        <servlet-class>jetbrains.xodus.browser.web.servlets.StatusServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>status-servlet</servlet-name>
+        <url-pattern>/status</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>main-servlet</servlet-name>
+        <servlet-class>jetbrains.xodus.browser.web.servlets.MainServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>main-servlet</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+
+
+</web-app>

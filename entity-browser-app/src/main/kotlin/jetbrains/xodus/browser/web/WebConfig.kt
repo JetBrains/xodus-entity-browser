@@ -11,15 +11,15 @@ package jetbrains.xodus.browser.web
 //import jetbrains.xodus.browser.web.resources.DB
 //import jetbrains.xodus.browser.web.resources.DBs
 //import jetbrains.xodus.browser.web.resources.Entities
-//import jetbrains.xodus.browser.web.resources.IndexHtmlPage
+import jetbrains.xodus.browser.web.resources.IndexHtmlPage
 import jetbrains.xodus.browser.web.search.SearchQueryException
 import mu.KLogging
 
 
-//open class HttpServer(val webApplication: WebApplication, val appContext: String = "/") : KLogging() {
-//
-//    open val indexHtml = IndexHtmlPage(appContext)
-//
+open class HttpServer(val webApplication: WebApplication, val appContext: String = "/") : KLogging() {
+
+    open val indexHtml = IndexHtmlPage(appContext)
+
 //    open val resources = listOf<AppRoute>(
 //            // rest api
 //            DBs(webApplication),
@@ -133,7 +133,7 @@ import mu.KLogging
 //        val vo = if (e is WithMessage) e.toVO() else e.toVO()
 //        respond(status, vo)
 //    }
-//}
+}
 //
 //interface AppRoute {
 //
