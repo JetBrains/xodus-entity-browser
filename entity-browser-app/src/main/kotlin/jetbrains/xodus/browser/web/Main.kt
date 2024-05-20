@@ -48,8 +48,6 @@ fun main() {
     connector.host = appHost
     server.connectors = arrayOf(connector)
 
-
-    println(Paths.get("").toAbsolutePath().toString() )
     val webContext = WebAppContext()
     webContext.war = "entity-browser-app/build/libs/entity-browser-app-3.0.0.war"
     val handlers = ContextHandlerCollection()

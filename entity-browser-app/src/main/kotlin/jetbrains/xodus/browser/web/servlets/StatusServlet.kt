@@ -11,6 +11,6 @@ class StatusServlet : HttpServlet() {
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
         response.contentType = "application/json"
         response.status = HttpServletResponse.SC_OK
-        response.writer.println("{ \"status\": \"ok\"}")
+        response.writer.println("{ \"status\": \"ok\", \"path\":\"${request.servletPath}\"}")
     }
 }
