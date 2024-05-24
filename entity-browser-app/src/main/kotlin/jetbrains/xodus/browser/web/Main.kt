@@ -5,16 +5,14 @@ package jetbrains.xodus.browser.web
 //import io.ktor.features.DefaultHeaders
 //import io.ktor.server.engine.embeddedServer
 //import io.ktor.server.jetty.Jetty
+import jetbrains.xodus.browser.web.servlets.resources
 import mu.KLogging
 import org.eclipse.jetty.server.Handler
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.ServerConnector
 import org.eclipse.jetty.server.handler.ContextHandlerCollection
 import org.eclipse.jetty.util.thread.QueuedThreadPool
-import org.eclipse.jetty.webapp.Configuration.ClassList
-import org.eclipse.jetty.webapp.JettyWebXmlConfiguration
 import org.eclipse.jetty.webapp.WebAppContext
-import java.nio.file.Paths
 
 
 fun main() {
