@@ -113,20 +113,9 @@ class MainServlet : HttpServlet() {
             }
 
         }
-        val uuid = path?.substringAfterLast("/") ?: ""
-
     }
 
-    private fun handleOnlyDBsEntitiesBlob(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-        uuid: String,
-        entityId: String,
-        blobName: String
-    ) {
-        // /api/dbs/{uuid}/entities/{entityId}/blob/{blobName}
-        TODO("Not yet implemented")
-    }
+
 
 
 
@@ -233,7 +222,7 @@ class MainServlet : HttpServlet() {
         }
     }
 
-    private fun handleOnlyDBsEntitiesBlobString(
+    private fun handleOnlyDBsEntitiesBlob(
         request: HttpServletRequest,
         response: HttpServletResponse,
         uuid: String,
@@ -241,6 +230,23 @@ class MainServlet : HttpServlet() {
         blobName: String
     ) {
         // /api/dbs/{uuid}/entities/{entityId}/blob/{blobName}
+        val webApp = resources.webApp
+        when (request.method) {
+            "GET" -> {
+                //TODO
+            }
+            else -> notFound(request, response)
+        }
+    }
+
+    private fun handleOnlyDBsEntitiesBlobString(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        uuid: String,
+        entityId: String,
+        blobName: String
+    ) {
+        // /api/dbs/{uuid}/entities/{entityId}/blobString/{blobName}
         val webApp = resources.webApp
         when (request.method) {
             "GET" -> {
