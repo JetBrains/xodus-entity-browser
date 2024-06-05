@@ -17,7 +17,7 @@ import org.eclipse.jetty.webapp.WebAppContext
 
 fun main() {
     Home.setup()
-    val appPort = Integer.getInteger("server.port", 18080)
+    val appPort = Integer.getInteger("server.port", 18082)
     val appHost = System.getProperty("server.host", "localhost")
     val context = System.getProperty("server.context", "/")
 
@@ -47,7 +47,7 @@ fun main() {
     server.connectors = arrayOf(connector)
 
     val webContext = WebAppContext()
-    webContext.war = "entity-browser-app/build/libs/entity-browser-app-3.0.0.war"
+    webContext.war = "build/xodus-entity-browser-3.0.0.war"
     val handlers = ContextHandlerCollection()
     handlers.handlers = arrayOf<Handler>(webContext)
     server.handler = handlers

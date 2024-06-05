@@ -14,13 +14,57 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>main-servlet</servlet-name>
-        <servlet-class>jetbrains.xodus.browser.web.servlets.MainServlet</servlet-class>
+        <servlet-name>api-servlet</servlet-name>
+        <servlet-class>jetbrains.xodus.browser.web.servlets.ApiServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>main-servlet</servlet-name>
-        <url-pattern>/</url-pattern>
+        <servlet-name>api-servlet</servlet-name>
+        <url-pattern>/api/dbs</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>default-servlet</servlet-name>
+        <servlet-class>org.eclipse.jetty.server.DefaultServlet</servlet-class>
+        <init-param>
+            <param-name>resourceBase</param-name>
+            <param-value>/entity/browser/static/*</param-value>
+        </init-param>
+        <init-param>
+            <param-name>dirAllowed</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <param-name>pathInfoOnly</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>default-servlet</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+<!--    <servlet>-->
+<!--        <servlet-name>static-servlet</servlet-name>-->
+<!--        <servlet-class>jetbrains.xodus.browser.web.servlets.StaticServlet</servlet-class>-->
+<!--    </servlet>-->
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>static-servlet</servlet-name>-->
+<!--        <url-pattern>/</url-pattern>-->
+<!--    </servlet-mapping>-->
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>static-servlet</servlet-name>-->
+<!--        <url-pattern>/databases</url-pattern>-->
+<!--    </servlet-mapping>-->
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>default</servlet-name>-->
+<!--        <url-pattern>*.js</url-pattern>-->
+<!--    </servlet-mapping>-->
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>default</servlet-name>-->
+<!--        <url-pattern>*.css</url-pattern>-->
+<!--    </servlet-mapping>-->
+
+
 
 
 

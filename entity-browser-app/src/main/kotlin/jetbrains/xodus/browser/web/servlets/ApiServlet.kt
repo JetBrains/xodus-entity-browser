@@ -14,7 +14,13 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 
-class MainServlet : HttpServlet() {
+
+/**
+ * The ApiServlet class handles HTTP requests and generates the appropriate response based on the requested path.
+ *
+ * /api/dbs
+ */
+class ApiServlet : HttpServlet() {
     val gson = Gson()
 
 
@@ -28,35 +34,8 @@ class MainServlet : HttpServlet() {
      */
     @Throws(ServletException::class, IOException::class)
     override fun service(request: HttpServletRequest, response: HttpServletResponse) {
-        val path = request.servletPath
-        with(path) {
-            when {
-//                /api/dbs/{uuid}/entities
-//                /api/dbs/{uuid}
-//                /api/dbs
-                startsWith("/api/dbs") -> {
-                    handleApiDbs(request, response)
-                }
-
-                (equals("/") || startsWith("/databases")) && request.method == "GET" -> {
-
-                    response.contentType = "text/html"
-                    val context: ServletContext = servletContext
-                    val inputStream: InputStream = context.getResourceAsStream("/WEB-INF/index.html")
-                    val isr = InputStreamReader(inputStream)
-                    val reader = BufferedReader(isr)
-                    val writer: PrintWriter = response.writer
-                    var text: String?
-                    while ((reader.readLine().also { text = it }) != null) {
-                        writer.println(text)
-                    }
-                }
-
-                else -> {
-                    notFound(request, response)
-                }
-            }
-        }
+        val path = request.contextPath
+        handleApiDbs(request, response)
     }
 
     fun handleApiDbs(request: HttpServletRequest, response: HttpServletResponse) {
@@ -109,7 +88,7 @@ class MainServlet : HttpServlet() {
                 handleOnlyDBsEntitiesLink(request, response, uuid, entityId, linkName)
             }
             else -> {
-                notFound(request, response)
+                notAllowed(request, response)
             }
 
         }
@@ -124,7 +103,6 @@ class MainServlet : HttpServlet() {
         val webApp = resources.webApp
         when (request.method) {
             "GET" -> {
-                println()
                 val applicationSummary = ApplicationSummary(
                     isReadonly = webApp.isReadonly,
                     dbs = webApp.databaseService.all().map { it.secureCopy() })
@@ -153,7 +131,7 @@ class MainServlet : HttpServlet() {
             "POST" -> {
                 //TODO
             }
-            else -> notFound(request, response)
+            else -> notAllowed(request, response)
         }
     }
 
@@ -166,7 +144,7 @@ class MainServlet : HttpServlet() {
             "POST" -> {
                 //TODO
             }
-            else -> notFound(request, response)
+            else -> notAllowed(request, response)
         }
     }
     private fun handleOnlyDBsTypes(request: HttpServletRequest, response: HttpServletResponse, uuid: String) {
@@ -179,7 +157,7 @@ class MainServlet : HttpServlet() {
             "POST" -> {
                 //TODO
             }
-            else -> notFound(request, response)
+            else -> notAllowed(request, response)
         }
     }
 
@@ -196,7 +174,7 @@ class MainServlet : HttpServlet() {
             "POST" -> {
                 //TODO
             }
-            else -> notFound(request, response)
+            else -> notAllowed(request, response)
         }
     }
 
@@ -218,7 +196,7 @@ class MainServlet : HttpServlet() {
             "DELETE" -> {
                 //TODO
             }
-            else -> notFound(request, response)
+            else -> notAllowed(request, response)
         }
     }
 
@@ -235,7 +213,7 @@ class MainServlet : HttpServlet() {
             "GET" -> {
                 //TODO
             }
-            else -> notFound(request, response)
+            else -> notAllowed(request, response)
         }
     }
 
@@ -252,7 +230,7 @@ class MainServlet : HttpServlet() {
             "GET" -> {
                 //TODO
             }
-            else -> notFound(request, response)
+            else -> notAllowed(request, response)
         }
     }
 
@@ -269,7 +247,7 @@ class MainServlet : HttpServlet() {
             "GET" -> {
                 //TODO
             }
-            else -> notFound(request, response)
+            else -> notAllowed(request, response)
         }
     }
 
@@ -278,6 +256,12 @@ class MainServlet : HttpServlet() {
         response.contentType = "application/json"
         response.status = HttpServletResponse.SC_NOT_FOUND
         response.writer.println("{ \"status\": \"failed\", \"message\":\"Page not found\"}")
+    }
+
+    private fun notAllowed(request: HttpServletRequest, response: HttpServletResponse) {
+        response.contentType = "application/json"
+        response.status = HttpServletResponse.SC_METHOD_NOT_ALLOWED
+        response.writer.println("{ \"status\": \"failed\", \"message\":\"Method is not allowed for this path\"}")
     }
 
     private fun DBSummary.secureCopy(): DBSummary {

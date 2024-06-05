@@ -15,7 +15,8 @@ apply plugin: 'kotlin'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 dependencies {
-    implementation 'org.slf4j:slf4j-simple:1.7.25'
+    //implementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.29'
+    implementation 'org.slf4j:slf4j-simple:1.7.29'
     implementation 'io.github.microutils:kotlin-logging:1.7.9'
 
     frontend project(path: ':entity-browser-frontend', configuration: 'frontend_build')
@@ -46,6 +47,10 @@ dependencies {
 }
 
 war {
+    dependsOn = ['buildFrontend']
+    archiveBaseName.set("xodus-entity-browser")
+    archiveVersion.set(null)
+    getDestinationDirectory().set(globalArtifactsBuildDir)
     duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
     //archiveFileName = "xodus-browser-app-${version}.war"
     webAppDirectory = file('src/main/webapp')
