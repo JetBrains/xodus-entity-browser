@@ -1,7 +1,7 @@
 buildscript {
     ext.xodusVersion = '3.0.134'
     ext.kotlinVersion = '1.9.21'
-    ext.ktorVersion = '2.0.3'
+    ext.ktorVersion = '2.2.4'
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
