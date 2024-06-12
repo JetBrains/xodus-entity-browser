@@ -1,15 +1,10 @@
 package jetbrains.xodus.browser.web.resources
 
-
-import io.ktor.application.call
-import io.ktor.features.BadRequestException
-import io.ktor.features.NotFoundException
-import io.ktor.request.receive
-import io.ktor.response.respond
-import io.ktor.routing.Route
-import io.ktor.routing.get
-import io.ktor.routing.post
-import io.ktor.routing.route
+import io.ktor.server.application.*
+import io.ktor.server.plugins.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import jetbrains.xodus.browser.web.AppRoute
 import jetbrains.xodus.browser.web.ApplicationSummary
 import jetbrains.xodus.browser.web.DBSummary

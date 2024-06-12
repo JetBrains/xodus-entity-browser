@@ -1,20 +1,18 @@
 package jetbrains.xodus.browser.web.resources
 
-import io.ktor.application.ApplicationCall
-import io.ktor.application.call
-import io.ktor.features.BadRequestException
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.application.call
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
-import io.ktor.request.receive
-import io.ktor.response.respond
-import io.ktor.response.respondOutputStream
-import io.ktor.routing.*
+import io.ktor.server.plugins.BadRequestException
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import jetbrains.xodus.browser.web.AppRoute
 import jetbrains.xodus.browser.web.ChangeSummary
 import jetbrains.xodus.browser.web.WebApplication
 import mu.KLogging
 import java.io.BufferedWriter
-import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.net.URI
 import java.nio.charset.StandardCharsets

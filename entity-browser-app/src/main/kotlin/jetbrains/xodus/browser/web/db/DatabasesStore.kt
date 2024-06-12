@@ -1,6 +1,6 @@
 package jetbrains.xodus.browser.web.db
 
-import io.ktor.features.NotFoundException
+import io.ktor.server.plugins.NotFoundException
 import jetbrains.xodus.browser.web.DBSummary
 
 interface DatabasesStore {

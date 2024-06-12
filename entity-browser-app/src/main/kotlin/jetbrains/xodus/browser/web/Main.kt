@@ -1,8 +1,8 @@
 package jetbrains.xodus.browser.web
 
-import io.ktor.application.Application
-import io.ktor.application.install
-import io.ktor.features.DefaultHeaders
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.plugins.defaultheaders.DefaultHeaders
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.jetty.Jetty
 import jetbrains.xodus.browser.web.db.PersistentDatabaseService
@@ -10,7 +10,7 @@ import mu.KLogging
 
 fun main() {
     Home.setup()
-    val appPort = Integer.getInteger("server.port", 18080)
+    val appPort = Integer.getInteger("server.port", 18081)
     val appHost = System.getProperty("server.host", "localhost")
     val context = System.getProperty("server.context", "/")
 

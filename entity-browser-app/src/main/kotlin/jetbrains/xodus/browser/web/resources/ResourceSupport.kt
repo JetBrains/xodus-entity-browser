@@ -1,7 +1,7 @@
 package jetbrains.xodus.browser.web.resources
 
-import io.ktor.application.ApplicationCall
-import io.ktor.features.BadRequestException
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.plugins.*
 import jetbrains.xodus.browser.web.DBSummary
 import jetbrains.xodus.browser.web.NotFoundException
 import jetbrains.xodus.browser.web.WebApplication
