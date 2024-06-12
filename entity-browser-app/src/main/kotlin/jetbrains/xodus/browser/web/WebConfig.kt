@@ -5,9 +5,7 @@ import io.ktor.server.application.call
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.compression.*
-//import io.ktor.server.serialization.gson.*
 import io.ktor.http.*
-import io.ktor.http.content.*
 import io.ktor.serialization.gson.*
 import io.ktor.server.http.content.*
 import io.ktor.server.request.*
@@ -21,7 +19,7 @@ import jetbrains.xodus.browser.web.search.SearchQueryException
 import mu.KLogging
 
 
-open class HttpServer(val webApplication: WebApplication, val appContext: String = "/") : KLogging() {
+open class HttpServer(webApplication: WebApplication, val appContext: String = "/") : KLogging() {
 
     open val indexHtml = IndexHtmlPage(appContext)
 
@@ -89,8 +87,7 @@ open class HttpServer(val webApplication: WebApplication, val appContext: String
     private fun Application.installStatusPages() {
         install(StatusPages) {
             status(HttpStatusCode.NotFound) {call, _->
-                val prefix = if (appContext.length > 1) "$appContext/api" else "/api"
-                if (!call.request.path().startsWith(prefix)) {
+                if (!call.request.path().startsWith("$appContext/api")) {
                     indexHtml.respondIndexHtml(call)
                 }
             }
@@ -123,14 +120,14 @@ open class HttpServer(val webApplication: WebApplication, val appContext: String
                 call.respond(HttpStatusCode.InternalServerError, cause)
             }
 
-//            exception<io.ktor.server.plugins.NotFoundException> { call, cause ->
-//                logger.error("unexpected exception", cause)
-//                if (!call.request.path().startsWith("/$context/api")) {
-//                    indexHtml.respondIndexHtml(call)
-//                } else {
-//                    call.respond(HttpStatusCode.NotFound, cause)
-//                }
-//            }
+            exception<io.ktor.server.plugins.NotFoundException> { call, cause ->
+                logger.error("unexpected exception", cause)
+                if (!call.request.path().startsWith("$appContext/api")) {
+                    indexHtml.respondIndexHtml(call)
+                } else {
+                    call.respond(HttpStatusCode.NotFound, cause)
+                }
+            }
         }
     }
 
