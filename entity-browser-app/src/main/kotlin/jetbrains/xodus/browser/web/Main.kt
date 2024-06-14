@@ -10,7 +10,7 @@ import mu.KLogging
 
 fun main() {
     Home.setup()
-    val appPort = Integer.getInteger("server.port", 18081)
+    val appPort = Integer.getInteger("server.port", 18080)
     val appHost = System.getProperty("server.host", "localhost")
     val context = System.getProperty("server.context", "/")
 
