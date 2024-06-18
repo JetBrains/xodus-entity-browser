@@ -27,7 +27,7 @@ allprojects {
     apply plugin: 'maven-publish'
     sourceCompatibility = 11
     group = 'org.jetbrains.xodus'
-    version = '3.0.0' + ((project.hasProperty("teamcity")) ? project.teamcity["build.number"] : '')
+    version = '3.0.' + ((project.hasProperty("teamcity")) ? project.teamcity["build.number"] : '')
 
     repositories {
         mavenCentral()
