@@ -1,13 +1,16 @@
 package jetbrains.xodus.browser.web
 
-import io.ktor.application.*
-import io.ktor.features.*
-import io.ktor.gson.*
+import io.ktor.server.application.*
+import io.ktor.server.application.call
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.plugins.compression.*
 import io.ktor.http.*
-import io.ktor.http.content.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.serialization.gson.*
+import io.ktor.server.http.content.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import jetbrains.xodus.browser.web.resources.DB
 import jetbrains.xodus.browser.web.resources.DBs
 import jetbrains.xodus.browser.web.resources.Entities
@@ -16,7 +19,7 @@ import jetbrains.xodus.browser.web.search.SearchQueryException
 import mu.KLogging
 
 
-open class HttpServer(val webApplication: WebApplication, val appContext: String = "/") : KLogging() {
+open class HttpServer(webApplication: WebApplication, val appContext: String = "/") : KLogging() {
 
     open val indexHtml = IndexHtmlPage(appContext)
 
@@ -83,47 +86,46 @@ open class HttpServer(val webApplication: WebApplication, val appContext: String
 
     private fun Application.installStatusPages() {
         install(StatusPages) {
-            status(HttpStatusCode.NotFound) {
-                val prefix = if (appContext.length > 1) "$appContext/api" else "/api"
-                if (!call.request.path().startsWith(prefix)) {
+            status(HttpStatusCode.NotFound) {call, _->
+                if (!call.request.path().startsWith("$appContext/api")) {
                     indexHtml.respondIndexHtml(call)
                 }
             }
+            exception<EntityNotFoundException>{ call, cause ->
+                logger.error("getting entity failed", cause)
+                call.respond(HttpStatusCode.NotFound, cause)
+            }
+            exception<InvalidFieldException> { call, cause ->
+                logger.error("error updating entity", cause)
+                call.respond(HttpStatusCode.BadRequest, cause)
+            }
+            exception<DatabaseException> { call, cause ->
+                logger.error("error with working with database", cause)
+                call.respond(HttpStatusCode.BadRequest, cause)
+            }
+            exception<SearchQueryException> { call, cause ->
+                logger.warn("error executing '${call.request.httpMethod.value}' request for '${call.request.path()}'", cause)
+                call.respond(HttpStatusCode.BadRequest, cause)
+            }
+            exception<NumberFormatException> { call, cause ->
+                logger.info("error parsing request path or query parameter", cause)
+                call.respond(HttpStatusCode.BadRequest, cause)
+            }
+            exception<NotFoundException> { call, cause ->
+                logger.info("can't handle database", cause)
+                call.respond(HttpStatusCode.NotFound, cause)
+            }
+            exception<Exception> { call, cause ->
+                logger.error("unexpected exception", cause)
+                call.respond(HttpStatusCode.InternalServerError, cause)
+            }
 
-            exception<EntityNotFoundException> {
-                logger.error("getting entity failed", it)
-                call.respond(HttpStatusCode.NotFound, it)
-            }
-            exception<InvalidFieldException> {
-                logger.error("error updating entity", it)
-                call.respond(HttpStatusCode.BadRequest, it)
-            }
-            exception<DatabaseException> {
-                logger.error("error with working with database", it)
-                call.respond(HttpStatusCode.BadRequest, it)
-            }
-            exception<SearchQueryException> {
-                logger.warn("error executing '${call.request.httpMethod.value}' request for '${call.request.path()}'", it)
-                call.respond(HttpStatusCode.BadRequest, it)
-            }
-            exception<NumberFormatException> {
-                logger.info("error parsing request path or query parameter", it)
-                call.respond(HttpStatusCode.BadRequest, it)
-            }
-            exception<NotFoundException> {
-                logger.info("can't handle database", it)
-                call.respond(HttpStatusCode.NotFound, it)
-            }
-            exception<Exception> {
-                logger.error("unexpected exception", it)
-                call.respond(HttpStatusCode.InternalServerError, it)
-            }
-            exception<io.ktor.features.NotFoundException> {
-                logger.error("unexpected exception", it)
-                if (!call.request.path().startsWith("/$context/api")) {
+            exception<io.ktor.server.plugins.NotFoundException> { call, cause ->
+                logger.error("unexpected exception", cause)
+                if (!call.request.path().startsWith("$appContext/api")) {
                     indexHtml.respondIndexHtml(call)
                 } else {
-                    call.respond(HttpStatusCode.NotFound, it)
+                    call.respond(HttpStatusCode.NotFound, cause)
                 }
             }
         }

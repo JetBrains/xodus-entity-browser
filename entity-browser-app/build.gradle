@@ -24,8 +24,13 @@ dependencies {
     implementation "org.jetbrains.xodus:xodus-openAPI:$xodusVersion"
     implementation "org.jetbrains.xodus:xodus-crypto:$xodusVersion"
 
-    implementation "io.ktor:ktor-gson:$ktorVersion"
+    implementation "io.ktor:ktor-serialization-gson:$ktorVersion"
     implementation "io.ktor:ktor-server-jetty:$ktorVersion"
+    implementation "io.ktor:ktor-server-default-headers:$ktorVersion"
+    implementation "io.ktor:ktor-server-status-pages:$ktorVersion"
+    implementation "io.ktor:ktor-server-content-negotiation:$ktorVersion"
+    implementation "io.ktor:ktor-server-compression:$ktorVersion"
+    implementation "io.ktor:ktor-server-core:$ktorVersion"
 
     testImplementation 'org.mockito:mockito-all:1.9.5'
     testImplementation 'junit:junit:4.13.1'
