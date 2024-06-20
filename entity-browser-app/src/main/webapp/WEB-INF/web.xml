@@ -1,8 +1,15 @@
-<web-app metadata-complete="true" version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-	      http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+<!--<web-app metadata-complete="true" version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"-->
+<!--         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
+<!--         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee-->
+<!--	      http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">-->
+    <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+         http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+             version="3.1">
     <display-name>Xodus Entity Browser</display-name>
+
+
 
     <servlet>
         <servlet-name>status-servlet</servlet-name>
@@ -22,26 +29,45 @@
         <url-pattern>/api/dbs</url-pattern>
     </servlet-mapping>
 
+<!--    <servlet>-->
+<!--        <servlet-name>welcomeServlet</servlet-name>-->
+<!--        <servlet-class>jetbrains.xodus.browser.web.servlets.DefaultStaticServlet</servlet-class>-->
+<!--        <init-param>-->
+<!--            <param-name>welcomePage</param-name>-->
+<!--            <param-value>WEB-INF/classes/entity/browser/static/index.html</param-value>-->
+<!--        </init-param>-->
+<!--        <async-supported>true</async-supported>-->
+<!--    </servlet>-->
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>welcomeServlet</servlet-name>-->
+<!--        <url-pattern></url-pattern>-->
+<!--    </servlet-mapping>-->
+
     <servlet>
         <servlet-name>default-servlet</servlet-name>
-        <servlet-class>org.eclipse.jetty.server.DefaultServlet</servlet-class>
-        <init-param>
-            <param-name>resourceBase</param-name>
-            <param-value>/entity/browser/static/*</param-value>
-        </init-param>
-        <init-param>
-            <param-name>dirAllowed</param-name>
-            <param-value>true</param-value>
-        </init-param>
-        <init-param>
-            <param-name>pathInfoOnly</param-name>
-            <param-value>true</param-value>
-        </init-param>
+<!--        <servlet-class>org.eclipse.jetty.server.DefaultServlet</servlet-class>-->
+        <servlet-class>jetbrains.xodus.browser.web.servlets.DefaultStaticServlet</servlet-class>
+<!--        <init-param>-->
+<!--            <param-name>resourceBase</param-name>-->
+<!--&lt;!&ndash;            <param-value>entity/browser/static</param-value>&ndash;&gt;-->
+<!--&lt;!&ndash;            <param-value>/classes/entity/browser/static</param-value>&ndash;&gt;-->
+<!--            <param-value>/</param-value>-->
+<!--        </init-param>-->
+<!--        <init-param>-->
+<!--            <param-name>dirAllowed</param-name>-->
+<!--            <param-value>true</param-value>-->
+<!--        </init-param>-->
+<!--        <init-param>-->
+<!--            <param-name>pathInfoOnly</param-name>-->
+<!--            <param-value>true</param-value>-->
+<!--        </init-param>-->
     </servlet>
     <servlet-mapping>
         <servlet-name>default-servlet</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
+
+
 
 <!--    <servlet>-->
 <!--        <servlet-name>static-servlet</servlet-name>-->

@@ -34,19 +34,19 @@ fun main() {
 //    }
 //    server.start(false)
 
-    val maxThreads = 100
-    val minThreads = 10
-    val idleTimeout = 120
+//    val maxThreads = 100
+//    val minThreads = 10
+//    val idleTimeout = 120
+//
+//    val threadPool = QueuedThreadPool(maxThreads, minThreads, idleTimeout)
 
-    val threadPool = QueuedThreadPool(maxThreads, minThreads, idleTimeout)
-
-    val server = Server(threadPool)
+    val server = Server()
     val connector = ServerConnector(server)
     connector.port = appPort
     connector.host = appHost
     server.connectors = arrayOf(connector)
-
     val webContext = WebAppContext()
+    webContext.contextPath="/"
     webContext.war = "build/xodus-entity-browser-3.0.0.war"
     val handlers = ContextHandlerCollection()
     handlers.handlers = arrayOf<Handler>(webContext)

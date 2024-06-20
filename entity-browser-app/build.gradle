@@ -33,6 +33,7 @@ dependencies {
 
     implementation "org.eclipse.jetty:jetty-server:$jettyVersion"
     implementation "org.eclipse.jetty:jetty-servlet:$jettyVersion"
+//    implementation "org.eclipse.jetty:jetty-servlets:$jettyVersion"    // web.xml dependency
     implementation "org.eclipse.jetty:jetty-webapp:$jettyVersion"
 
 
@@ -44,6 +45,22 @@ dependencies {
     testImplementation 'com.squareup.okhttp3:logging-interceptor:3.12.1'
 
     testImplementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.9.8'
+}
+
+tasks.register('copyFrontend', Copy) {
+    dependsOn(buildFrontend)
+
+    from(configurations.frontend.files.collect { zipTree(it) }) {
+        include 'entity/browser/static/**'
+    }
+    into(processResources.destinationDir)
+//    eachFile {
+//        it.path = it.path.replaceFirst("entity/browser/static", "static")
+//    }
+}
+
+tasks.named('processResources').configure {
+    dependsOn(copyFrontend)
 }
 
 war {
@@ -64,6 +81,9 @@ war {
         )
     }
     from(jar) { into 'WEB-INF/lib' }
+    from("src/main/resources") {
+        into "/"
+    }
 }
 
 java {
