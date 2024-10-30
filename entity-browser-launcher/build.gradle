@@ -5,22 +5,21 @@ dependencies {
 tasks.register('zipLauncher', Zip) {
     dependsOn(':entity-browser-app:shadowJar')
 
-    archiveFileName.set("xodus-entity-browser-${archiveVersion.get()}.zip")
+    def archiveName = "xodus-entity-browser-${project.version}"
 
-    into("xodus-entity-browser-${archiveVersion.get()}") {
-        from 'src/main/resources', {
+    into(archiveName) {
+        from('src/main/resources') {
             include '*.bat'
             include '*.sh'
         }
-    }
-
-    into("xodus-entity-browser-${archiveVersion.get()}") {
-        from globalArtifactsBuildDir, {
-            include '*.jar'
+        from(project(':entity-browser-app').tasks.shadowJar.outputs.files) {
+            include "xodus-entity-browser-*.jar"
+            rename { "xodus-entity-browser.jar" }
         }
     }
 
-    destinationDirectory.set(globalArtifactsBuildDir)
+    archiveFileName = "${archiveName}.zip"
+    destinationDirectory = globalArtifactsBuildDir
 }
 
 artifacts {

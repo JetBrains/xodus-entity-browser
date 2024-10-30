@@ -23,5 +23,6 @@ fun main() {
         HttpServer(webApplication, context).setup(this)
     }
     server.start(false)
-    OS.launchBrowser(appHost, appPort, context)
+
+    Browser.launch("http://$appHost:$appPort$context")
 }
