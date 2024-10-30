@@ -16,9 +16,7 @@ plugins {
 
 apply plugin: 'kotlin'
 
-ext.globalArtifactsBuildDir = buildDir
-
-
+ext.globalArtifactsBuildDir = layout.buildDirectory.get().asFile
 
 allprojects {
     apply plugin: 'java'
@@ -27,7 +25,7 @@ allprojects {
     apply plugin: 'maven-publish'
     sourceCompatibility = 11
     group = 'org.jetbrains.xodus'
-    version = '3.0.' + ((project.hasProperty("teamcity")) ? project.teamcity["build.number"] : '')
+    version = '3.0.' + ((project.hasProperty("teamcity")) ? project.teamcity["build.number"] : '999')
 
     repositories {
         mavenCentral()

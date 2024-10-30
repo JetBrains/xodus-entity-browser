@@ -10,15 +10,19 @@ import jetbrains.xodus.browser.web.DBSummary
 import jetbrains.xodus.browser.web.EncryptionProvider
 import jetbrains.xodus.browser.web.Home
 import jetbrains.xodus.browser.web.NotFoundException
+import mu.KLogging
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 
 class DBDatabasesStore : DatabasesStore {
 
+    companion object : KLogging()
+
     private val iv: Long = System.getProperty("xodus.entity.browser.env.iv", "0").toLong()
     private val key: String? = System.getProperty("xodus.entity.browser.env.key")
-    private val cipherId: String = System.getProperty("xodus.entity.browser.env.cipherId", EncryptionProvider.CHACHA.cipherIds.first())
+    private val cipherId: String =
+        System.getProperty("xodus.entity.browser.env.cipherId", EncryptionProvider.CHACHA.cipherIds.first())
 
     private val location: String
         get() {
@@ -38,20 +42,25 @@ class DBDatabasesStore : DatabasesStore {
                 it.cipherId = cipherId
             }
         }
-        val env = Environments.newInstance(location, config)
-        store = PersistentEntityStores.newInstance(env, "xodus-entity-browser")
-        store.executeInTransaction {
-            it as PersistentStoreTransaction
-            store.getEntityTypeId(it, dbType, true)
+        try {
+            logger.info { "Opening database on '$location'" }
+            val env = Environments.newInstance(location, config)
+            store = PersistentEntityStores.newInstance(env, "xodus-entity-browser")
+            store.executeInTransaction {
+                it as PersistentStoreTransaction
+                store.getEntityTypeId(it, dbType, true)
 
-            //validate store
-            it.getAll(dbType).toList().forEach { entity ->
-                try {
-                    DBEntity(entity).summary()
-                } catch (e: Exception) {
-                    entity.delete()
+                // Validate store
+                it.getAll(dbType).toList().forEach { entity ->
+                    try {
+                        DBEntity(entity).summary()
+                    } catch (e: Exception) {
+                        entity.delete()
+                    }
                 }
             }
+        } catch (e: Exception) {
+            throw IllegalStateException("Can't open database on '$location'", e)
         }
     }
 
@@ -159,16 +168,16 @@ class DBDatabasesStore : DatabasesStore {
         }
 
         fun summary() = DBSummary(
-                uuid = id,
-                location = location,
-                key = key,
-                isOpened = isOpened,
-                isReadonly = isReadonly,
-                isWatchReadonly = isWatchReadonly,
-                isEncrypted = isEncrypted,
-                encryptionProvider = encryptionProvider?.let { EncryptionProvider.valueOf(it) },
-                encryptionIV = encryptionIV,
-                encryptionKey = encryptionKey
+            uuid = id,
+            location = location,
+            key = key,
+            isOpened = isOpened,
+            isReadonly = isReadonly,
+            isWatchReadonly = isWatchReadonly,
+            isEncrypted = isEncrypted,
+            encryptionProvider = encryptionProvider?.let { EncryptionProvider.valueOf(it) },
+            encryptionIV = encryptionIV,
+            encryptionKey = encryptionKey
         )
 
         fun merge(dbSummary: DBSummary) = apply {
