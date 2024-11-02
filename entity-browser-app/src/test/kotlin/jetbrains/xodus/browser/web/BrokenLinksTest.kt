@@ -71,13 +71,13 @@ class BrokenLinksTest : TestSupport() {
     @Test
     fun `delete broken link`() {
         val changeSummary = ChangeSummary(
-                links = listOf(
-                        LinkChangeSummaryAction(
-                                name = "folks",
-                                oldValue = EntityLink(id = "1-0", label = "", typeId = 0, type = "", notExists = false, name = ""),
-                                newValue = null
-                        )
+            links = listOf(
+                LinkChangeSummaryAction(
+                    name = "folks",
+                    oldValue = EntityLink(id = "1-0", label = "", typeId = 0, type = "", notExists = false, name = ""),
+                    newValue = null
                 )
+            )
         )
         entitiesResource.update(db.uuid, "0-0", changeSummary).execute()
 
@@ -86,5 +86,4 @@ class BrokenLinksTest : TestSupport() {
             Assert.assertTrue(links.isEmpty())
         }
     }
-
 }

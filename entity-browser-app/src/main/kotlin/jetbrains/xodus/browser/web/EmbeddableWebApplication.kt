@@ -15,16 +15,13 @@ open class EmbeddableWebApplication(open val lookup: () -> List<PersistentEntity
     }
 
     override val allServices: Map<String, Services>
-        get() = lookup().map { it.name to Services(StoreService(it, false)) }.toMap()
+        get() = lookup().associate { it.name to Services(StoreService(it, false)) }
 
-    override fun start() {
-    }
+    override fun start() {}
 
-    override fun stop() {
-    }
+    override fun stop() {}
 
-    override fun stop(db: DBSummary) {
-    }
+    override fun stop(db: DBSummary) {}
 
     override fun tryStartServices(db: DBSummary, silent: Boolean): Boolean {
         return false
