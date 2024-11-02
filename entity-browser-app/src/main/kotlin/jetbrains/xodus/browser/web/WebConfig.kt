@@ -1,5 +1,6 @@
 package jetbrains.xodus.browser.web
 
+import com.fasterxml.jackson.databind.DeserializationFeature
 import io.ktor.server.application.*
 import io.ktor.server.application.call
 import io.ktor.server.plugins.statuspages.StatusPages
@@ -24,10 +25,10 @@ open class HttpServer(webApplication: WebApplication, val appContext: String = "
     open val indexHtml = IndexHtmlPage(appContext)
 
     open val resources = listOf<AppRoute>(
-            // rest api
-            DBs(webApplication),
-            DB(webApplication),
-            Entities(webApplication)
+        // REST API
+        DBs(webApplication),
+        DB(webApplication),
+        Entities(webApplication)
     )
 
     fun setup(application: Application) {
@@ -35,7 +36,9 @@ open class HttpServer(webApplication: WebApplication, val appContext: String = "
             install(Compression)
 
             install(ContentNegotiation) {
-                jackson()
+                jackson {
+                    disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                }
             }
 
             installStatusPages()
@@ -48,14 +51,11 @@ open class HttpServer(webApplication: WebApplication, val appContext: String = "
         }
     }
 
-    open fun Application.installAdditionalFeatures() {
-    }
+    open fun Application.installAdditionalFeatures() {}
 
     open fun Application.installStatic() {
         routing {
-            static(appContext) {
-                resources("entity.browser.static")
-            }
+            staticResources(appContext, "entity.browser.static")
         }
     }
 
@@ -67,7 +67,7 @@ open class HttpServer(webApplication: WebApplication, val appContext: String = "
 
     open fun Application.installIndexHTML() {
         routing {
-            //damn ktor StatusPages is not working in war
+            // Damn Ktor StatusPages is not working in war
             listOf("", "/", "/databases/{...}", "/databases").forEach {
                 installIndexHtml(it)
             }
@@ -86,12 +86,12 @@ open class HttpServer(webApplication: WebApplication, val appContext: String = "
 
     private fun Application.installStatusPages() {
         install(StatusPages) {
-            status(HttpStatusCode.NotFound) {call, _->
+            status(HttpStatusCode.NotFound) { call, _ ->
                 if (!call.request.path().startsWith("$appContext/api")) {
                     indexHtml.respondIndexHtml(call)
                 }
             }
-            exception<EntityNotFoundException>{ call, cause ->
+            exception<EntityNotFoundException> { call, cause ->
                 logger.error("getting entity failed", cause)
                 call.respond(HttpStatusCode.NotFound, cause)
             }

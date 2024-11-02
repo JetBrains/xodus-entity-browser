@@ -11,46 +11,47 @@ interface Named {
 }
 
 data class PropertyType(
-        var readonly: Boolean = false,
-        var clazz: String,
-        var displayName: String
+    var readonly: Boolean = false,
+    var clazz: String,
+    var displayName: String
 )
 
 data class EntityProperty(
-        override var name: String,
-        var type: PropertyType,
-        var value: String? = null
+    override var name: String,
+    var type: PropertyType,
+    var value: String? = null
 ) : Named
 
 data class EntityLink(
-        var id: String,
-        override var name: String,
-        var typeId: Int,
-        var type: String,
-        var label: String,
-        var notExists: Boolean = false
+    var id: String,
+    override var name: String,
+    var typeId: Int,
+    var type: String,
+    var label: String,
+    var notExists: Boolean = false
 ) : Named
 
 data class LinkPager(
-        override var name: String,
-        var skip: Int = 0,
-        var top: Int = 100,
-        var totalCount: Long = 0L,
-        var entities: List<EntityLink> = emptyList()
+    override var name: String,
+    var skip: Int = 0,
+    var top: Int = 100,
+    var totalCount: Long = 0L,
+    var entities: List<EntityLink> = emptyList()
 ) : Named
 
 data class EntityBlob(
-        override var name: String,
-        var blobSize: Long = 0) : Named
+    override var name: String,
+    var blobSize: Long = 0
+) : Named
 
 data class EntityView(
-        var id: String,
-        var type: String,
-        var label: String,
-        var typeId: Int,
-        var properties: List<EntityProperty> = emptyList(),
-        var links: List<LinkPager> = emptyList(),
-        var blobs: List<EntityBlob> = emptyList()
+    var id: String,
+    var type: String,
+    var label: String,
+    var typeId: Int,
+    var properties: List<EntityProperty> = emptyList(),
+    var links: List<LinkPager> = emptyList(),
+    var blobs: List<EntityBlob> = emptyList()
 )
 
 data class EntityType(var id: Int?, var name: String)
@@ -58,26 +59,27 @@ data class EntityType(var id: Int?, var name: String)
 data class SearchPager(val items: List<EntityView>, val totalCount: Long)
 
 open class ChangeSummaryAction<T>(
-        override var name: String,
-        var newValue: T? = null
+    override var name: String,
+    var newValue: T? = null
 ) : Named
 
-open class PropertiesChangeSummaryAction(name: String, newValue: EntityProperty?) : ChangeSummaryAction<EntityProperty>(name, newValue)
+open class PropertiesChangeSummaryAction(name: String, newValue: EntityProperty?) :
+    ChangeSummaryAction<EntityProperty>(name, newValue)
+
 open class LinkChangeSummaryAction(
-        name: String,
-        newValue: EntityLink?,
-        var oldValue: EntityLink? = null,
-        var totallyRemoved: Boolean = false
+    name: String,
+    newValue: EntityLink?,
+    var oldValue: EntityLink? = null,
+    var totallyRemoved: Boolean = false
 ) : ChangeSummaryAction<EntityLink>(name, newValue)
 
 open class BlobChangeSummaryAction(name: String, newValue: EntityBlob) : ChangeSummaryAction<EntityBlob>(name, newValue)
 
 data class ChangeSummary(
-        var properties: List<PropertiesChangeSummaryAction> = listOf(),
-        var links: List<LinkChangeSummaryAction> = listOf(),
-        var blobs: List<BlobChangeSummaryAction> = listOf()
+    var properties: List<PropertiesChangeSummaryAction> = listOf(),
+    var links: List<LinkChangeSummaryAction> = listOf(),
+    var blobs: List<BlobChangeSummaryAction> = listOf()
 )
-
 
 enum class EncryptionProvider(val cipherIds: List<String>) {
     SALSA(listOf(SALSA20_CIPHER_ID)),
@@ -85,28 +87,28 @@ enum class EncryptionProvider(val cipherIds: List<String>) {
 }
 
 data class DBSummary(
-        var uuid: String = UUID.randomUUID().toString(),
+    var uuid: String = UUID.randomUUID().toString(),
 
-        var location: String,
-        var key: String? = null,
+    var location: String,
+    var key: String? = null,
 
-        @JsonProperty("opened")
-        var isOpened: Boolean = false,
-        @JsonProperty("readonly")
-        var isReadonly: Boolean = true,
-        @JsonProperty("watchReadonly")
-        var isWatchReadonly: Boolean = true,
+    @JsonProperty("opened")
+    var isOpened: Boolean = false,
+    @JsonProperty("readonly")
+    var isReadonly: Boolean = true,
+    @JsonProperty("watchReadonly")
+    var isWatchReadonly: Boolean = true,
 
-        @JsonProperty("encrypted")
-        var isEncrypted: Boolean = false,
-        var encryptionProvider: EncryptionProvider? = null,
-        var encryptionKey: String? = null,
-        var encryptionIV: String? = null // js can't in Long
+    @JsonProperty("encrypted")
+    var isEncrypted: Boolean = false,
+    var encryptionProvider: EncryptionProvider? = null,
+    var encryptionKey: String? = null,
+    var encryptionIV: String? = null // js can't in Long
 )
 
 data class ApplicationSummary(
-        val dbs: List<DBSummary>,
+    val dbs: List<DBSummary>,
 
-        @JsonProperty(value = "isReadonly")
-        var isReadonly: Boolean
+    @JsonProperty(value = "isReadonly")
+    var isReadonly: Boolean
 )
