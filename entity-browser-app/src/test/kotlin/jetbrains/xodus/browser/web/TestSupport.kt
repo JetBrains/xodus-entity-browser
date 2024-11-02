@@ -2,10 +2,9 @@ package jetbrains.xodus.browser.web
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.jetty.Jetty
-import io.ktor.server.jetty.JettyApplicationEngine
+import com.fasterxml.jackson.module.kotlin.kotlinModule
+import io.ktor.server.engine.*
+import io.ktor.server.jetty.*
 import jetbrains.exodus.entitystore.PersistentEntityStoreImpl
 import jetbrains.exodus.entitystore.PersistentEntityStores
 import jetbrains.exodus.env.Environments
@@ -19,7 +18,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import java.io.File
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 
 open class TestSupport {
@@ -27,7 +25,7 @@ open class TestSupport {
     companion object : KLogging() {
 
         val mapper = ObjectMapper().also {
-            it.registerModule(KotlinModule())
+            it.registerModule(kotlinModule())
             it.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
         }
     }
@@ -43,7 +41,7 @@ open class TestSupport {
 
     protected val retrofit: Retrofit by lazy {
         val client = with(OkHttpClient().newBuilder()) {
-            interceptors().add(HttpLoggingInterceptor(HttpLoggingInterceptor.Logger { logger.info { it } }).apply {
+            interceptors().add(HttpLoggingInterceptor { logger.info { it } }.apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
             build()
@@ -59,7 +57,7 @@ open class TestSupport {
     }
 
     protected fun newLocation(): String {
-        return "java.io.tmpdir".system() + File.separator + Random().nextLong()
+        return "java.io.tmpdir".systemProperty() + File.separator + Random().nextLong()
     }
 
     @Before

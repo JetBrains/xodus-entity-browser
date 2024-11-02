@@ -16,9 +16,9 @@ class DBs(webApp: WebApplication) : ResourceSupport(webApp), AppRoute {
         route("/dbs") {
             get {
                 call.respond(
-                        ApplicationSummary(
-                                isReadonly = webApp.isReadonly,
-                                dbs = webApp.databaseService.all().map { it.secureCopy() })
+                    ApplicationSummary(
+                        isReadonly = webApp.isReadonly,
+                        dbs = webApp.databaseService.all().map { it.secureCopy() })
                 )
             }
             post {
@@ -31,7 +31,7 @@ class DBs(webApp: WebApplication) : ResourceSupport(webApp), AppRoute {
                     webApp.tryStartServices(summary, false)
                 }
                 call.respond(
-                        webApp.databaseService.find(summary.uuid)?.secureCopy() ?: throw NotFoundException()
+                    webApp.databaseService.find(summary.uuid)?.secureCopy() ?: throw NotFoundException()
                 )
             }
         }

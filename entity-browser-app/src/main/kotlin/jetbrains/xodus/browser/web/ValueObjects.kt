@@ -1,6 +1,6 @@
 package jetbrains.xodus.browser.web
 
-import com.google.gson.annotations.SerializedName
+import com.fasterxml.jackson.annotation.JsonProperty
 import jetbrains.exodus.crypto.streamciphers.CHACHA_CIPHER_ID
 import jetbrains.exodus.crypto.streamciphers.JB_CHACHA_CIPHER_ID
 import jetbrains.exodus.crypto.streamciphers.SALSA20_CIPHER_ID
@@ -90,14 +90,14 @@ data class DBSummary(
         var location: String,
         var key: String? = null,
 
-        @SerializedName(value = "opened")
+        @JsonProperty("opened")
         var isOpened: Boolean = false,
-        @SerializedName(value = "readonly")
+        @JsonProperty("readonly")
         var isReadonly: Boolean = true,
-        @SerializedName(value = "watchReadonly")
+        @JsonProperty("watchReadonly")
         var isWatchReadonly: Boolean = true,
 
-        @SerializedName(value = "encrypted")
+        @JsonProperty("encrypted")
         var isEncrypted: Boolean = false,
         var encryptionProvider: EncryptionProvider? = null,
         var encryptionKey: String? = null,
@@ -107,6 +107,6 @@ data class DBSummary(
 data class ApplicationSummary(
         val dbs: List<DBSummary>,
 
-        @SerializedName(value = "readonly")
+        @JsonProperty(value = "isReadonly")
         var isReadonly: Boolean
 )

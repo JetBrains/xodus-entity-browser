@@ -1,18 +1,21 @@
 package jetbrains.xodus.browser.web.search
 
-import jetbrains.exodus.entitystore.*
+import jetbrains.exodus.entitystore.Entity
+import jetbrains.exodus.entitystore.EntityIterable
+import jetbrains.exodus.entitystore.PersistentEntityId
+import jetbrains.exodus.entitystore.StoreTransaction
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Matchers
 import org.mockito.Mock
 import org.mockito.Mockito.*
-import org.mockito.runners.MockitoJUnitRunner
+import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
 class SmartSearchTest {
+
     private val TYPE_ID = 0
     private val TYPE_NAME = "type"
 
@@ -32,17 +35,16 @@ class SmartSearchTest {
     private lateinit var entity: Entity
 
     @Before
-    fun construct() {
+    fun setup() {
         `when`(iterable.union(any(EntityIterable::class.java))).thenReturn(union)
         `when`(union.union(any(EntityIterable::class.java))).thenReturn(union)
-
         `when`(iterable.intersect(any(EntityIterable::class.java))).thenReturn(intersection)
-        `when`(intersection.intersect(any(EntityIterable::class.java))).thenReturn(intersection)
     }
 
     @Test
     fun testSearchAll() {
         `when`(tx.getAll(TYPE_NAME)).thenReturn(iterable)
+
         val search = search(null)
         assertEquals(iterable, search)
         verify(tx).getAll(eq(TYPE_NAME))
@@ -86,7 +88,6 @@ class SmartSearchTest {
     fun testSearchByIdRange() {
         `when`(tx.findIds(TYPE_NAME, 1, 10)).thenReturn(iterable)
         `when`(tx.find(TYPE_NAME, "id", 1L, 10L)).thenReturn(iterable)
-        `when`(tx.getSingletonIterable(eq(entity))).thenReturn(iterable)
 
         val search = search("id=[1,10]")
         assertEquals(union, search)
@@ -107,12 +108,6 @@ class SmartSearchTest {
     fun testSearchByParams() {
         `when`(tx.findStartingWith(TYPE_NAME, "firstName", "Jo")).thenReturn(iterable)
         `when`(tx.find(TYPE_NAME, "lastName", "McClane")).thenReturn(iterable)
-        `when`(tx.getAll(TYPE_NAME)).thenReturn(iterable)
-        `when`(iterable.reverse()).thenReturn(iterable)
-        `when`(iterable.take(Matchers.anyInt())).thenReturn(iterable)
-        `when`(iterable.iterator()).thenReturn(SingleEntityIterator(entity))
-        `when`(entity.propertyNames).thenReturn(listOf("firstName", "lastName"))
-
 
         val search = search("firstName~Jo and lastName=McClane")
         assertEquals(intersection, search)
@@ -122,16 +117,5 @@ class SmartSearchTest {
 
     private fun search(term: String?): EntityIterable {
         return smartSearch(term, TYPE_NAME, TYPE_ID, tx)
-    }
-
-    private class SingleEntityIterator(val entity: Entity) : EntityIterator {
-        private var hasNext = true
-        override fun next(): Entity = entity.apply { hasNext = false }
-        override fun nextId(): EntityId? = if (hasNext) entity.id else null
-        override fun skip(p0: Int): Boolean = true
-        override fun shouldBeDisposed(): Boolean = false
-        override fun hasNext(): Boolean = hasNext
-        override fun remove() { }
-        override fun dispose(): Boolean = true
     }
 }

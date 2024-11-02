@@ -6,7 +6,7 @@ import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.compression.*
 import io.ktor.http.*
-import io.ktor.serialization.gson.*
+import io.ktor.serialization.jackson.*
 import io.ktor.server.http.content.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -35,7 +35,7 @@ open class HttpServer(webApplication: WebApplication, val appContext: String = "
             install(Compression)
 
             install(ContentNegotiation) {
-                gson { }
+                jackson()
             }
 
             installStatusPages()

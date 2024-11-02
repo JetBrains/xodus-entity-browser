@@ -13,7 +13,6 @@ class Services(val storeService: StoreService,
         jobsService.stop()
         storeService.stop()
     }
-
 }
 
 interface WebApplication {
@@ -29,9 +28,13 @@ interface WebApplication {
     val isReadonly get() = databaseService.isReadonly
 }
 
-fun WebApplication.servicesOf(dbUUID: String): Services = allServices[dbUUID]
+fun WebApplication.servicesOf(dbUUID: String): Services {
+    return allServices[dbUUID]
         ?: throw NotFoundException("no database founded for $dbUUID")
+}
 
-fun String.system(): String = System.getProperty(this)
+fun String.systemProperty(): String {
+    return System.getProperty(this)
+}
 
 
