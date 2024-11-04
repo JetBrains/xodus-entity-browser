@@ -14,7 +14,7 @@ apply plugin: 'kotlin'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 dependencies {
-    implementation 'org.slf4j:slf4j-simple:1.7.25'
+    implementation 'org.slf4j:slf4j-simple:2.0.12'
     implementation 'io.github.microutils:kotlin-logging:1.7.9'
 
     frontend project(path: ':entity-browser-frontend', configuration: 'frontend_build')
