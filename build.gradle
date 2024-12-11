@@ -1,5 +1,5 @@
 buildscript {
-    ext.xodusVersion = '9.9.112'
+    ext.xodusVersion = '9.9.129'
     ext.kotlinVersion = '1.9.21'
     ext.ktorVersion = '2.3.11'
 
@@ -35,7 +35,6 @@ allprojects {
 
     repositories {
         mavenCentral()
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
         maven { url 'https://packages.jetbrains.team/maven/p/xodus/xodus-daily' }
         // necessary for dokka 1.4.30
         maven { url "https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven" }
