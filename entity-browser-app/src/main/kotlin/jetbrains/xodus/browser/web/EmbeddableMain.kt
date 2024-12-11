@@ -1,8 +1,8 @@
 package jetbrains.xodus.browser.web
 
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.jetty.Jetty
-import jetbrains.exodus.entitystore.PersistentEntityStoreImpl
+import io.ktor.server.engine.*
+import io.ktor.server.jetty.*
+import jetbrains.exodus.entitystore.PersistentEntityStore
 import jetbrains.exodus.entitystore.PersistentEntityStores
 import jetbrains.exodus.env.Environments
 
@@ -17,7 +17,7 @@ fun main() {
     val server = embeddedServer(Jetty, port = appPort, host = appHost) {
         val webApplication = object : EmbeddableWebApplication(lookup = { listOf(store) }) {
 
-            override fun PersistentEntityStoreImpl.isForcedlyReadonly() = true
+            override fun PersistentEntityStore.isForcedlyReadonly() = true
 
         }
         HttpServer(webApplication, context).setup(this)

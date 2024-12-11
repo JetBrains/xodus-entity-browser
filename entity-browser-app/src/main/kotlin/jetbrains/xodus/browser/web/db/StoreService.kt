@@ -1,7 +1,7 @@
 package jetbrains.xodus.browser.web.db
 
 
-import jetbrains.exodus.bindings.IntegerBinding
+import com.orientechnologies.orient.core.db.ODatabaseSession
 import jetbrains.exodus.crypto.InvalidCipherParametersException
 import jetbrains.exodus.entitystore.*
 import jetbrains.exodus.env.EnvironmentConfig
@@ -18,10 +18,10 @@ class StoreService {
 
     companion object : KLogging()
 
-    private val store: PersistentEntityStoreImpl
+    private val store: PersistentEntityStore
     val isReadonly: Boolean
 
-    constructor(store: PersistentEntityStoreImpl, isReadonly: Boolean) {
+    constructor(store: PersistentEntityStore, isReadonly: Boolean) {
         this.store = store
         this.isReadonly = isReadonly
     }
@@ -41,8 +41,6 @@ class StoreService {
                     }
                     it.cipherBasicIV = initialization ?: throw InvalidCipherParametersException()
                     it.setCipherKey(dbSummary.encryptionKey)
-                    it.cipherId = dbSummary.encryptionProvider?.cipherIds?.first()
-                            ?: throw InvalidCipherParametersException()
                 }
             }
             val environment = Environments.newInstance(dbSummary.location, config)
@@ -87,30 +85,28 @@ class StoreService {
     }
 
     fun addType(type: String): Int {
-        return transactional {
-            store.getEntityTypeId(it, type, true)
+        val foundType: Int = readonly { store.getEntityTypeId(type) }
+        if (foundType != -1) {
+            return foundType
         }
+        transactional {
+            ODatabaseSession.getActiveSession().createClassIfNotExist(type)
+        }
+        return readonly { store.getEntityTypeId(type) }
     }
 
     fun allTypes(): Array<EntityType> {
         return readonly { txn ->
-            val store = txn.store
-            val typeIds = arrayListOf<Int>()
-            store.entityTypesTable.getSecondIndexCursor(txn.environmentTransaction).use { entityTypesCursor ->
-                while (entityTypesCursor.next) {
-                    typeIds.add(IntegerBinding.compressedEntryToInt(entityTypesCursor.key))
-                }
-            }
-
-            typeIds.map {
-                EntityType(it, store.getEntityType(txn, it))
-            }.sortedBy { it.name }.toTypedArray()
+            txn.entityTypes
+                .sorted()
+                .map { typeName -> EntityType(store.getEntityTypeId(typeName), typeName) }
+                .toTypedArray()
         }
     }
 
     fun searchType(typeId: Int, q: String?, offset: Int, pageSize: Int): SearchPager {
         return readonly { t ->
-            val type = store.getEntityType(t, typeId)
+            val type = store.getEntityType(typeId)
             val result = smartSearch(q, type, typeId, t)
             val totalCount = result.size()
             val items = result.skip(offset).take(pageSize).map { it.asView() }
@@ -126,20 +122,20 @@ class StoreService {
 
     fun newEntity(typeId: Int, vo: ChangeSummary): EntityView {
         val entityId = transactional { t ->
-            val type = store.getEntityType(t, typeId)
+            val type = store.getEntityType(typeId)
             val entity = t.newEntity(type)
             vo.properties.forEach {
-                it.newValue?.let {
-                    entity.applyValues(it)
+                it.newValue?.let { newValue ->
+                    entity.applyValues(newValue)
                 }
             }
-            vo.links.forEach {
-                it.newValue?.let {
-                    val link = getEntity(it.id, t)
-                    entity.addLink(it.name, link)
+            vo.links.forEach { linkChange ->
+                linkChange.newValue?.let { newValue ->
+                    val link = getEntity(newValue.id, t)
+                    entity.addLink(newValue.name, link)
                 }
             }
-            entity.id.toString()
+            entity.toIdString()
         }
         return getEntity(entityId)
     }
@@ -187,7 +183,7 @@ class StoreService {
                     entity.deleteLinks(it.name)
                 } else if (newValue == null) {
                     if (oldValue != null) {
-                        val linked = getEntityOrStub(oldValue.id, t)
+                        val linked = getEntity(oldValue.id, t)
                         entity.deleteLink(it.name, linked)
                     }
                 } else {
@@ -233,9 +229,9 @@ class StoreService {
         }
     }
 
-    private fun getEntity(id: String, t: PersistentStoreTransaction): Entity {
+    private fun getEntity(id: String, txn: StoreTransaction): Entity {
         try {
-            return t.getEntity(PersistentEntityId.toEntityId(id))
+            return txn.getEntity(txn.toEntityId(id))
         } catch (e: RuntimeException) {
             logger.error(e) { "entity not found by '$id'" }
             throw EntityNotFoundException(e, id)
@@ -243,39 +239,27 @@ class StoreService {
 
     }
 
-    private fun getEntityOrStub(id: String, t: PersistentStoreTransaction): Entity {
-        val entityId = PersistentEntityId.toEntityId(id)
-        return try {
-            t.getEntity(entityId)
-        } catch (e: EntityRemovedInDatabaseException) {
-            logger.info { "entity not found by '$id'. using stub" }
-            PersistentEntity(store, entityId as PersistentEntityId)
-        }
-    }
-
     private fun safeTrim(value: String?): String? {
-        if (value == null) {
-            return null
-        }
-        val trimmed = value.trim { it <= ' ' }
-        return if (trimmed.isEmpty()) null else trimmed
+        return value
+            ?.trim { it <= ' ' }
+            ?.takeIf { it.isNotEmpty() }
     }
 
-    private fun <T> transactional(call: (PersistentStoreTransaction) -> T): T {
+    private fun <T> transactional(call: (StoreTransaction) -> T): T {
         return store.transactional(call)
     }
 
-    private fun <T> readonly(call: (PersistentStoreTransaction) -> T): T {
+    private fun <T> readonly(call: (StoreTransaction) -> T): T {
         return store.readonly(call)
     }
 
 }
 
 
-fun <T> PersistentEntityStore.transactional(call: (PersistentStoreTransaction) -> T): T {
-    return computeInTransaction { call(it as PersistentStoreTransaction) }
+fun <T> PersistentEntityStore.transactional(call: (StoreTransaction) -> T): T {
+    return computeInTransaction { call(it.asOStoreTransaction()) }
 }
 
-fun <T> PersistentEntityStore.readonly(call: (PersistentStoreTransaction) -> T): T {
-    return computeInReadonlyTransaction { call(it as PersistentStoreTransaction) }
+fun <T> PersistentEntityStore.readonly(call: (StoreTransaction) -> T): T {
+    return computeInReadonlyTransaction { call(it.asOStoreTransaction()) }
 }

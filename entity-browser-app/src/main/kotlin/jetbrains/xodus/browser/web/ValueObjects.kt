@@ -1,9 +1,6 @@
 package jetbrains.xodus.browser.web
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import jetbrains.exodus.crypto.streamciphers.CHACHA_CIPHER_ID
-import jetbrains.exodus.crypto.streamciphers.JB_CHACHA_CIPHER_ID
-import jetbrains.exodus.crypto.streamciphers.SALSA20_CIPHER_ID
 import java.util.*
 
 interface Named {
@@ -81,11 +78,6 @@ data class ChangeSummary(
     var blobs: List<BlobChangeSummaryAction> = listOf()
 )
 
-enum class EncryptionProvider(val cipherIds: List<String>) {
-    SALSA(listOf(SALSA20_CIPHER_ID)),
-    CHACHA(listOf(CHACHA_CIPHER_ID, JB_CHACHA_CIPHER_ID))
-}
-
 data class DBSummary(
     var uuid: String = UUID.randomUUID().toString(),
 
@@ -101,7 +93,6 @@ data class DBSummary(
 
     @JsonProperty("encrypted")
     var isEncrypted: Boolean = false,
-    var encryptionProvider: EncryptionProvider? = null,
     var encryptionKey: String? = null,
     var encryptionIV: String? = null // js can't in Long
 )

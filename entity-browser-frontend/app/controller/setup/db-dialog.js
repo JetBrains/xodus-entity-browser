@@ -70,7 +70,6 @@ angular.module('xodus').controller('DBDialogController', [
 
         dbDialogCtrl.saveDB = function () {
             if ($scope.database.$valid) {
-                dbDialogCtrl.db.encryptionProvider = (dbDialogCtrl.isChaCha ? 'CHACHA' : 'SALSA');
                 databaseService.add(dbDialogCtrl.db).then(function (db) {
                     return $modalInstance.close(db);
                 });

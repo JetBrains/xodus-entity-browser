@@ -7,7 +7,6 @@ import jetbrains.exodus.entitystore.PersistentStoreTransaction
 import jetbrains.exodus.env.EnvironmentConfig
 import jetbrains.exodus.env.Environments
 import jetbrains.xodus.browser.web.DBSummary
-import jetbrains.xodus.browser.web.EncryptionProvider
 import jetbrains.xodus.browser.web.Home
 import jetbrains.xodus.browser.web.NotFoundException
 import mu.KLogging
@@ -21,8 +20,6 @@ class DBDatabasesStore : DatabasesStore {
 
     private val iv: Long = System.getProperty("xodus.entity.browser.env.iv", "0").toLong()
     private val key: String? = System.getProperty("xodus.entity.browser.env.key")
-    private val cipherId: String =
-        System.getProperty("xodus.entity.browser.env.cipherId", EncryptionProvider.CHACHA.cipherIds.first())
 
     private val location: String
         get() {
@@ -39,7 +36,6 @@ class DBDatabasesStore : DatabasesStore {
             if (isEncrypted) {
                 it.cipherBasicIV = iv
                 it.setCipherKey(key)
-                it.cipherId = cipherId
             }
         }
         try {
@@ -120,7 +116,6 @@ class DBDatabasesStore : DatabasesStore {
         var isWatchReadonly by boolean()
 
         var isEncrypted by boolean()
-        var encryptionProvider by string()
         var encryptionKey by string()
         var encryptionIV by string()
 
@@ -175,7 +170,6 @@ class DBDatabasesStore : DatabasesStore {
             isReadonly = isReadonly,
             isWatchReadonly = isWatchReadonly,
             isEncrypted = isEncrypted,
-            encryptionProvider = encryptionProvider?.let { EncryptionProvider.valueOf(it) },
             encryptionIV = encryptionIV,
             encryptionKey = encryptionKey
         )
@@ -186,7 +180,6 @@ class DBDatabasesStore : DatabasesStore {
 
             encryptionIV = dbSummary.encryptionIV
             encryptionKey = dbSummary.encryptionKey
-            encryptionProvider = dbSummary.encryptionProvider?.name
 
             isOpened = dbSummary.isOpened
             isEncrypted = dbSummary.isEncrypted

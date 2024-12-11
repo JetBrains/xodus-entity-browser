@@ -1,6 +1,5 @@
 package jetbrains.xodus.browser.web
 
-import jetbrains.exodus.crypto.streamciphers.CHACHA_CIPHER_ID
 import jetbrains.exodus.entitystore.PersistentEntityStores
 import jetbrains.exodus.entitystore.PersistentStoreTransaction
 import jetbrains.exodus.env.EnvironmentConfig
@@ -26,8 +25,6 @@ class EncryptedDatabasesTest : TestSupport() {
 
             assertEquals(encStoreLocation, it.location)
             assertEquals(key, it.key)
-
-            assertNull(it.encryptionProvider)
             assertNull(it.encryptionKey)
             assertNull(it.encryptionIV)
         }
@@ -51,7 +48,6 @@ class EncryptedDatabasesTest : TestSupport() {
                 isEncrypted = true,
                 isReadonly = false,
                 isWatchReadonly = false,
-                encryptionProvider = EncryptionProvider.CHACHA,
                 encryptionKey = encKey,
                 encryptionIV = encInit.toString()
         )
@@ -61,7 +57,6 @@ class EncryptedDatabasesTest : TestSupport() {
     @Before
     fun setup() {
         val config = EnvironmentConfig()
-                .setCipherId(CHACHA_CIPHER_ID)
                 .setCipherKey(encKey)
                 .setCipherBasicIV(encInit)
         val store = PersistentEntityStores.newInstance(Environments.newInstance(encStoreLocation, config), key)

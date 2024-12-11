@@ -1,21 +1,23 @@
 package jetbrains.xodus.browser.web
 
-import jetbrains.exodus.entitystore.PersistentEntityStoreImpl
+import jetbrains.exodus.entitystore.PersistentEntityStore
 import jetbrains.xodus.browser.web.db.EmbeddableDatabaseService
 import jetbrains.xodus.browser.web.db.StoreService
 import jetbrains.xodus.browser.web.db.asSummary
 
-open class EmbeddableWebApplication(open val lookup: () -> List<PersistentEntityStoreImpl>) : WebApplication {
+open class EmbeddableWebApplication(open val lookup: () -> List<PersistentEntityStore>) : WebApplication {
 
     override val databaseService = EmbeddableDatabaseService {
-        lookup().map {
-            val readonly = it.isForcedlyReadonly()
-            it.asSummary(readonly)
+        lookup().map { persistentStore ->
+            val readonly = persistentStore.isForcedlyReadonly()
+            persistentStore.asSummary(readonly)
         }
     }
 
     override val allServices: Map<String, Services>
-        get() = lookup().associate { it.name to Services(StoreService(it, false)) }
+        get() = lookup().associate { persistentStore ->
+            persistentStore.name to Services(StoreService(persistentStore, false))
+        }
 
     override fun start() {}
 
@@ -27,6 +29,6 @@ open class EmbeddableWebApplication(open val lookup: () -> List<PersistentEntity
         return false
     }
 
-    open fun PersistentEntityStoreImpl.isForcedlyReadonly() = true
+    open fun PersistentEntityStore.isForcedlyReadonly() = true
 
 }

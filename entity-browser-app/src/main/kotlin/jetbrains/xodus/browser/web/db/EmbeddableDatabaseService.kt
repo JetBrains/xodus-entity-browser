@@ -1,8 +1,7 @@
 package jetbrains.xodus.browser.web.db
 
-import jetbrains.exodus.entitystore.PersistentEntityStoreImpl
+import jetbrains.exodus.entitystore.PersistentEntityStore
 import jetbrains.xodus.browser.web.DBSummary
-import jetbrains.xodus.browser.web.EncryptionProvider
 
 open class EmbeddableDatabaseService(open val lookup: () -> List<DBSummary>) : DatabaseService {
 
@@ -38,19 +37,16 @@ open class EmbeddableDatabaseService(open val lookup: () -> List<DBSummary>) : D
 
 }
 
-fun PersistentEntityStoreImpl.asSummary(forcedReadonly: Boolean): DBSummary {
+fun PersistentEntityStore.asSummary(forcedReadonly: Boolean): DBSummary {
+    val txn = this.andCheckCurrentTransaction
     return DBSummary(
             uuid = this.name,
             key = this.name,
             location = this.location,
             isOpened = true,
-            isReadonly = if (forcedReadonly) forcedReadonly else this.environment.environmentConfig.envIsReadonly,
-            isEncrypted = this.environment.environmentConfig.cipherId != null,
+            isReadonly = forcedReadonly || txn.isEnvironmentReadOnly,
+            isEncrypted = txn.isDatabaseEncrypted,
             isWatchReadonly = false,
-
-            encryptionProvider = this.environment.environmentConfig.cipherId?.let {
-                EncryptionProvider.values().first { pr -> pr.cipherIds.contains(it) }
-            },
             encryptionIV = null,
             encryptionKey = null
     )

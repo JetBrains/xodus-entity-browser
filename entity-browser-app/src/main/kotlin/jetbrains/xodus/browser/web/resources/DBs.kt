@@ -38,7 +38,7 @@ class DBs(webApp: WebApplication) : ResourceSupport(webApp), AppRoute {
     }
 
     private fun DBSummary.secureCopy(): DBSummary {
-        return copy(encryptionKey = null, encryptionIV = null, encryptionProvider = null)
+        return copy(encryptionKey = null, encryptionIV = null)
     }
 
 }
