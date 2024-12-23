@@ -1,7 +1,7 @@
 package jetbrains.xodus.browser.web
 
+import jetbrains.exodus.bindings.ComparableValueType
 import jetbrains.exodus.entitystore.Entity
-import jetbrains.exodus.entitystore.PersistentEntityStoreImpl
 import jetbrains.xodus.browser.web.search.UIPropertyTypes
 
 fun Entity.asView(): EntityView {
@@ -64,11 +64,8 @@ private fun Entity.blobView(name: String): EntityBlob {
 
 private fun Entity.propertyView(name: String): EntityProperty {
     val value = this.getProperty(name)
-    val entity = this
-    val store = entity.store as PersistentEntityStoreImpl
     val clazz: Class<*> = if (value != null) {
-        val propertyType = store.propertyTypes.getPropertyType(value.javaClass)
-        propertyType.clazz
+        ComparableValueType.getPredefinedType(value.javaClass).clazz
     } else {
         String::class.java
     }
@@ -82,11 +79,6 @@ private fun Entity.propertyView(name: String): EntityProperty {
             type = typeVO,
             value = value2string(value)
     )
-}
-
-fun String.asEntityType(store: PersistentEntityStoreImpl): EntityType {
-    val typeId = store.getEntityTypeId(store.currentTransaction!!, this, false)
-    return EntityType(typeId, this)
 }
 
 fun EntityProperty.string2value(): Comparable<*>? {
