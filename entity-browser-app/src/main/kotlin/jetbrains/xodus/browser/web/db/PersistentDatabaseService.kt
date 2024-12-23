@@ -2,7 +2,7 @@ package jetbrains.xodus.browser.web.db
 
 import jetbrains.xodus.browser.web.DBSummary
 
-open class PersistentDatabaseService(private val store: DatabasesStore = DBDatabasesStore()) : DatabaseService {
+open class PersistentDatabaseService(private val store: DatabasesStore = JsonDatabasesStore()) : DatabaseService {
 
     override val isReadonly: Boolean
         get() = false

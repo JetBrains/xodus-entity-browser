@@ -5,14 +5,14 @@ import java.util.concurrent.ConcurrentHashMap
 
 open class InMemoryDatabasesStore : DatabasesStore {
 
-    val databases: MutableMap<String, DBSummary> = ConcurrentHashMap()
+    private val databases: MutableMap<String, DBSummary> = ConcurrentHashMap()
 
     override fun start() {
     }
 
-    override fun add(dbSummary: DBSummary): DBSummary {
-        val copy = dbSummary.copy()
-        databases[dbSummary.uuid] = copy
+    override fun add(summary: DBSummary): DBSummary {
+        val copy = summary.copy()
+        databases[summary.uuid] = copy
         return copy
     }
 
