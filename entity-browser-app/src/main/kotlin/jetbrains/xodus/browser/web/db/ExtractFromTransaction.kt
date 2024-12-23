@@ -1,5 +1,7 @@
 package jetbrains.xodus.browser.web.db
 
+import com.orientechnologies.orient.core.db.ODatabaseSession
+import jetbrains.exodus.entitystore.PersistentEntityStore
 import jetbrains.exodus.entitystore.StoreTransaction
 import jetbrains.exodus.entitystore.asOStoreTransaction
 import jetbrains.exodus.entitystore.orientdb.*
@@ -39,3 +41,31 @@ val StoreTransaction.isDatabaseEncrypted: Boolean
         // TODO get property without reflection
         return this.asOStoreTransaction().extractDatabaseConfig().cipherKey != null
     }
+
+
+fun <T> PersistentEntityStore.transactional(call: (StoreTransaction) -> T): T {
+    return computeInTransaction { call(it.asOStoreTransaction()) }
+}
+
+fun <T> PersistentEntityStore.readonly(call: (StoreTransaction) -> T): T {
+    return computeInReadonlyTransaction { call(it.asOStoreTransaction()) }
+}
+
+fun PersistentEntityStore.getEntityTypeId(type: String, allowCreate: Boolean): Int {
+    val foundTypeId = readonly { getEntityTypeId(type) }
+    if (!allowCreate || foundTypeId != -1) {
+        return foundTypeId
+    }
+    createTypeIfNotExist(type)
+    return readonly {
+        getEntityTypeId(type)
+    }
+}
+
+private fun PersistentEntityStore.createTypeIfNotExist(type: String) {
+    transactional {
+        ODatabaseSession.getActiveSession().createClassIfNotExist(type)
+    }
+}
+
+

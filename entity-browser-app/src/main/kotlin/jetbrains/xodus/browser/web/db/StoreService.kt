@@ -1,7 +1,6 @@
 package jetbrains.xodus.browser.web.db
 
 
-import com.orientechnologies.orient.core.db.ODatabaseSession
 import jetbrains.exodus.crypto.InvalidCipherParametersException
 import jetbrains.exodus.entitystore.*
 import jetbrains.exodus.env.EnvironmentConfig
@@ -85,14 +84,7 @@ class StoreService {
     }
 
     fun addType(type: String): Int {
-        val foundType: Int = readonly { store.getEntityTypeId(type) }
-        if (foundType != -1) {
-            return foundType
-        }
-        transactional {
-            ODatabaseSession.getActiveSession().createClassIfNotExist(type)
-        }
-        return readonly { store.getEntityTypeId(type) }
+        return store.getEntityTypeId(type, true)
     }
 
     fun allTypes(): Array<EntityType> {
@@ -253,13 +245,4 @@ class StoreService {
         return store.readonly(call)
     }
 
-}
-
-
-fun <T> PersistentEntityStore.transactional(call: (StoreTransaction) -> T): T {
-    return computeInTransaction { call(it.asOStoreTransaction()) }
-}
-
-fun <T> PersistentEntityStore.readonly(call: (StoreTransaction) -> T): T {
-    return computeInReadonlyTransaction { call(it.asOStoreTransaction()) }
 }
