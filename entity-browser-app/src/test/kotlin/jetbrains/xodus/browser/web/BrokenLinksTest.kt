@@ -2,6 +2,8 @@ package jetbrains.xodus.browser.web
 
 import jetbrains.exodus.entitystore.*
 import jetbrains.exodus.env.Environments
+import jetbrains.xodus.browser.web.db.getOrCreateEntityTypeId
+import jetbrains.xodus.browser.web.db.transactional
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -11,9 +13,9 @@ import java.io.File
 class BrokenLinksTest : TestSupport() {
 
     private val location = newLocation()
-    private lateinit var store: PersistentEntityStoreImpl
+    private lateinit var store: PersistentEntityStore
 
-    private lateinit var brokenEntityId: PersistentEntityId
+    private lateinit var brokenEntityId: EntityId
     private lateinit var linkedEntity1: Entity
 
     private lateinit var db: DBSummary
@@ -23,30 +25,26 @@ class BrokenLinksTest : TestSupport() {
     @Before
     fun setup() {
         store = PersistentEntityStores.newInstance(Environments.newInstance(location), key)
-        store.executeInTransaction {
-            it as PersistentStoreTransaction
-            store.getEntityTypeId(it, "Type1", true)
-            store.getEntityTypeId(it, "Type2", true)
+        store.getOrCreateEntityTypeId("Type1", true)
+        store.getOrCreateEntityTypeId( "Type2", true)
+        store.transactional { txn: StoreTransaction ->
 
-            val brokenEntity = it.newEntity("Type2").also {
+            val brokenEntity = txn.newEntity("Type2").also {
                 it.setProperty("name", "John McClane")
                 it.setProperty("age", 35L)
             }
 
             brokenEntityId = brokenEntity.id
 
-            linkedEntity1 = it.newEntity("Type1").also {
+            linkedEntity1 = txn.newEntity("Type1").also {
                 it.setProperty("type", "Band")
                 it.addLink("folks", brokenEntity)
             }
         }
-        store.executeInTransaction {
-            it as PersistentStoreTransaction
-
+        store.transactional {
             it.getEntity(brokenEntityId).delete()
         }
         store.close()
-        store.environment.close()
         db = newDB(location, true)
     }
 

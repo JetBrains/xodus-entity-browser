@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.kotlinModule
 import io.ktor.server.engine.*
 import io.ktor.server.jetty.*
-import jetbrains.exodus.entitystore.PersistentEntityStoreImpl
+import jetbrains.exodus.entitystore.PersistentEntityStore
 import jetbrains.exodus.entitystore.PersistentEntityStores
 import jetbrains.exodus.env.Environments
 import jetbrains.xodus.browser.web.db.PersistentDatabaseService
@@ -32,7 +32,7 @@ open class TestSupport {
 
     protected val key = "teamsysdata"
     protected val lockedDBLocation = newLocation()
-    private lateinit var store: PersistentEntityStoreImpl
+    private lateinit var store: PersistentEntityStore
     lateinit var webApp: PersistentWebApplication
 
     private lateinit var server: JettyApplicationEngine

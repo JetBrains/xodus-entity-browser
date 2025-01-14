@@ -1,10 +1,11 @@
 package jetbrains.xodus.browser.web
 
 import jetbrains.exodus.entitystore.Entity
-import jetbrains.exodus.entitystore.PersistentEntityStoreImpl
+import jetbrains.exodus.entitystore.PersistentEntityStore
 import jetbrains.exodus.entitystore.PersistentEntityStores
-import jetbrains.exodus.entitystore.PersistentStoreTransaction
 import jetbrains.exodus.env.Environments
+import jetbrains.xodus.browser.web.db.getOrCreateEntityTypeId
+import jetbrains.xodus.browser.web.db.transactional
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -14,7 +15,7 @@ import java.io.File
 class EntitiesApiTest : TestSupport() {
 
     private val location = newLocation()
-    private lateinit var store: PersistentEntityStoreImpl
+    private lateinit var store: PersistentEntityStore
 
     private lateinit var entity: Entity
     private lateinit var linkedEntity1: Entity
@@ -27,30 +28,28 @@ class EntitiesApiTest : TestSupport() {
     @Before
     fun setup() {
         store = PersistentEntityStores.newInstance(Environments.newInstance(location), key)
-        store.executeInTransaction {
-            it as PersistentStoreTransaction
-            store.getEntityTypeId(it, "Type1", true)
-            store.getEntityTypeId(it, "Type2", true)
+        store.getOrCreateEntityTypeId( "Type1", true)
+        store.getOrCreateEntityTypeId( "Type2", true)
+        store.transactional { txn ->
 
-            linkedEntity1 = it.newEntity("Type1").also {
+            linkedEntity1 = txn.newEntity("Type1").also {
                 it.setProperty("name", "John McClane")
                 it.setProperty("age", 35L)
             }
 
-            linkedEntity2 = it.newEntity("Type1").also {
+            linkedEntity2 = txn.newEntity("Type1").also {
                 it.setProperty("name", "John Silver")
                 it.setProperty("age", 45L)
                 it.setLink("boss", linkedEntity1)
             }
 
-            entity = it.newEntity("Type2").also {
+            entity = txn.newEntity("Type2").also {
                 it.setProperty("type", "Band")
                 it.addLink("folks", linkedEntity1)
                 it.addLink("folks", linkedEntity2)
             }
         }
         store.close()
-        store.environment.close()
         db = newDB(location, true)
     }
 

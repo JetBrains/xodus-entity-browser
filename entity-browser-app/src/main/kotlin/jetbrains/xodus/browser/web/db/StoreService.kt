@@ -84,7 +84,7 @@ class StoreService {
     }
 
     fun addType(type: String): Int {
-        return store.getEntityTypeId(type, true)
+        return store.getOrCreateEntityTypeId(type, true)
     }
 
     fun allTypes(): Array<EntityType> {
@@ -242,7 +242,7 @@ class StoreService {
     }
 
     private fun <T> readonly(call: (StoreTransaction) -> T): T {
-        return store.readonly(call)
+        return store.readonlyTransactional(call)
     }
 
 }
