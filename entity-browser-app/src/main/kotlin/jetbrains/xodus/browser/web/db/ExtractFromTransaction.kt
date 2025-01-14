@@ -1,6 +1,5 @@
 package jetbrains.xodus.browser.web.db
 
-import com.orientechnologies.orient.core.db.ODatabaseSession
 import jetbrains.exodus.entitystore.PersistentEntityStore
 import jetbrains.exodus.entitystore.StoreTransaction
 import jetbrains.exodus.entitystore.asOStoreTransaction
@@ -56,8 +55,10 @@ fun PersistentEntityStore.getOrCreateEntityTypeId(type: String, allowCreate: Boo
     if (!allowCreate || foundTypeId != -1) {
         return foundTypeId
     }
-    transactional {
-        ODatabaseSession.getActiveSession().createClassIfNotExist(type)
+    //TODO provide a better way to access session and change a schema
+    val provider = readonlyTransactional { it.asOStoreTransaction().extractDatabaseProvider() }
+    provider.withCurrentOrNewSession(requireNoActiveTransaction = true) { session ->
+        session.createVertexClassWithClassId(type)
     }
     return readonlyTransactional {
         getEntityTypeId(type)

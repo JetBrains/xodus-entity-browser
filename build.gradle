@@ -1,6 +1,6 @@
 buildscript {
-    ext.xodusVersion = '9.9.129'
-    ext.kotlinVersion = '1.9.21'
+    ext.xodusVersion = '9.9.139'
+    ext.kotlinVersion = '2.1.0'
     ext.ktorVersion = '2.3.11'
 
     dependencies {
@@ -29,7 +29,7 @@ allprojects {
 
     java {
         toolchain {
-            languageVersion = JavaLanguageVersion.of(17)
+            languageVersion = JavaLanguageVersion.of(21)
         }
     }
 
@@ -38,7 +38,7 @@ allprojects {
         maven { url 'https://packages.jetbrains.team/maven/p/xodus/xodus-daily' }
         // necessary for dokka 1.4.30
         maven { url "https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven" }
-        maven { url 'https://packages.jetbrains.team/maven/p/xodus/orientdb-daily' }
+        maven { url 'https://packages.jetbrains.team/maven/p/xodus/youtrackdb-daily' }
     }
 
     idea {
