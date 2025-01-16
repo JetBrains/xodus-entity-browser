@@ -1,7 +1,6 @@
 package jetbrains.xodus.browser.web
 
 import jetbrains.exodus.entitystore.Entity
-import jetbrains.exodus.entitystore.PersistentEntityStore
 import jetbrains.xodus.browser.web.db.getOrCreateEntityTypeId
 import jetbrains.xodus.browser.web.db.transactional
 import org.junit.After
@@ -13,7 +12,6 @@ import java.io.File
 class EntitiesApiTest : TestSupport() {
 
     private val location = newLocation()
-    private lateinit var store: PersistentEntityStore
 
     private lateinit var entity: Entity
     private lateinit var linkedEntity1: Entity
@@ -25,10 +23,10 @@ class EntitiesApiTest : TestSupport() {
 
     @Before
     fun setup() {
-        store = EnvironmentFactory.persistentEntityStore(dbSummary)
-        store.getOrCreateEntityTypeId( "Type1", true)
-        store.getOrCreateEntityTypeId( "Type2", true)
-        store.transactional { txn ->
+        val environment = EnvironmentFactory.environment(dbSummary)
+        environment.getOrCreateEntityTypeId( "Type1", true)
+        environment.getOrCreateEntityTypeId( "Type2", true)
+        environment.transactional { txn ->
 
             linkedEntity1 = txn.newEntity("Type1").also {
                 it.setProperty("name", "John McClane")
@@ -47,7 +45,7 @@ class EntitiesApiTest : TestSupport() {
                 it.addLink("folks", linkedEntity2)
             }
         }
-        store.close()
+        environment.store.close()
         dbSummary = newDB(location, true)
     }
 

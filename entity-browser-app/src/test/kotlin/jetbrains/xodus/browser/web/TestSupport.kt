@@ -6,7 +6,6 @@ import com.fasterxml.jackson.module.kotlin.kotlinModule
 import com.jetbrains.youtrack.db.api.DatabaseType
 import io.ktor.server.engine.*
 import io.ktor.server.jetty.*
-import jetbrains.exodus.entitystore.PersistentEntityStore
 import jetbrains.xodus.browser.web.db.PersistentDatabaseService
 import mu.KLogging
 import okhttp3.OkHttpClient
@@ -31,7 +30,7 @@ open class TestSupport {
 
     protected val key = "teamsysdata"
     protected val lockedDBLocation = newLocation()
-    private lateinit var store: PersistentEntityStore
+    private lateinit var environment: Environment
     lateinit var webApp: PersistentWebApplication
 
     private lateinit var server: JettyApplicationEngine
@@ -68,7 +67,7 @@ open class TestSupport {
             isOpened = true,
             type = DatabaseType.MEMORY.name
         )
-        store = EnvironmentFactory.persistentEntityStore(dbSummary)
+        environment = EnvironmentFactory.environment(dbSummary)
         webApp = PersistentWebApplication(PersistentDatabaseService())
 
         server = embeddedServer(Jetty, port = port) {
@@ -101,7 +100,7 @@ open class TestSupport {
 
     @After
     fun after() {
-        store.close()
+        environment.store.close()
         webApp.stop()
         File("db").delete()
         server.stop(gracePeriodMillis = 20, timeoutMillis = 20)

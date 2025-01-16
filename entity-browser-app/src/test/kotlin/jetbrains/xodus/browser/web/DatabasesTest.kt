@@ -74,11 +74,11 @@ class DatabasesTest : TestSupport() {
             val resultOfStop = dbResource.startOrStop(uuid, "stop").execute()
             assertFalse(resultOfStop.body()!!.isOpened)
             assertFalse(webApp.allServices.containsKey(uuid))
-            val store = EnvironmentFactory.persistentEntityStore(DBSummary(location = location))
+            val environment = EnvironmentFactory.environment(DBSummary(location = location))
             try {
-                store.getOrCreateEntityTypeId("BlaBlaBla", true)
+                environment.getOrCreateEntityTypeId("BlaBlaBla", true)
             } finally {
-                store.close()
+                environment.store.close()
             }
         }
     }

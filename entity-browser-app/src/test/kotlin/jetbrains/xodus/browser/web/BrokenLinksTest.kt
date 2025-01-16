@@ -2,7 +2,6 @@ package jetbrains.xodus.browser.web
 
 import jetbrains.exodus.entitystore.Entity
 import jetbrains.exodus.entitystore.EntityId
-import jetbrains.exodus.entitystore.PersistentEntityStore
 import jetbrains.exodus.entitystore.StoreTransaction
 import jetbrains.xodus.browser.web.db.getOrCreateEntityTypeId
 import jetbrains.xodus.browser.web.db.transactional
@@ -15,7 +14,7 @@ import java.io.File
 class BrokenLinksTest : TestSupport() {
 
     private val location = newLocation()
-    private lateinit var store: PersistentEntityStore
+    private lateinit var environment: Environment
 
     private lateinit var brokenEntityId: EntityId
     private lateinit var linkedEntity1: Entity
@@ -26,10 +25,10 @@ class BrokenLinksTest : TestSupport() {
 
     @Before
     fun setup() {
-        store = EnvironmentFactory.persistentEntityStore(DBSummary(location = location))
-        store.getOrCreateEntityTypeId("Type1", true)
-        store.getOrCreateEntityTypeId( "Type2", true)
-        store.transactional { txn: StoreTransaction ->
+        environment = EnvironmentFactory.environment(DBSummary(location = location))
+        environment.getOrCreateEntityTypeId("Type1", true)
+        environment.getOrCreateEntityTypeId( "Type2", true)
+        environment.transactional { txn: StoreTransaction ->
 
             val brokenEntity = txn.newEntity("Type2").also {
                 it.setProperty("name", "John McClane")
@@ -43,10 +42,10 @@ class BrokenLinksTest : TestSupport() {
                 it.addLink("folks", brokenEntity)
             }
         }
-        store.transactional {
+        environment.transactional {
             it.getEntity(brokenEntityId).delete()
         }
-        store.close()
+        environment.store.close()
         db = newDB(location, true)
     }
 

@@ -2,7 +2,10 @@ package jetbrains.xodus.browser.web.db
 
 
 import jetbrains.exodus.crypto.InvalidCipherParametersException
-import jetbrains.exodus.entitystore.*
+import jetbrains.exodus.entitystore.Entity
+import jetbrains.exodus.entitystore.EntityIterable
+import jetbrains.exodus.entitystore.PersistentEntityStore
+import jetbrains.exodus.entitystore.StoreTransaction
 import jetbrains.exodus.log.DataCorruptionException
 import jetbrains.xodus.browser.web.*
 import jetbrains.xodus.browser.web.search.smartSearch
@@ -14,18 +17,19 @@ class StoreService {
 
     companion object : KLogging()
 
-    private val store: PersistentEntityStore
+    private val environment: Environment
+    private val store: PersistentEntityStore get() = environment.store
     val isReadonly: Boolean
 
-    constructor(store: PersistentEntityStore, isReadonly: Boolean) {
-        this.store = store
+    constructor(environment: Environment, isReadonly: Boolean) {
+        this.environment = environment
         this.isReadonly = isReadonly
     }
 
     constructor(dbSummary: DBSummary) {
         try {
-            store = EnvironmentFactory.persistentEntityStore(dbSummary)
-            isReadonly = dbSummary.isReadonly
+            environment = EnvironmentFactory.environment(dbSummary)
+            isReadonly = environment.dbProvider.readOnly
         } catch (e: InvalidCipherParametersException) {
             val msg = "It seems that store encrypted with another parameters"
             logger.error(e) { msg }
@@ -58,7 +62,7 @@ class StoreService {
     }
 
     fun addType(type: String): Int {
-        return store.getOrCreateEntityTypeId(type, true)
+        return environment.getOrCreateEntityTypeId(type, true)
     }
 
     fun allTypes(): Array<EntityType> {
@@ -177,14 +181,14 @@ class StoreService {
     }
 
     fun deleteEntitiesJob(typeId: Int, term: String?): Job {
-        return object : EntityBulkJob(store) {
+        return object : EntityBulkJob(environment) {
 
             override fun Entity.doAction() {
                 delete()
             }
 
             override val affectedEntities: EntityIterable
-                get() = store.transactional {
+                get() = transactional {
                     val type = store.getEntityType(typeId)
                     smartSearch(term, type, typeId, it)
                 }
@@ -212,11 +216,11 @@ class StoreService {
     }
 
     private fun <T> transactional(call: (StoreTransaction) -> T): T {
-        return store.transactional(call)
+        return environment.transactional(call)
     }
 
     private fun <T> readonly(call: (StoreTransaction) -> T): T {
-        return store.readonlyTransactional(call)
+        return environment.readonlyTransactional(call)
     }
 
 }

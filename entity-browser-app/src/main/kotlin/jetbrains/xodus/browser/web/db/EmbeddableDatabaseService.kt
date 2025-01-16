@@ -1,7 +1,7 @@
 package jetbrains.xodus.browser.web.db
 
-import jetbrains.exodus.entitystore.PersistentEntityStore
 import jetbrains.xodus.browser.web.DBSummary
+import jetbrains.xodus.browser.web.Environment
 
 open class EmbeddableDatabaseService(open val lookup: () -> List<DBSummary>) : DatabaseService {
 
@@ -37,15 +37,14 @@ open class EmbeddableDatabaseService(open val lookup: () -> List<DBSummary>) : D
 
 }
 
-fun PersistentEntityStore.asSummary(forcedReadonly: Boolean): DBSummary {
-    val txn = this.andCheckCurrentTransaction
+fun Environment.asSummary(forcedReadonly: Boolean): DBSummary {
     return DBSummary(
-            uuid = this.name,
-            key = this.name,
-            location = this.location,
+            uuid = store.name,
+            key = store.name,
+            location = store.location,
             isOpened = true,
-            isReadonly = forcedReadonly || txn.isReadOnly,
-            isEncrypted = txn.isDatabaseEncrypted,
+            isReadonly = forcedReadonly || dbProvider.readOnly,
+            isEncrypted = dbConfig.cipherKey != null,
             isWatchReadonly = false,
             encryptionIV = null,
             encryptionKey = null

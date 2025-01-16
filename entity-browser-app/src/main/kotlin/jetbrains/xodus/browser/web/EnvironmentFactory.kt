@@ -7,11 +7,15 @@ import jetbrains.exodus.entitystore.orientdb.*
 
 object EnvironmentFactory {
 
-    fun databaseProvider(config: ODatabaseConfig, db: YouTrackDB): ODatabaseProvider {
-        return ODatabaseProviderImpl(config, db)
+    private fun databaseProvider(config: ODatabaseConfig, db: YouTrackDB, dbSummary: DBSummary): ODatabaseProvider {
+        return ODatabaseProviderImpl(config, db).apply {
+            if (dbSummary.isReadonly) {
+                readOnly = true
+            }
+        }
     }
 
-    fun connectionConfig(dbSummary: DBSummary): ODatabaseConnectionConfig {
+    private fun connectionConfig(dbSummary: DBSummary): ODatabaseConnectionConfig {
         return ODatabaseConnectionConfig
             .builder()
             .withPassword("admin")
@@ -21,7 +25,7 @@ object EnvironmentFactory {
             .build()
     }
 
-    fun oDatabaseConfig(dbConnectionConfig: ODatabaseConnectionConfig, dbSummary: DBSummary): ODatabaseConfig {
+    private fun oDatabaseConfig(dbConnectionConfig: ODatabaseConnectionConfig, dbSummary: DBSummary): ODatabaseConfig {
         return ODatabaseConfig
             .builder()
             .withConnectionConfig(dbConnectionConfig)
@@ -29,26 +33,6 @@ object EnvironmentFactory {
             .withDatabaseType(DatabaseType.valueOf(dbSummary.type))
             .withEncryption(dbSummary)
             .build()
-    }
-
-    fun persistentEntityStore(dbProvider: ODatabaseProvider, dbConfig: ODatabaseConfig): OPersistentEntityStore {
-        return OPersistentEntityStore(
-            databaseProvider = dbProvider,
-            name = dbConfig.databaseName,
-            schemaBuddy = OSchemaBuddyImpl(dbProvider, autoInitialize = false)
-        )
-    }
-
-    fun persistentEntityStore(dbSummary: DBSummary): OPersistentEntityStore {
-        val dbConnectionConfig = connectionConfig(dbSummary)
-        val dbConfig: ODatabaseConfig = oDatabaseConfig(dbConnectionConfig, dbSummary)
-        val db = iniYouTrackDb(dbConnectionConfig)
-        val dbProvider = databaseProvider(dbConfig, db).apply {
-            if (dbSummary.isReadonly) {
-                readOnly = true
-            }
-        }
-        return persistentEntityStore(dbProvider, dbConfig)
     }
 
     private fun ODatabaseConfig.Builder.withEncryption(dbSummary: DBSummary): ODatabaseConfig.Builder {
@@ -62,5 +46,22 @@ object EnvironmentFactory {
             throw InvalidCipherParametersException()
         }
         return withStringHexAndIV(encryptionKey, cipherBasicIV)
+    }
+
+    private fun persistentEntityStore(dbProvider: ODatabaseProvider, dbConfig: ODatabaseConfig): OPersistentEntityStore {
+        return OPersistentEntityStore(
+            databaseProvider = dbProvider,
+            name = dbConfig.databaseName,
+            schemaBuddy = OSchemaBuddyImpl(dbProvider, autoInitialize = false)
+        )
+    }
+
+    fun environment(dbSummary: DBSummary): Environment {
+        val dbConnectionConfig = connectionConfig(dbSummary)
+        val dbConfig: ODatabaseConfig = oDatabaseConfig(dbConnectionConfig, dbSummary)
+        val db = iniYouTrackDb(dbConnectionConfig)
+        val dbProvider = databaseProvider(dbConfig, db, dbSummary)
+        val store = persistentEntityStore(dbProvider, dbConfig)
+        return Environment(dbConfig, dbConnectionConfig, dbProvider, db, store)
     }
 }

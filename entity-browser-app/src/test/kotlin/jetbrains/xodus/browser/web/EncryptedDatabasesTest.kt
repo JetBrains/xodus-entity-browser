@@ -2,6 +2,7 @@ package jetbrains.xodus.browser.web
 
 import jetbrains.exodus.entitystore.PersistentStoreTransaction
 import jetbrains.xodus.browser.web.db.getOrCreateEntityTypeId
+import jetbrains.xodus.browser.web.db.transactional
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -55,9 +56,9 @@ class EncryptedDatabasesTest : TestSupport() {
     @Before
     fun setup() {
         val dbSummary = newEncDB()
-        val store = EnvironmentFactory.persistentEntityStore(dbSummary)
-        store.getOrCreateEntityTypeId("Type1", allowCreate = true)
-        store.executeInTransaction {
+        val environment = EnvironmentFactory.environment(dbSummary)
+        environment.getOrCreateEntityTypeId("Type1", allowCreate = true)
+        environment.transactional {
             val tr = it as PersistentStoreTransaction
             repeat(100) {
                 tr.newEntity("Type1").also {
@@ -65,7 +66,7 @@ class EncryptedDatabasesTest : TestSupport() {
                 }
             }
         }
-        store.close()
+        environment.store.close()
     }
 
     @After

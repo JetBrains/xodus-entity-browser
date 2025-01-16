@@ -2,7 +2,7 @@ package jetbrains.xodus.browser.web.db
 
 import jetbrains.exodus.entitystore.Entity
 import jetbrains.exodus.entitystore.EntityIterable
-import jetbrains.exodus.entitystore.PersistentEntityStore
+import jetbrains.xodus.browser.web.Environment
 import mu.KLogging
 import java.util.concurrent.Executors
 
@@ -27,7 +27,7 @@ class JobsService {
 
 abstract class Job : Runnable
 
-abstract class EntityBulkJob(private val store: PersistentEntityStore) : Job() {
+abstract class EntityBulkJob(private val environment: Environment) : Job() {
 
     companion object : KLogging()
 
@@ -41,7 +41,7 @@ abstract class EntityBulkJob(private val store: PersistentEntityStore) : Job() {
     override fun run() {
         logger.info { "step $step of $this" }
         try {
-            store.transactional {
+            environment.transactional {
                 affectedEntities.take(bulkSize).asSequence().forEach { it.doAction() }
             }
         } catch (e: Exception) {

@@ -5,18 +5,18 @@ import jetbrains.xodus.browser.web.db.EmbeddableDatabaseService
 import jetbrains.xodus.browser.web.db.StoreService
 import jetbrains.xodus.browser.web.db.asSummary
 
-open class EmbeddableWebApplication(open val lookup: () -> List<PersistentEntityStore>) : WebApplication {
+open class EmbeddableWebApplication(open val lookup: () -> List<Environment>) : WebApplication {
 
     override val databaseService = EmbeddableDatabaseService {
-        lookup().map { persistentStore ->
-            val readonly = persistentStore.isForcedlyReadonly()
-            persistentStore.asSummary(readonly)
+        lookup().map { environment ->
+            val readonly = environment.store.isForcedlyReadonly()
+            environment.asSummary(readonly)
         }
     }
 
     override val allServices: Map<String, Services>
-        get() = lookup().associate { persistentStore ->
-            persistentStore.name to Services(StoreService(persistentStore, false))
+        get() = lookup().associate { environment ->
+            environment.store.name to Services(StoreService(environment, false))
         }
 
     override fun start() {}

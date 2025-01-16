@@ -3,7 +3,6 @@ package jetbrains.xodus.browser.web
 import io.ktor.server.engine.*
 import io.ktor.server.jetty.*
 import jetbrains.exodus.entitystore.PersistentEntityStore
-import jetbrains.xodus.browser.web.EnvironmentFactory.persistentEntityStore
 import java.nio.file.Files
 import kotlin.io.path.absolutePathString
 
@@ -14,10 +13,10 @@ fun main() {
     val context = System.getProperty("server.context", "/")
 
     val dbSummary = DBSummary(location = Files.createTempDirectory("some path to app").absolutePathString())
-    val store = persistentEntityStore(dbSummary)
+    val environment = EnvironmentFactory.environment(dbSummary)
 
     val server = embeddedServer(Jetty, port = appPort, host = appHost) {
-        val webApplication = object : EmbeddableWebApplication(lookup = { listOf(store) }) {
+        val webApplication = object : EmbeddableWebApplication(lookup = { listOf(environment) }) {
 
             override fun PersistentEntityStore.isForcedlyReadonly() = true
 
