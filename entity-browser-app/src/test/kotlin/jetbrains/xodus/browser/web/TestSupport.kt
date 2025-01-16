@@ -3,6 +3,7 @@ package jetbrains.xodus.browser.web
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.kotlinModule
+import com.jetbrains.youtrack.db.api.DatabaseType
 import io.ktor.server.engine.*
 import io.ktor.server.jetty.*
 import jetbrains.exodus.entitystore.PersistentEntityStore
@@ -61,7 +62,12 @@ open class TestSupport {
     @Before
     fun before() {
         System.setProperty("xodus.entity.browser.db.store", newLocation())
-        val dbSummary = DBSummary(location = lockedDBLocation, key = key, isOpened = true)
+        val dbSummary = DBSummary(
+            location = lockedDBLocation,
+            key = key,
+            isOpened = true,
+            type = DatabaseType.MEMORY.name
+        )
         store = EnvironmentFactory.persistentEntityStore(dbSummary)
         webApp = PersistentWebApplication(PersistentDatabaseService())
 

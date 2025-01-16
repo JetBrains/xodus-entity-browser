@@ -1,6 +1,7 @@
 package jetbrains.xodus.browser.web
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.jetbrains.youtrack.db.api.DatabaseType
 import java.util.*
 
 interface Named {
@@ -83,6 +84,7 @@ data class DBSummary(
 
     var location: String,
     var key: String? = null,
+    var type: String = DatabaseType.PLOCAL.name,
 
     @JsonProperty("opened")
     var isOpened: Boolean = false,

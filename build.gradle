@@ -68,7 +68,7 @@ allprojects {
     configurations.configureEach {
         resolutionStrategy.eachDependency { details ->
             if (details.requested.group == 'org.slf4j') {
-                details.useVersion "1.7.25"
+                details.useVersion "2.0.7"
             }
         }
     }

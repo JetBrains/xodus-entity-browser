@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import io.ktor.server.http.content.*
 import jetbrains.xodus.browser.web.DBSummary
 import mu.KLogging
 import java.io.*
@@ -23,6 +22,8 @@ class JsonDatabasesLoader(private val filePath: String) {
     private fun readJson(): Array<DBSummary> {
         return try {
             deserializeJson(File(filePath).inputStream())
+        } catch (_: FileNotFoundException) {
+            emptyArray()
         } catch (e: Exception) {
             handleReadException(e)
             throw e
