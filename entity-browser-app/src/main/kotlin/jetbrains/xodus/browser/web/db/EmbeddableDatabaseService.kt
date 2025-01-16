@@ -44,7 +44,7 @@ fun PersistentEntityStore.asSummary(forcedReadonly: Boolean): DBSummary {
             key = this.name,
             location = this.location,
             isOpened = true,
-            isReadonly = forcedReadonly || txn.isEnvironmentReadOnly,
+            isReadonly = forcedReadonly || txn.isReadOnly,
             isEncrypted = txn.isDatabaseEncrypted,
             isWatchReadonly = false,
             encryptionIV = null,

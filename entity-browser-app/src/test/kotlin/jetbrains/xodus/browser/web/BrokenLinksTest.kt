@@ -1,7 +1,9 @@
 package jetbrains.xodus.browser.web
 
-import jetbrains.exodus.entitystore.*
-import jetbrains.exodus.env.Environments
+import jetbrains.exodus.entitystore.Entity
+import jetbrains.exodus.entitystore.EntityId
+import jetbrains.exodus.entitystore.PersistentEntityStore
+import jetbrains.exodus.entitystore.StoreTransaction
 import jetbrains.xodus.browser.web.db.getOrCreateEntityTypeId
 import jetbrains.xodus.browser.web.db.transactional
 import org.junit.After
@@ -24,7 +26,7 @@ class BrokenLinksTest : TestSupport() {
 
     @Before
     fun setup() {
-        store = PersistentEntityStores.newInstance(Environments.newInstance(location), key)
+        store = EnvironmentFactory.persistentEntityStore(DBSummary(location = location))
         store.getOrCreateEntityTypeId("Type1", true)
         store.getOrCreateEntityTypeId( "Type2", true)
         store.transactional { txn: StoreTransaction ->

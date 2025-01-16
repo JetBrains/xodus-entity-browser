@@ -6,8 +6,6 @@ import com.fasterxml.jackson.module.kotlin.kotlinModule
 import io.ktor.server.engine.*
 import io.ktor.server.jetty.*
 import jetbrains.exodus.entitystore.PersistentEntityStore
-import jetbrains.exodus.entitystore.PersistentEntityStores
-import jetbrains.exodus.env.Environments
 import jetbrains.xodus.browser.web.db.PersistentDatabaseService
 import mu.KLogging
 import okhttp3.OkHttpClient
@@ -63,7 +61,8 @@ open class TestSupport {
     @Before
     fun before() {
         System.setProperty("xodus.entity.browser.db.store", newLocation())
-        store = PersistentEntityStores.newInstance(Environments.newInstance(lockedDBLocation), key)
+        val dbSummary = DBSummary(location = lockedDBLocation, key = key, isOpened = true)
+        store = EnvironmentFactory.persistentEntityStore(dbSummary)
         webApp = PersistentWebApplication(PersistentDatabaseService())
 
         server = embeddedServer(Jetty, port = port) {

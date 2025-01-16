@@ -2,8 +2,6 @@ package jetbrains.xodus.browser.web
 
 import jetbrains.exodus.entitystore.Entity
 import jetbrains.exodus.entitystore.PersistentEntityStore
-import jetbrains.exodus.entitystore.PersistentEntityStores
-import jetbrains.exodus.env.Environments
 import jetbrains.xodus.browser.web.db.getOrCreateEntityTypeId
 import jetbrains.xodus.browser.web.db.transactional
 import org.junit.After
@@ -21,13 +19,13 @@ class EntitiesApiTest : TestSupport() {
     private lateinit var linkedEntity1: Entity
     private lateinit var linkedEntity2: Entity
 
-    private lateinit var db: DBSummary
+    private lateinit var dbSummary: DBSummary
 
     private val entitiesResource by lazy { retrofit.create(EntitiesApi::class.java) }
 
     @Before
     fun setup() {
-        store = PersistentEntityStores.newInstance(Environments.newInstance(location), key)
+        store = EnvironmentFactory.persistentEntityStore(dbSummary)
         store.getOrCreateEntityTypeId( "Type1", true)
         store.getOrCreateEntityTypeId( "Type2", true)
         store.transactional { txn ->
@@ -50,7 +48,7 @@ class EntitiesApiTest : TestSupport() {
             }
         }
         store.close()
-        db = newDB(location, true)
+        dbSummary = newDB(location, true)
     }
 
     @After
@@ -65,7 +63,7 @@ class EntitiesApiTest : TestSupport() {
 
     @Test
     fun `get entities`() {
-        val view = entitiesResource.get(db.uuid, "0-0").execute().body()!!
+        val view = entitiesResource.get(dbSummary.uuid, "0-0").execute().body()!!
         with(view) {
             assertEquals("0-0", id)
             assertEquals("Type1", type)
@@ -85,7 +83,7 @@ class EntitiesApiTest : TestSupport() {
 
     @Test
     fun `search entities`() {
-        val pager = entitiesResource.search(db.uuid, 0, null).execute().body()!!
+        val pager = entitiesResource.search(dbSummary.uuid, 0, null).execute().body()!!
         with(pager) {
             assertEquals(2, items.size)
 
@@ -107,7 +105,7 @@ class EntitiesApiTest : TestSupport() {
 
     @Test
     fun `linked entities`() {
-        val pager = entitiesResource.links(db.uuid, entity.toIdString(), "folks").execute().body()!!
+        val pager = entitiesResource.links(dbSummary.uuid, entity.toIdString(), "folks").execute().body()!!
         with(pager) {
             assertEquals(2, totalCount)
             assertEquals("folks", name)

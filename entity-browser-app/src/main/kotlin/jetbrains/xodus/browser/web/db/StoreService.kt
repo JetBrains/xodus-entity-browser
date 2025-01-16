@@ -3,9 +3,6 @@ package jetbrains.xodus.browser.web.db
 
 import jetbrains.exodus.crypto.InvalidCipherParametersException
 import jetbrains.exodus.entitystore.*
-import jetbrains.exodus.env.EnvironmentConfig
-import jetbrains.exodus.env.Environments
-import jetbrains.exodus.io.AsyncFileDataReaderWriterProvider
 import jetbrains.exodus.log.DataCorruptionException
 import jetbrains.xodus.browser.web.*
 import jetbrains.xodus.browser.web.search.smartSearch
@@ -27,31 +24,8 @@ class StoreService {
 
     constructor(dbSummary: DBSummary) {
         try {
-            val config = EnvironmentConfig().also {
-                it.envIsReadonly = dbSummary.isReadonly
-                if (dbSummary.isWatchReadonly && dbSummary.isReadonly) {
-                    it.logDataReaderWriterProvider = AsyncFileDataReaderWriterProvider::class.java.name
-                }
-                if (dbSummary.isEncrypted) {
-                    val initialization = try {
-                        dbSummary.encryptionIV?.toLong()
-                    } catch (e: Exception) {
-                        throw InvalidCipherParametersException()
-                    }
-                    it.cipherBasicIV = initialization ?: throw InvalidCipherParametersException()
-                    it.setCipherKey(dbSummary.encryptionKey)
-                }
-            }
-            val environment = Environments.newInstance(dbSummary.location, config)
-            store = dbSummary.key.let {
-                if (it == null) {
-                    PersistentEntityStores.newInstance(environment)
-                } else {
-                    PersistentEntityStores.newInstance(environment, it)
-                }
-            }
-            store.setCloseEnvironment(true)
-            isReadonly = store.environment.environmentConfig.envIsReadonly
+            store = EnvironmentFactory.persistentEntityStore(dbSummary)
+            isReadonly = dbSummary.isReadonly
         } catch (e: InvalidCipherParametersException) {
             val msg = "It seems that store encrypted with another parameters"
             logger.error(e) { msg }

@@ -29,7 +29,7 @@ private fun OStoreTransaction.extractDatabaseConfig(): ODatabaseConfig {
     return dbConfig!!
 }
 
-val StoreTransaction.isEnvironmentReadOnly: Boolean
+val StoreTransaction.isReadOnly: Boolean
     get() {
         // TODO get property without reflection
         return this.asOStoreTransaction().extractDatabaseProvider().readOnly

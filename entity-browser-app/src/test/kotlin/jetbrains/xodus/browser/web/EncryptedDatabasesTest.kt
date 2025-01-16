@@ -1,9 +1,7 @@
 package jetbrains.xodus.browser.web
 
-import jetbrains.exodus.entitystore.PersistentEntityStores
 import jetbrains.exodus.entitystore.PersistentStoreTransaction
-import jetbrains.exodus.env.EnvironmentConfig
-import jetbrains.exodus.env.Environments
+import jetbrains.xodus.browser.web.db.getOrCreateEntityTypeId
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -56,13 +54,11 @@ class EncryptedDatabasesTest : TestSupport() {
 
     @Before
     fun setup() {
-        val config = EnvironmentConfig()
-                .setCipherKey(encKey)
-                .setCipherBasicIV(encInit)
-        val store = PersistentEntityStores.newInstance(Environments.newInstance(encStoreLocation, config), key)
+        val dbSummary = newEncDB()
+        val store = EnvironmentFactory.persistentEntityStore(dbSummary)
+        store.getOrCreateEntityTypeId("Type1", allowCreate = true)
         store.executeInTransaction {
             val tr = it as PersistentStoreTransaction
-            store.getEntityTypeId(tr, "Type1", true)
             repeat(100) {
                 tr.newEntity("Type1").also {
                     it.setProperty("type", "Band")
@@ -70,7 +66,6 @@ class EncryptedDatabasesTest : TestSupport() {
             }
         }
         store.close()
-        store.environment.close()
     }
 
     @After

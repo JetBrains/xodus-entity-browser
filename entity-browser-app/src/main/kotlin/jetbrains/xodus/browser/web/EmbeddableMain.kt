@@ -3,8 +3,9 @@ package jetbrains.xodus.browser.web
 import io.ktor.server.engine.*
 import io.ktor.server.jetty.*
 import jetbrains.exodus.entitystore.PersistentEntityStore
-import jetbrains.exodus.entitystore.PersistentEntityStores
-import jetbrains.exodus.env.Environments
+import jetbrains.xodus.browser.web.EnvironmentFactory.persistentEntityStore
+import java.nio.file.Files
+import kotlin.io.path.absolutePathString
 
 fun main() {
     Home.setup()
@@ -12,7 +13,8 @@ fun main() {
     val appHost = System.getProperty("server.host", "localhost")
     val context = System.getProperty("server.context", "/")
 
-    val store = PersistentEntityStores.newInstance(Environments.newInstance("some path to app"), "teamsysstore")
+    val dbSummary = DBSummary(location = Files.createTempDirectory("some path to app").absolutePathString())
+    val store = persistentEntityStore(dbSummary)
 
     val server = embeddedServer(Jetty, port = appPort, host = appHost) {
         val webApplication = object : EmbeddableWebApplication(lookup = { listOf(store) }) {
