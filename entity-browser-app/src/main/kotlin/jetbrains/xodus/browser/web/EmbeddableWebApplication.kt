@@ -2,6 +2,7 @@ package jetbrains.xodus.browser.web
 
 import jetbrains.exodus.entitystore.PersistentEntityStore
 import jetbrains.xodus.browser.web.db.EmbeddableDatabaseService
+import jetbrains.xodus.browser.web.db.Environment
 import jetbrains.xodus.browser.web.db.StoreService
 import jetbrains.xodus.browser.web.db.asSummary
 

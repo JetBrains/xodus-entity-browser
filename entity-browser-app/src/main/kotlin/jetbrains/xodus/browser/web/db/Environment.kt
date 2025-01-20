@@ -1,4 +1,4 @@
-package jetbrains.xodus.browser.web
+package jetbrains.xodus.browser.web.db
 
 import com.jetbrains.youtrack.db.api.YouTrackDB
 import jetbrains.exodus.entitystore.PersistentEntityStore

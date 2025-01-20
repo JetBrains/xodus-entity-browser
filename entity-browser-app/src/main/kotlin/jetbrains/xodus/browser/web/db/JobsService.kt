@@ -2,7 +2,6 @@ package jetbrains.xodus.browser.web.db
 
 import jetbrains.exodus.entitystore.Entity
 import jetbrains.exodus.entitystore.EntityIterable
-import jetbrains.xodus.browser.web.Environment
 import mu.KLogging
 import java.util.concurrent.Executors
 

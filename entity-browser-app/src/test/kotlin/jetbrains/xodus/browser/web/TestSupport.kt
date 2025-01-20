@@ -3,7 +3,6 @@ package jetbrains.xodus.browser.web
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.kotlinModule
-import com.jetbrains.youtrack.db.api.DatabaseType
 import io.ktor.server.engine.*
 import io.ktor.server.jetty.*
 import jetbrains.xodus.browser.web.db.PersistentDatabaseService
@@ -30,7 +29,6 @@ open class TestSupport {
 
     protected val key = "teamsysdata"
     protected val lockedDBLocation = newLocation()
-    private lateinit var environment: Environment
     lateinit var webApp: PersistentWebApplication
 
     private lateinit var server: JettyApplicationEngine
@@ -44,7 +42,8 @@ open class TestSupport {
             })
             build()
         }
-        Retrofit.Builder().client(client).baseUrl("http://localhost:$port/custom/").addConverterFactory(JacksonConverterFactory.create(mapper)).build()
+        Retrofit.Builder().client(client).baseUrl("http://localhost:$port/custom/")
+            .addConverterFactory(JacksonConverterFactory.create(mapper)).build()
     }
 
     protected val dbsResource by lazy {
@@ -61,13 +60,6 @@ open class TestSupport {
     @Before
     fun before() {
         System.setProperty("xodus.entity.browser.db.store", newLocation())
-        val dbSummary = DBSummary(
-            location = lockedDBLocation,
-            key = key,
-            isOpened = true,
-            type = DatabaseType.MEMORY.name
-        )
-        environment = EnvironmentFactory.environment(dbSummary)
         webApp = PersistentWebApplication(PersistentDatabaseService())
 
         server = embeddedServer(Jetty, port = port) {
@@ -90,17 +82,20 @@ open class TestSupport {
     }
 
     fun newDB(location: String, isOpened: Boolean = false): DBSummary {
-        return dbsResource.new(DBSummary(location = location,
+        return dbsResource.new(
+            DBSummary(
+                location = location,
                 key = key,
                 isOpened = isOpened,
                 isReadonly = false,
-                isWatchReadonly = false)).execute().body()!!
+                isWatchReadonly = false
+            )
+        ).execute().body()!!
     }
 
 
     @After
     fun after() {
-        environment.store.close()
         webApp.stop()
         File("db").delete()
         server.stop(gracePeriodMillis = 20, timeoutMillis = 20)

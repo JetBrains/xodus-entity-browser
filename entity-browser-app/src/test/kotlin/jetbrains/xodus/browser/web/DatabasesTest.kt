@@ -1,6 +1,8 @@
 package jetbrains.xodus.browser.web
 
-import jetbrains.xodus.browser.web.db.getOrCreateEntityTypeId
+import jetbrains.xodus.browser.web.db.EnvironmentFactory
+import jetbrains.xodus.browser.web.db.asParameters
+import jetbrains.xodus.browser.web.db.createEntityType
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -64,23 +66,21 @@ class DatabasesTest : TestSupport() {
     @Test
     fun `should be able to trying to start and stop db`() {
         val location = newLocation()
-        with(newDB(location)) {
-            assertFalse(isOpened)
+        val dbSummary = newDB(location)
+        assertFalse(dbSummary.isOpened)
 
-            val resultOfStart = dbResource.startOrStop(uuid, "start").execute()
-            assertTrue(resultOfStart.body()!!.isOpened)
-            assertTrue(webApp.allServices.containsKey(uuid))
+        val uuid = dbSummary.uuid
+        val resultOfStart = dbResource.startOrStop(uuid, "start").execute()
+        assertTrue(resultOfStart.body()!!.isOpened)
+        assertTrue(webApp.allServices.containsKey(uuid))
 
-            val resultOfStop = dbResource.startOrStop(uuid, "stop").execute()
-            assertFalse(resultOfStop.body()!!.isOpened)
-            assertFalse(webApp.allServices.containsKey(uuid))
-            val environment = EnvironmentFactory.environment(DBSummary(location = location))
-            try {
-                environment.getOrCreateEntityTypeId("BlaBlaBla", true)
-            } finally {
-                environment.store.close()
-            }
+        val resultOfStop = dbResource.startOrStop(uuid, "stop").execute()
+        assertFalse(resultOfStop.body()!!.isOpened)
+        assertFalse(webApp.allServices.containsKey(uuid))
+        val environment = EnvironmentFactory.createEnvironment(dbSummary.asParameters()) {
+            createEntityType("BlaBlaBla")
         }
+        environment.store.close()
     }
 
     @Test

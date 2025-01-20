@@ -12,6 +12,7 @@ import jetbrains.xodus.browser.web.search.smartSearch
 import mu.KLogging
 import java.io.IOException
 import java.io.InputStream
+import kotlin.Throws
 
 class StoreService {
 
@@ -28,7 +29,10 @@ class StoreService {
 
     constructor(dbSummary: DBSummary) {
         try {
-            environment = EnvironmentFactory.environment(dbSummary)
+            environment = EnvironmentFactory.createEnvironment(dbSummary.asParameters())
+//            if (dbSummary.isWatchReadonly && dbSummary.isReadonly) {
+//                it.logDataReaderWriterProvider = AsyncFileDataReaderWriterProvider::class.java.name
+//            }
             isReadonly = environment.dbProvider.readOnly
         } catch (e: InvalidCipherParametersException) {
             val msg = "It seems that store encrypted with another parameters"
@@ -51,7 +55,7 @@ class StoreService {
         while (proceed && count <= 10) {
             try {
                 logger.info { "trying to close persistent store. attempt $count" }
-                store.close()
+                EnvironmentFactory.closeEnvironment(environment)
                 proceed = false
                 logger.info("persistent store closed")
             } catch (e: RuntimeException) {
@@ -62,7 +66,8 @@ class StoreService {
     }
 
     fun addType(type: String): Int {
-        return environment.getOrCreateEntityTypeId(type, true)
+        environment.dbProvider.createEntityType(type)
+        return store.getEntityTypeId(type)
     }
 
     fun allTypes(): Array<EntityType> {
@@ -91,7 +96,7 @@ class StoreService {
     }
 
     fun newEntity(typeId: Int, vo: ChangeSummary): EntityView {
-        val entityId = transactional { t ->
+        val entityId = transactional { t: StoreTransaction ->
             val type = store.getEntityType(typeId)
             val entity = t.newEntity(type)
             vo.properties.forEach {

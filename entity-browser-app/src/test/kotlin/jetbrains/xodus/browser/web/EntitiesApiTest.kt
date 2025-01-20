@@ -1,8 +1,8 @@
 package jetbrains.xodus.browser.web
 
+import com.jetbrains.youtrack.db.api.DatabaseType
 import jetbrains.exodus.entitystore.Entity
-import jetbrains.xodus.browser.web.db.getOrCreateEntityTypeId
-import jetbrains.xodus.browser.web.db.transactional
+import jetbrains.xodus.browser.web.db.*
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -21,32 +21,54 @@ class EntitiesApiTest : TestSupport() {
 
     private val entitiesResource by lazy { retrofit.create(EntitiesApi::class.java) }
 
+    private object Users {
+        const val CLASS = "User"
+
+        object Links {
+            const val GROUPS = "groups"
+            const val BOSS = "boss"
+            const val TEAM = "team"
+        }
+    }
+
+    private object Groups {
+        const val CLASS = "Group"
+
+        object Links {
+            const val FOLKS = "folks"
+        }
+    }
+
     @Before
     fun setup() {
-        val environment = EnvironmentFactory.environment(dbSummary)
-        environment.getOrCreateEntityTypeId( "Type1", true)
-        environment.getOrCreateEntityTypeId( "Type2", true)
+        val params = EnvironmentParameters(location = location, key = key)
+        val environment = EnvironmentFactory.createEnvironment(params) {
+            createEntityType(Users.CLASS)
+            createEntityType(Groups.CLASS)
+            addAssociation(Users.CLASS, Groups.CLASS, Users.Links.GROUPS, Groups.Links.FOLKS)
+            addAssociation(Users.CLASS, Users.CLASS, Users.Links.BOSS, Users.Links.TEAM)
+        }
         environment.transactional { txn ->
 
-            linkedEntity1 = txn.newEntity("Type1").also {
+            linkedEntity1 = txn.newEntity(Users.CLASS).also {
                 it.setProperty("name", "John McClane")
                 it.setProperty("age", 35L)
             }
 
-            linkedEntity2 = txn.newEntity("Type1").also {
+            linkedEntity2 = txn.newEntity(Users.CLASS).also {
                 it.setProperty("name", "John Silver")
                 it.setProperty("age", 45L)
-                it.setLink("boss", linkedEntity1)
+                it.setLink(Users.Links.BOSS, linkedEntity1)
             }
 
-            entity = txn.newEntity("Type2").also {
+            entity = txn.newEntity(Groups.CLASS).also {
                 it.setProperty("type", "Band")
-                it.addLink("folks", linkedEntity1)
-                it.addLink("folks", linkedEntity2)
+                it.addLink(Groups.Links.FOLKS, linkedEntity1)
+                it.addLink(Groups.Links.FOLKS, linkedEntity2)
             }
         }
-        environment.store.close()
-        dbSummary = newDB(location, true)
+        EnvironmentFactory.closeEnvironment(environment)
+        dbSummary = newDB(location = location, isOpened = true)
     }
 
     @After
@@ -64,9 +86,9 @@ class EntitiesApiTest : TestSupport() {
         val view = entitiesResource.get(dbSummary.uuid, "0-0").execute().body()!!
         with(view) {
             assertEquals("0-0", id)
-            assertEquals("Type1", type)
+            assertEquals("User", type)
             assertEquals(0, typeId)
-            assertEquals("Type1[0-0]", label)
+            assertEquals("User[0-0]", label)
             assertEquals(2, properties.size)
             with(properties.first { it.value == "35" }) {
                 assertEquals("age", name)
@@ -86,15 +108,15 @@ class EntitiesApiTest : TestSupport() {
             assertEquals(2, items.size)
 
             with(items.first()) {
-                assertEquals("Type1", type)
+                assertEquals(Users.CLASS, type)
                 assertEquals(0, typeId)
-                assertEquals("Type1[0-0]", label)
+                assertEquals("User[0-0]", label)
                 assertEquals(2, properties.size)
             }
             with(items[1]) {
-                assertEquals("Type1", type)
+                assertEquals(Users.CLASS, type)
                 assertEquals(0, typeId)
-                assertEquals("Type1[0-1]", label)
+                assertEquals("User[0-1]", label)
                 assertEquals(2, properties.size)
                 assertEquals(1, links.size)
             }
@@ -103,22 +125,22 @@ class EntitiesApiTest : TestSupport() {
 
     @Test
     fun `linked entities`() {
-        val pager = entitiesResource.links(dbSummary.uuid, entity.toIdString(), "folks").execute().body()!!
+        val pager = entitiesResource.links(dbSummary.uuid, entity.toIdString(), Groups.Links.FOLKS).execute().body()!!
         with(pager) {
             assertEquals(2, totalCount)
-            assertEquals("folks", name)
+            assertEquals(Groups.Links.FOLKS, name)
 
             with(entities.first()) {
-                assertEquals("Type1", type)
-                assertEquals("folks", name)
+                assertEquals(Users.CLASS, type)
+                assertEquals(Groups.Links.FOLKS, name)
                 assertEquals(0, typeId)
-                assertEquals("Type1[0-0]", label)
+                assertEquals("User[0-0]", label)
             }
             with(entities[1]) {
-                assertEquals("Type1", type)
-                assertEquals("folks", name)
+                assertEquals(Users.CLASS, type)
+                assertEquals(Groups.Links.FOLKS, name)
                 assertEquals(0, typeId)
-                assertEquals("Type1[0-1]", label)
+                assertEquals("User[0-1]", label)
             }
         }
     }

@@ -1,8 +1,7 @@
 package jetbrains.xodus.browser.web
 
-import jetbrains.exodus.entitystore.PersistentStoreTransaction
-import jetbrains.xodus.browser.web.db.getOrCreateEntityTypeId
-import jetbrains.xodus.browser.web.db.transactional
+import jetbrains.exodus.entitystore.StoreTransaction
+import jetbrains.xodus.browser.web.db.*
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -17,8 +16,8 @@ class EncryptedDatabasesTest : TestSupport() {
 
     @Test
     fun `should be able to add new encrypted db`() {
-        val db = newEncDB()
-        newDB(db).let {
+        val params = newEncDBParams()
+        newDB(params.asSummary()).let {
             assertTrue(it.isOpened)
             assertTrue(it.isEncrypted)
 
@@ -31,22 +30,20 @@ class EncryptedDatabasesTest : TestSupport() {
 
     @Test
     fun `should not be able to add new encrypted db with incorrect params`() {
-        val db = newEncDB().apply {
+        val params = newEncDBParams().apply {
             encryptionKey = "15e9d57c49098fb3a34763acb81c34c735f4f231f1fa7fa9b74be385269c9b82"
         }
-        val response = dbsResource.new(db).execute()
+        val response = dbsResource.new(params.asSummary()).execute()
         assertEquals(400, response.code())
         assertTrue(webApp.allServices.isEmpty())
     }
 
-    private fun newEncDB(): DBSummary {
-        return DBSummary(
+    private fun newEncDBParams(): EnvironmentParameters {
+        return EnvironmentParameters(
                 location = encStoreLocation,
                 key = key,
-                isOpened = true,
                 isEncrypted = true,
                 isReadonly = false,
-                isWatchReadonly = false,
                 encryptionKey = encKey,
                 encryptionIV = encInit.toString()
         )
@@ -55,18 +52,16 @@ class EncryptedDatabasesTest : TestSupport() {
 
     @Before
     fun setup() {
-        val dbSummary = newEncDB()
-        val environment = EnvironmentFactory.environment(dbSummary)
+        val environment = EnvironmentFactory.createEnvironment(newEncDBParams())
         environment.getOrCreateEntityTypeId("Type1", allowCreate = true)
-        environment.transactional {
-            val tr = it as PersistentStoreTransaction
+        environment.transactional { txn: StoreTransaction ->
             repeat(100) {
-                tr.newEntity("Type1").also {
-                    it.setProperty("type", "Band")
+                txn.newEntity("Type1").also { entity ->
+                    entity.setProperty("type", "Band")
                 }
             }
         }
-        environment.store.close()
+        EnvironmentFactory.closeEnvironment(environment)
     }
 
     @After

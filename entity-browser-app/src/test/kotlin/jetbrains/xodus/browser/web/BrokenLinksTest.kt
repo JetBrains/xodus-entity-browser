@@ -3,8 +3,7 @@ package jetbrains.xodus.browser.web
 import jetbrains.exodus.entitystore.Entity
 import jetbrains.exodus.entitystore.EntityId
 import jetbrains.exodus.entitystore.StoreTransaction
-import jetbrains.xodus.browser.web.db.getOrCreateEntityTypeId
-import jetbrains.xodus.browser.web.db.transactional
+import jetbrains.xodus.browser.web.db.*
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -23,21 +22,43 @@ class BrokenLinksTest : TestSupport() {
 
     private val entitiesResource by lazy { retrofit.create(EntitiesApi::class.java) }
 
+    private object Users {
+        const val CLASS = "User"
+
+        object Links {
+            const val GROUPS = "groups"
+            const val BOSS = "boss"
+            const val TEAM = "team"
+        }
+    }
+
+    private object Groups {
+        const val CLASS = "Group"
+
+        object Links {
+            const val FOLKS = "folks"
+        }
+    }
+
     @Before
     fun setup() {
-        environment = EnvironmentFactory.environment(DBSummary(location = location))
-        environment.getOrCreateEntityTypeId("Type1", true)
-        environment.getOrCreateEntityTypeId( "Type2", true)
+        val params = EnvironmentParameters(location = location, key = key)
+        environment = EnvironmentFactory.createEnvironment(params) {
+            createEntityType(Users.CLASS)
+            createEntityType(Groups.CLASS)
+            addAssociation(Users.CLASS, Groups.CLASS, Users.Links.GROUPS, Groups.Links.FOLKS)
+            addAssociation(Users.CLASS, Users.CLASS, Users.Links.BOSS, Users.Links.TEAM)
+        }
         environment.transactional { txn: StoreTransaction ->
 
-            val brokenEntity = txn.newEntity("Type2").also {
+            val brokenEntity = txn.newEntity(Groups.CLASS).also {
                 it.setProperty("name", "John McClane")
                 it.setProperty("age", 35L)
             }
 
             brokenEntityId = brokenEntity.id
 
-            linkedEntity1 = txn.newEntity("Type1").also {
+            linkedEntity1 = txn.newEntity(Users.CLASS).also {
                 it.setProperty("type", "Band")
                 it.addLink("folks", brokenEntity)
             }
@@ -45,7 +66,7 @@ class BrokenLinksTest : TestSupport() {
         environment.transactional {
             it.getEntity(brokenEntityId).delete()
         }
-        environment.store.close()
+        EnvironmentFactory.closeEnvironment(environment)
         db = newDB(location, true)
     }
 
