@@ -5,7 +5,7 @@ import jetbrains.exodus.entitystore.EntityId
 import jetbrains.exodus.entitystore.StoreTransaction
 import jetbrains.xodus.browser.web.db.*
 import org.junit.After
-import org.junit.Assert
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import java.io.File
@@ -13,12 +13,9 @@ import java.io.File
 class BrokenLinksTest : TestSupport() {
 
     private val location = newLocation()
-    private lateinit var environment: Environment
 
-    private lateinit var brokenEntityId: EntityId
-    private lateinit var linkedEntity1: Entity
-
-    private lateinit var db: DBSummary
+    private lateinit var deletedEntityId: EntityId
+    private lateinit var entityWithLinkToDeleted: Entity
 
     private val entitiesResource by lazy { retrofit.create(EntitiesApi::class.java) }
 
@@ -43,31 +40,32 @@ class BrokenLinksTest : TestSupport() {
     @Before
     fun setup() {
         val params = EnvironmentParameters(location = location, key = key)
-        environment = EnvironmentFactory.createEnvironment(params) {
-            createEntityType(Users.CLASS)
-            createEntityType(Groups.CLASS)
+        val environment = EnvironmentFactory.createEnvironment(params) {
+            createEntityType(Groups.CLASS) // type with id=0, first entity with id=0-0
+            createEntityType(Users.CLASS) // type with id=1, first entity with id=1-0
             addAssociation(Users.CLASS, Groups.CLASS, Users.Links.GROUPS, Groups.Links.FOLKS)
             addAssociation(Users.CLASS, Users.CLASS, Users.Links.BOSS, Users.Links.TEAM)
         }
         environment.transactional { txn: StoreTransaction ->
 
-            val brokenEntity = txn.newEntity(Groups.CLASS).also {
+            val entityToDelete = txn.newEntity(Users.CLASS).also {
                 it.setProperty("name", "John McClane")
                 it.setProperty("age", 35L)
             }
 
-            brokenEntityId = brokenEntity.id
+            deletedEntityId = entityToDelete.id
 
-            linkedEntity1 = txn.newEntity(Users.CLASS).also {
+            entityWithLinkToDeleted = txn.newEntity(Groups.CLASS).also {
                 it.setProperty("type", "Band")
-                it.addLink("folks", brokenEntity)
+                it.addLink("folks", entityToDelete)
             }
         }
         environment.transactional {
-            it.getEntity(brokenEntityId).delete()
+            assertEquals("0-0", entityWithLinkToDeleted.toIdString())
+            assertEquals("1-0", deletedEntityId.toString())
+            it.getEntity(deletedEntityId).delete()
         }
         EnvironmentFactory.closeEnvironment(environment)
-        db = newDB(location, true)
     }
 
     @After
@@ -81,29 +79,12 @@ class BrokenLinksTest : TestSupport() {
     }
 
     @Test
-    fun `get entities with broken links`() {
+    fun `get entities with cleared links to deleted entities`() {
+        val db = newDB(location, true)
         val view = entitiesResource.get(db.uuid, "0-0").execute().body()!!
-        with(view) {
-            Assert.assertEquals(1, links.size)
-        }
-    }
-
-    @Test
-    fun `delete broken link`() {
-        val changeSummary = ChangeSummary(
-            links = listOf(
-                LinkChangeSummaryAction(
-                    name = "folks",
-                    oldValue = EntityLink(id = "1-0", label = "", typeId = 0, type = "", notExists = false, name = ""),
-                    newValue = null
-                )
-            )
-        )
-        entitiesResource.update(db.uuid, "0-0", changeSummary).execute()
-
-        val view = entitiesResource.get(db.uuid, "0-0").execute().body()!!
-        with(view) {
-            Assert.assertTrue(links.isEmpty())
-        }
+        //link description is presented
+        assertEquals(1, view.links.size)
+        //all linked entities are cleared
+        assertEquals(0, view.links.first().entities.size)
     }
 }
