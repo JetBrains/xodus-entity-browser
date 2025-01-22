@@ -73,7 +73,7 @@ class JsonDatabasesLoader(private val filePath: String) {
         if (dbNotFound) {
             return false
         }
-        val newData = oldData.filter { it.uuid == uuid }.toTypedArray()
+        val newData = oldData.filterNot { it.uuid == uuid }.toTypedArray()
         writeJson(newData)
         return true
     }
