@@ -2,7 +2,7 @@ package jetbrains.xodus.browser.web
 
 import jetbrains.xodus.browser.web.db.EnvironmentFactory
 import jetbrains.xodus.browser.web.db.asParameters
-import jetbrains.xodus.browser.web.db.createEntityType
+import jetbrains.xodus.browser.web.db.getOrCreateEntityType
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -78,25 +78,18 @@ class DatabasesTest : TestSupport() {
         assertFalse(resultOfStop.body()!!.isOpened)
         assertFalse(webApp.allServices.containsKey(uuid))
         val environment = EnvironmentFactory.createEnvironment(dbSummary.asParameters()) {
-            createEntityType("BlaBlaBla")
+            getOrCreateEntityType("BlaBlaBla")
         }
-        environment.store.close()
+        EnvironmentFactory.closeEnvironment(environment)
     }
 
     @Test
-    fun `should be able to add new entity type`() {
+    fun `can not add new entity type in initialised state`() {
         val location = newLocation()
-        with(newDB(location, true)) {
-            var types = dbResource.addDbType(uuid, EntityType(id = null, name = "NewType")).execute()
-            assertEquals(1, types.body()!!.size)
-
-            types = dbResource.addDbType(uuid, EntityType(id = null, name = "NewType1")).execute()
-            assertEquals(2, types.body()!!.size)
-
-            with(dbResource.allDbTypes(uuid)) {
-                assertEquals(2, types.body()!!.size)
-            }
-        }
+        val newDB = newDB(location, true)
+        val uuid = newDB.uuid
+        val response = dbResource.addDbType(uuid, EntityType(id = null, name = "NewType")).execute()
+        assertEquals(response.code(), 500)
     }
 
 }

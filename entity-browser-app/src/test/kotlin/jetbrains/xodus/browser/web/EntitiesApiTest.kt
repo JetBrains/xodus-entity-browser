@@ -1,6 +1,5 @@
 package jetbrains.xodus.browser.web
 
-import com.jetbrains.youtrack.db.api.DatabaseType
 import jetbrains.exodus.entitystore.Entity
 import jetbrains.xodus.browser.web.db.*
 import org.junit.After
@@ -43,8 +42,8 @@ class EntitiesApiTest : TestSupport() {
     fun setup() {
         val params = EnvironmentParameters(location = location, key = key)
         val environment = EnvironmentFactory.createEnvironment(params) {
-            createEntityType(Users.CLASS)
-            createEntityType(Groups.CLASS)
+            getOrCreateEntityType(Users.CLASS)
+            getOrCreateEntityType(Groups.CLASS)
             addAssociation(Users.CLASS, Groups.CLASS, Users.Links.GROUPS, Groups.Links.FOLKS)
             addAssociation(Users.CLASS, Users.CLASS, Users.Links.BOSS, Users.Links.TEAM)
         }

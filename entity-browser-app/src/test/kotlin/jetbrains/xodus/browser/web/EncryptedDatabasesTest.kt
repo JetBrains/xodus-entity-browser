@@ -53,7 +53,7 @@ class EncryptedDatabasesTest : TestSupport() {
     @Before
     fun setup() {
         val environment = EnvironmentFactory.createEnvironment(newEncDBParams())
-        environment.getOrCreateEntityTypeId("Type1", allowCreate = true)
+        environment.dbProvider.getOrCreateEntityType("Type1")
         environment.transactional { txn: StoreTransaction ->
             repeat(100) {
                 txn.newEntity("Type1").also { entity ->

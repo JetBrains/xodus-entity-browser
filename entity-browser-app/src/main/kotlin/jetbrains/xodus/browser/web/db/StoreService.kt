@@ -12,7 +12,6 @@ import jetbrains.xodus.browser.web.search.smartSearch
 import mu.KLogging
 import java.io.IOException
 import java.io.InputStream
-import kotlin.Throws
 
 class StoreService {
 
@@ -66,8 +65,7 @@ class StoreService {
     }
 
     fun addType(type: String): Int {
-        environment.dbProvider.createEntityType(type)
-        return store.getEntityTypeId(type)
+        throw UnsupportedOperationException("Adding a new type is not allowed for a database with an already initialized model")
     }
 
     fun allTypes(): Array<EntityType> {

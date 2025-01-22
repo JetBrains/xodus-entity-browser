@@ -4,6 +4,7 @@ import com.jetbrains.youtrack.db.api.DatabaseSession
 import com.jetbrains.youtrack.db.api.record.Direction
 import com.jetbrains.youtrack.db.api.record.Vertex
 import com.jetbrains.youtrack.db.api.schema.PropertyType
+import com.jetbrains.youtrack.db.api.schema.SchemaClass
 import jetbrains.exodus.entitystore.StoreTransaction
 import jetbrains.exodus.entitystore.asOStoreTransaction
 import jetbrains.exodus.entitystore.orientdb.*
@@ -16,19 +17,8 @@ fun <T> Environment.readonlyTransactional(call: (StoreTransaction) -> T): T {
     return store.computeInReadonlyTransaction { call(it.asOStoreTransaction()) }
 }
 
-fun Environment.getOrCreateEntityTypeId(type: String, allowCreate: Boolean): Int {
-    val foundTypeId = readonlyTransactional { store.getEntityTypeId(type) }
-    if (!allowCreate || foundTypeId != -1) {
-        return foundTypeId
-    }
-    dbProvider.withCurrentOrNewSession(requireNoActiveTransaction = true) { session ->
-        session.createVertexClassWithClassId(type)
-    }
-    return readonlyTransactional { store.getEntityTypeId(type) }
-}
-
-fun ODatabaseProvider.createEntityType(type: String) {
-    withSession { session: DatabaseSession ->
+fun ODatabaseProvider.getOrCreateEntityType(type: String): SchemaClass {
+    return withSession { session: DatabaseSession ->
         session.createVertexClassWithClassId(type)
     }
 }

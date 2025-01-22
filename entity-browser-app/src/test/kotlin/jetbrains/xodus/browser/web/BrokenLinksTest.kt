@@ -41,8 +41,8 @@ class BrokenLinksTest : TestSupport() {
     fun setup() {
         val params = EnvironmentParameters(location = location, key = key)
         val environment = EnvironmentFactory.createEnvironment(params) {
-            createEntityType(Groups.CLASS) // type with id=0, first entity with id=0-0
-            createEntityType(Users.CLASS) // type with id=1, first entity with id=1-0
+            getOrCreateEntityType(Groups.CLASS) // type with id=0, first entity with id=0-0
+            getOrCreateEntityType(Users.CLASS) // type with id=1, first entity with id=1-0
             addAssociation(Users.CLASS, Groups.CLASS, Users.Links.GROUPS, Groups.Links.FOLKS)
             addAssociation(Users.CLASS, Users.CLASS, Users.Links.BOSS, Users.Links.TEAM)
         }
