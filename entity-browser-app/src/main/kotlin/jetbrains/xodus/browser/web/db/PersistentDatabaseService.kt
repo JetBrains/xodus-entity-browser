@@ -11,10 +11,6 @@ open class PersistentDatabaseService(private val store: DatabasesStore = JsonDat
         return store.all()
     }
 
-    override fun start() {
-        store.start()
-    }
-
     override fun find(uuid: String): DBSummary? {
         return store.find(uuid)
     }
@@ -39,10 +35,5 @@ open class PersistentDatabaseService(private val store: DatabasesStore = JsonDat
 
     override fun deleteAll() {
         store.all().forEach { delete(it.uuid) }
-    }
-
-
-    override fun stop() {
-        store.stop()
     }
 }

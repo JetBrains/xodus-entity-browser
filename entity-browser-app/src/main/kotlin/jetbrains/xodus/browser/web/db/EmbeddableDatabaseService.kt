@@ -11,9 +11,6 @@ open class EmbeddableDatabaseService(open val lookup: () -> List<DBSummary>) : D
         return lookup()
     }
 
-    override fun start() {}
-    override fun stop() {}
-
     override fun find(uuid: String): DBSummary? {
         return all().firstOrNull { it.uuid == uuid }
     }

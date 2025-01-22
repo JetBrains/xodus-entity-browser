@@ -9,7 +9,6 @@ open class PersistentWebApplication(override val databaseService: DatabaseServic
     override val allServices = ConcurrentHashMap<String, Services>()
 
     override fun start() {
-        databaseService.start()
         databaseService.all().forEach {
             val started = tryStartServices(it, true)
             databaseService.markStarted(it.uuid, started)
@@ -47,7 +46,7 @@ open class PersistentWebApplication(override val databaseService: DatabaseServic
     }
 
     override fun stop() {
-        databaseService.stop()
+        databaseService.all().forEach { stop(it) }
     }
 
 }

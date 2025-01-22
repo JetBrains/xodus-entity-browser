@@ -7,9 +7,6 @@ open class InMemoryDatabasesStore : DatabasesStore {
 
     private val databases: MutableMap<String, DBSummary> = ConcurrentHashMap()
 
-    override fun start() {
-    }
-
     override fun add(summary: DBSummary): DBSummary {
         val copy = summary.copy()
         databases[summary.uuid] = copy
@@ -28,9 +25,6 @@ open class InMemoryDatabasesStore : DatabasesStore {
 
     override fun all(): List<DBSummary> {
         return databases.values.map { it.copy() }
-    }
-
-    override fun stop() {
     }
 
     override fun find(uuid: String, error: () -> Nothing): DBSummary {

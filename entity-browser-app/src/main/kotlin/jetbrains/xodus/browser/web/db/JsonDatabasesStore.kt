@@ -15,9 +15,6 @@ class JsonDatabasesStore : DatabasesStore {
     private val location: String
         get() = System.getProperty("xodus.entity.browser.db.store") ?: Home.dbHome.absolutePath
 
-    override fun start() {
-    }
-
     override fun add(summary: DBSummary): DBSummary {
         if (!loader.add(summary)) {
             throw NotFoundException("Database on '${summary.location}' is already registered")
@@ -39,9 +36,6 @@ class JsonDatabasesStore : DatabasesStore {
     }
 
     override fun all() = listDBs()
-
-    override fun stop() {
-    }
 
     override fun find(uuid: String, error: () -> Nothing) = loader.get(uuid) ?: error()
 

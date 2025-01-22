@@ -9,9 +9,6 @@ interface DatabaseService {
 
     fun all(): List<DBSummary>
 
-    fun start()
-    fun stop()
-
     fun find(uuid: String): DBSummary?
 
     fun add(dbSummary: DBSummary): DBSummary
