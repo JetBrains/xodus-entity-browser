@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.kotlinModule
 import io.ktor.server.engine.*
 import io.ktor.server.jetty.*
+import jetbrains.xodus.browser.web.db.Environment
+import jetbrains.xodus.browser.web.db.EnvironmentFactory
+import jetbrains.xodus.browser.web.db.EnvironmentParameters
 import jetbrains.xodus.browser.web.db.PersistentDatabaseService
 import mu.KLogging
 import okhttp3.OkHttpClient
@@ -29,6 +32,7 @@ open class TestSupport {
 
     protected val key = "teamsysdata"
     protected val lockedDBLocation = newLocation()
+    private lateinit var lockedEnvironment: Environment
     lateinit var webApp: PersistentWebApplication
 
     private lateinit var server: JettyApplicationEngine
@@ -63,6 +67,7 @@ open class TestSupport {
     fun before() {
         dbsStoreLocation = newLocation()
         System.setProperty("xodus.entity.browser.db.store", dbsStoreLocation)
+        lockedEnvironment = EnvironmentFactory.createEnvironment(EnvironmentParameters(key = key, location = lockedDBLocation))
         webApp = PersistentWebApplication(PersistentDatabaseService())
 
         server = embeddedServer(Jetty, port = port) {
@@ -99,7 +104,9 @@ open class TestSupport {
 
     @After
     fun after() {
+        EnvironmentFactory.closeEnvironment(lockedEnvironment)
         webApp.stop()
+        File(lockedDBLocation).delete()
         File(dbsStoreLocation).delete()
         server.stop(gracePeriodMillis = 20, timeoutMillis = 20)
     }
