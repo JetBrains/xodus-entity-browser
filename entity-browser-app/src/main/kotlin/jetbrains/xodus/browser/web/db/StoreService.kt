@@ -1,6 +1,7 @@
 package jetbrains.xodus.browser.web.db
 
 
+import com.jetbrains.youtrack.db.internal.core.exception.StorageException
 import jetbrains.exodus.crypto.InvalidCipherParametersException
 import jetbrains.exodus.entitystore.Entity
 import jetbrains.exodus.entitystore.EntityIterable
@@ -29,14 +30,15 @@ class StoreService {
     constructor(dbSummary: DBSummary) {
         try {
             environment = EnvironmentFactory.createEnvironment(dbSummary.asParameters())
-//            if (dbSummary.isWatchReadonly && dbSummary.isReadonly) {
-//                it.logDataReaderWriterProvider = AsyncFileDataReaderWriterProvider::class.java.name
-//            }
             isReadonly = environment.dbProvider.readOnly
         } catch (e: InvalidCipherParametersException) {
             val msg = "It seems that store encrypted with another parameters"
             logger.error(e) { msg }
             throw DatabaseException("Database is ciphered with different/unknown cipher parameters")
+        } catch (e: StorageException) {
+            val msg = "It seems that store can not be opened with presented parameters"
+            logger.error(e) { msg }
+            throw DatabaseException("Database is ciphered with different/unknown cipher parameters or corrupted")
         } catch (e: DataCorruptionException){
             val msg = "Cannot open database because of data corruption"
             logger.error(e) { msg }

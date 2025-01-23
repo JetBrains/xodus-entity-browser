@@ -54,12 +54,15 @@ open class TestSupport {
     }
 
     protected fun newLocation(): String {
-        return "java.io.tmpdir".systemProperty() + File.separator + Random().nextLong()
+        return "java.io.tmpdir".systemProperty().trimEnd(File.separatorChar) + File.separator + Random().nextLong()
     }
+
+    private lateinit var dbsStoreLocation: String
 
     @Before
     fun before() {
-        System.setProperty("xodus.entity.browser.db.store", newLocation())
+        dbsStoreLocation = newLocation()
+        System.setProperty("xodus.entity.browser.db.store", dbsStoreLocation)
         webApp = PersistentWebApplication(PersistentDatabaseService())
 
         server = embeddedServer(Jetty, port = port) {
@@ -97,7 +100,7 @@ open class TestSupport {
     @After
     fun after() {
         webApp.stop()
-        File("db").delete()
+        File(dbsStoreLocation).delete()
         server.stop(gracePeriodMillis = 20, timeoutMillis = 20)
     }
 }
