@@ -18,7 +18,7 @@ fun main() {
     val environment = EnvironmentFactory.createEnvironment(params)
 
     val server = embeddedServer(Jetty, port = appPort, host = appHost) {
-        val webApplication = object : EmbeddableWebApplication(lookup = { listOf(environment) }) {
+        val webApplication = object : EmbeddableWebApplication(lookup = { listOf(environment.store) }) {
 
             override fun PersistentEntityStore.isForcedlyReadonly() = true
 

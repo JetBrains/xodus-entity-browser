@@ -1,7 +1,7 @@
 package jetbrains.xodus.browser.web
 
 import jetbrains.xodus.browser.web.db.DatabaseService
-import jetbrains.xodus.browser.web.db.StoreService
+import jetbrains.xodus.browser.web.db.EnvironmentStoreService
 import java.util.concurrent.ConcurrentHashMap
 
 open class PersistentWebApplication(override val databaseService: DatabaseService) : WebApplication {
@@ -20,14 +20,14 @@ open class PersistentWebApplication(override val databaseService: DatabaseServic
             return true
         }
         val service = try {
-            StoreService(db)
+            EnvironmentStoreService(db)
         } catch (e: DatabaseException) {
             if (silent) {
                 null
             } else {
                 throw e
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
         service?.let {
