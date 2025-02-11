@@ -2,20 +2,20 @@ package jetbrains.xodus.browser.web.db
 
 import com.jetbrains.youtrack.db.api.YouTrackDB
 import jetbrains.exodus.crypto.InvalidCipherParametersException
-import jetbrains.exodus.entitystore.orientdb.*
+import jetbrains.exodus.entitystore.youtrackdb.*
 
 object EnvironmentFactory {
 
-    private fun databaseProvider(config: ODatabaseConfig, db: YouTrackDB, parameters: EnvironmentParameters): ODatabaseProvider {
-        return ODatabaseProviderImpl(config, db).apply {
+    private fun databaseProvider(config: YTDBDatabaseConfig, db: YouTrackDB, parameters: EnvironmentParameters): YTDBDatabaseProvider {
+        return YTDBDatabaseProviderImpl(config, db).apply {
             if (parameters.isReadonly) {
                 readOnly = true
             }
         }
     }
 
-    private fun connectionConfig(parameters: EnvironmentParameters): ODatabaseConnectionConfig {
-        return ODatabaseConnectionConfig
+    private fun connectionConfig(parameters: EnvironmentParameters): YTDBDatabaseConnectionConfig {
+        return YTDBDatabaseConnectionConfig
             .builder()
             .withPassword("admin")
             .withUserName("admin")
@@ -24,8 +24,8 @@ object EnvironmentFactory {
             .build()
     }
 
-    private fun oDatabaseConfig(dbConnectionConfig: ODatabaseConnectionConfig, parameters: EnvironmentParameters): ODatabaseConfig {
-        return ODatabaseConfig
+    private fun oDatabaseConfig(dbConnectionConfig: YTDBDatabaseConnectionConfig, parameters: EnvironmentParameters): YTDBDatabaseConfig {
+        return YTDBDatabaseConfig
             .builder()
             .withConnectionConfig(dbConnectionConfig)
             .withDatabaseName(parameters.key)
@@ -35,7 +35,7 @@ object EnvironmentFactory {
             .build()
     }
 
-    private fun ODatabaseConfig.Builder.withEncryption(parameters: EnvironmentParameters): ODatabaseConfig.Builder {
+    private fun YTDBDatabaseConfig.Builder.withEncryption(parameters: EnvironmentParameters): YTDBDatabaseConfig.Builder {
         if (!parameters.isEncrypted) return this
 
         val encryptionKey = parameters.encryptionKey ?: throw InvalidCipherParametersException()
@@ -48,14 +48,14 @@ object EnvironmentFactory {
         return withStringHexAndIV(encryptionKey, cipherBasicIV)
     }
 
-    fun createEnvironment(parameters: EnvironmentParameters, initializeSchema: (ODatabaseProvider.() -> Unit)? = null): Environment {
+    fun createEnvironment(parameters: EnvironmentParameters, initializeSchema: (YTDBDatabaseProvider.() -> Unit)? = null): Environment {
         val dbConnectionConfig = connectionConfig(parameters)
-        val dbConfig: ODatabaseConfig = oDatabaseConfig(dbConnectionConfig, parameters)
+        val dbConfig: YTDBDatabaseConfig = oDatabaseConfig(dbConnectionConfig, parameters)
         val db = iniYouTrackDb(dbConnectionConfig)
-        val dbProvider: ODatabaseProvider = databaseProvider(dbConfig, db, parameters)
+        val dbProvider: YTDBDatabaseProvider = databaseProvider(dbConfig, db, parameters)
         initializeSchema?.invoke(dbProvider)
-        val schemaBuddy = OSchemaBuddyImpl(dbProvider, autoInitialize = true)
-        val store = OPersistentEntityStore(dbProvider, dbConfig.databaseName, schemaBuddy = schemaBuddy)
+        val schemaBuddy = YTDBSchemaBuddyImpl(dbProvider, autoInitialize = true)
+        val store = YTDBPersistentEntityStore(dbProvider, dbConfig.databaseName, schemaBuddy = schemaBuddy)
         return Environment(dbConfig, dbConnectionConfig, dbProvider, db, store)
     }
 

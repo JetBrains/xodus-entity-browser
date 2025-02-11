@@ -4,7 +4,7 @@ import jetbrains.exodus.entitystore.EntityId
 import jetbrains.exodus.entitystore.EntityIterable
 import jetbrains.exodus.entitystore.PersistentEntityId
 import jetbrains.exodus.entitystore.StoreTransaction
-import jetbrains.exodus.entitystore.iterate.EntityIterableBase
+import jetbrains.exodus.entitystore.youtrackdb.iterate.YTDBEntityIterableBase
 import java.io.ByteArrayInputStream
 
 
@@ -35,16 +35,16 @@ private fun searchByTerms(term: String, type: String, typeId: Int, t: StoreTrans
         throw SearchQueryException(ex)
     } catch (ex: SearchQueryException) {
         throw ex
-    } catch (ex: RuntimeException) {
-        EntityIterableBase.EMPTY
+    } catch (_: RuntimeException) {
+        YTDBEntityIterableBase.EMPTY
     }
 }
 
 private fun orEmpty(f: () -> EntityIterable): EntityIterable {
     try {
         return f()
-    } catch (e: RuntimeException) {
-        return EntityIterableBase.EMPTY
+    } catch (_: RuntimeException) {
+        return YTDBEntityIterableBase.EMPTY
     }
 }
 

@@ -1,7 +1,11 @@
 package jetbrains.xodus.browser.web.search
 
-import jetbrains.exodus.entitystore.*
-import jetbrains.exodus.entitystore.iterate.EntityIterableBase
+import jetbrains.exodus.entitystore.EntityIterable
+import jetbrains.exodus.entitystore.EntityRemovedInDatabaseException
+import jetbrains.exodus.entitystore.PersistentEntityId
+import jetbrains.exodus.entitystore.StoreTransaction
+import jetbrains.exodus.entitystore.youtrackdb.YTDBPersistentEntityStore
+import jetbrains.exodus.entitystore.youtrackdb.iterate.YTDBEntityIterableBase
 import java.util.regex.Pattern
 
 
@@ -169,25 +173,28 @@ class LinkSearchTerm private constructor(name: String, val oppositeEntityTypeNam
     override fun search(txn: StoreTransaction, entityType: String, entityTypeId: Int): EntityIterable {
         val equalityResult = if (oppositeEntityTypeName == null || oppositeEntityLocalId == null) {
             txn.getAll(entityType).minus(txn.findWithLinks(entityType, name))
-        } else if (txn is PersistentStoreTransaction) {
-            val oppositeTypeId = txn.store.getEntityTypeId(txn, oppositeEntityTypeName, false)
-            if (oppositeTypeId < 0) {
-                EntityIterableBase.EMPTY
-            } else {
-                val oppositeEntityId = txn.toEntityId("$oppositeTypeId-$oppositeEntityLocalId")
-                val oppositeEntity = try {
-                    txn.getEntity(oppositeEntityId)
-                } catch (ex: EntityRemovedInDatabaseException) {
-                    null
-                }
-                if (oppositeEntity == null) {
-                    EntityIterableBase.EMPTY
-                } else {
-                    txn.findLinks(entityType, oppositeEntity, name)
-                }
-            }
         } else {
-            throw RuntimeException("Can't search by a link. The transaction should be persistent")
+            val store = txn.store
+            if (store is YTDBPersistentEntityStore) {
+                val oppositeTypeId = store.getEntityTypeId(oppositeEntityTypeName)
+                if (oppositeTypeId < 0) {
+                    YTDBEntityIterableBase.EMPTY
+                } else {
+                    val oppositeEntityId = txn.toEntityId("$oppositeTypeId-$oppositeEntityLocalId")
+                    val oppositeEntity = try {
+                        txn.getEntity(oppositeEntityId)
+                    } catch (_: EntityRemovedInDatabaseException) {
+                        null
+                    }
+                    if (oppositeEntity == null) {
+                       YTDBEntityIterableBase.EMPTY
+                    } else {
+                        txn.findLinks(entityType, oppositeEntity, name)
+                    }
+                }
+            } else {
+                throw RuntimeException("Can't search by a link. The transaction should be persistent")
+            }
         }
 
         return if (equals) {
@@ -201,7 +208,7 @@ class LinkSearchTerm private constructor(name: String, val oppositeEntityTypeNam
 fun String?.toLongOrNull(): Long? {
     return try {
         this?.toLong()
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         null
     }
 }
