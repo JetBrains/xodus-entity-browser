@@ -1,13 +1,33 @@
 package jetbrains.xodus.browser.web
 
+import jetbrains.xodus.browser.web.db.Environment
 import jetbrains.xodus.browser.web.db.EnvironmentFactory
+import jetbrains.xodus.browser.web.db.EnvironmentParameters
 import jetbrains.xodus.browser.web.db.asParameters
 import jetbrains.xodus.browser.web.db.getOrCreateEntityType
+import org.junit.After
 import org.junit.Assert.*
+import org.junit.Before
 import org.junit.Test
+import java.io.File
 
 
 class DatabasesTest : TestSupport() {
+
+    private val lockedDBLocation = newLocation()
+    private lateinit var lockedEnvironment: Environment
+
+    @Before
+    fun setUpLocke() {
+        val parameters = EnvironmentParameters(key = key, location = lockedDBLocation)
+        lockedEnvironment = EnvironmentFactory.createEnvironment(parameters)
+    }
+
+    @After
+    fun tearDownLocked() {
+        EnvironmentFactory.closeEnvironment(lockedEnvironment)
+        File(lockedDBLocation).delete()
+    }
 
     @Test
     fun `should be able to add new db which is locked`() {

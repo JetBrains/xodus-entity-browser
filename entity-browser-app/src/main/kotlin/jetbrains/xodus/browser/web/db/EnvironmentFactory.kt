@@ -51,7 +51,7 @@ object EnvironmentFactory {
     fun createEnvironment(parameters: EnvironmentParameters, initializeSchema: (YTDBDatabaseProvider.() -> Unit)? = null): Environment {
         val dbConnectionConfig = connectionConfig(parameters)
         val dbConfig: YTDBDatabaseConfig = oDatabaseConfig(dbConnectionConfig, parameters)
-        val db = iniYouTrackDb(dbConnectionConfig)
+        val db = initYouTrackDb(dbConnectionConfig)
         val dbProvider: YTDBDatabaseProvider = databaseProvider(dbConfig, db, parameters)
         initializeSchema?.invoke(dbProvider)
         val schemaBuddy = YTDBSchemaBuddyImpl(dbProvider, autoInitialize = true)

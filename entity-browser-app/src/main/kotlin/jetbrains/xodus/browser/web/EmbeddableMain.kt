@@ -14,7 +14,10 @@ fun main() {
     val appHost = System.getProperty("server.host", "localhost")
     val context = System.getProperty("server.context", "/")
 
-    val params = EnvironmentParameters(location = Files.createTempDirectory("some path to app").absolutePathString())
+    val params = EnvironmentParameters(
+        key = "app",
+        location = Files.createTempDirectory("some path to app").absolutePathString()
+    )
     val environment = EnvironmentFactory.createEnvironment(params)
 
     val server = embeddedServer(Jetty, port = appPort, host = appHost) {

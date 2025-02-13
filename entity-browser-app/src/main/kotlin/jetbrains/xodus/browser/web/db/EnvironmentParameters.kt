@@ -3,7 +3,7 @@ package jetbrains.xodus.browser.web.db
 import com.jetbrains.youtrack.db.api.DatabaseType
 
 data class EnvironmentParameters(
-    var key: String = "db",
+    var key: String,
     var location: String,
     var user: String = "admin",
     var password: String = "admin",

@@ -11,9 +11,11 @@ import java.nio.charset.StandardCharsets
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
-class JsonDatabasesLoader(private val filePath: String) {
+class JsonDatabasesLoader(private val location: String) {
 
-    companion object : KLogging()
+    companion object : KLogging() {
+        private const val DEFAULT_DBS_STORAGE = "databases.json.gz"
+    }
 
     private val mapper: ObjectMapper = ObjectMapper()
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -21,7 +23,7 @@ class JsonDatabasesLoader(private val filePath: String) {
 
     private fun readJson(): Array<DBSummary> {
         return try {
-            deserializeJson(File(filePath).inputStream())
+            deserializeJson(File(location, DEFAULT_DBS_STORAGE).inputStream())
         } catch (_: FileNotFoundException) {
             emptyArray()
         } catch (e: Exception) {
@@ -32,7 +34,7 @@ class JsonDatabasesLoader(private val filePath: String) {
 
     private fun writeJson(json: Array<DBSummary>) {
         try {
-            File(filePath).outputStream().use { out ->
+            File(location, DEFAULT_DBS_STORAGE).outputStream().use { out ->
                 serializeJson(json).copyTo(out)
             }
         } catch (e: Exception) {

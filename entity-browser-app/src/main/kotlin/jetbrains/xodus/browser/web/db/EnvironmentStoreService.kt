@@ -21,7 +21,7 @@ class EnvironmentStoreService: AbstractStoreService {
     constructor(dbSummary: DBSummary) {
         try {
             this.environment = EnvironmentFactory.createEnvironment(dbSummary.asParameters())
-            this.isReadonly = environment.dbProvider.readOnly
+            this.isReadonly = environment.store.isReadOnly
         } catch (e: InvalidCipherParametersException) {
             val msg = "It seems that store encrypted with another parameters"
             logger.error(e) { msg }
