@@ -12,6 +12,10 @@ import java.io.File
 
 class BrokenLinksTest : TestSupport() {
 
+    companion object {
+        private const val DB_NAME = "teamsysdata"
+    }
+
     private val location = newLocation()
 
     private lateinit var deletedEntityId: EntityId
@@ -39,7 +43,7 @@ class BrokenLinksTest : TestSupport() {
 
     @Before
     fun setup() {
-        val params = EnvironmentParameters(location = location, key = key)
+        val params = EnvironmentParameters(location = location, key = DB_NAME)
         val environment = EnvironmentFactory.createEnvironment(params) {
             getOrCreateEntityType(Groups.CLASS) // type with id=0, first entity with id=0-0
             getOrCreateEntityType(Users.CLASS) // type with id=1, first entity with id=1-0
@@ -80,7 +84,7 @@ class BrokenLinksTest : TestSupport() {
 
     @Test
     fun `get entities with cleared links to deleted entities`() {
-        val db = newDB(location, true)
+        val db = newDB(location, DB_NAME, true)
         val view = entitiesResource.get(db.uuid, "0-0").execute().body()!!
         //link description is presented
         assertEquals(1, view.links.size)

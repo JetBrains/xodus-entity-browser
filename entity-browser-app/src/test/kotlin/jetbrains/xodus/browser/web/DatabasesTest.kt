@@ -1,10 +1,6 @@
 package jetbrains.xodus.browser.web
 
-import jetbrains.xodus.browser.web.db.Environment
-import jetbrains.xodus.browser.web.db.EnvironmentFactory
-import jetbrains.xodus.browser.web.db.EnvironmentParameters
-import jetbrains.xodus.browser.web.db.asParameters
-import jetbrains.xodus.browser.web.db.getOrCreateEntityType
+import jetbrains.xodus.browser.web.db.*
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -14,12 +10,16 @@ import java.io.File
 
 class DatabasesTest : TestSupport() {
 
+    companion object {
+        private const val LOCKED_DB_NAME = "locked-db"
+    }
+
     private val lockedDBLocation = newLocation()
     private lateinit var lockedEnvironment: Environment
 
     @Before
-    fun setUpLocke() {
-        val parameters = EnvironmentParameters(key = key, location = lockedDBLocation)
+    fun setUpLocked() {
+        val parameters = EnvironmentParameters(key = LOCKED_DB_NAME, location = lockedDBLocation)
         lockedEnvironment = EnvironmentFactory.createEnvironment(parameters)
     }
 
@@ -31,62 +31,61 @@ class DatabasesTest : TestSupport() {
 
     @Test
     fun `should be able to add new db which is locked`() {
-        newDB(lockedDBLocation).let {
-            assertFalse(it.isOpened)
-            assertEquals(lockedDBLocation, it.location)
-            assertEquals(key, it.key)
-        }
+        val dbSummary = newDB(location = lockedDBLocation, dbName = LOCKED_DB_NAME, isOpened = false)
+        assertFalse(dbSummary.isOpened)
+        assertEquals(lockedDBLocation, dbSummary.location)
+        assertEquals(LOCKED_DB_NAME, dbSummary.key)
     }
 
     @Test
     fun `should be able to add new db`() {
         val location = newLocation()
-        newDB(location).let {
-            assertFalse(it.isOpened)
-            assertEquals(location, it.location)
-            assertEquals(key, it.key)
-        }
+        val dbName = "new-db"
+        val dbSummary = newDB(location, dbName)
+        assertFalse(dbSummary.isOpened)
+        assertEquals(location, dbSummary.location)
+        assertEquals(dbName, dbSummary.key)
     }
 
     @Test
     fun `should be able to add new db and open it`() {
         val location = newLocation()
-        newDB(location, true).let {
-            assertTrue(it.isOpened)
-            assertEquals(location, it.location)
-            assertEquals(key, it.key)
-        }
+        val dbName = "new-open-db"
+        val dbSummary = newDB(location, dbName, true)
+        assertTrue(dbSummary.isOpened)
+        assertEquals(location, dbSummary.location)
+        assertEquals(dbName, dbSummary.key)
     }
 
     @Test
     fun `should be able to delete db`() {
         val location = newLocation()
-        with(newDB(location)) {
-            dbResource.delete(uuid).execute()
-            assertTrue(webApp.databaseService.all().all { it.location != location })
-            assertFalse(webApp.allServices.containsKey(uuid))
-        }
+        val dbName = "delete-db"
+        val dbSummary = newDB(location, dbName, false)
+        dbResource.delete(dbSummary.uuid).execute()
+        assertTrue(webApp.databaseService.all().all { it.location != location })
+        assertFalse(webApp.allServices.containsKey(dbSummary.uuid))
     }
 
     @Test
     fun `should be able to trying to start and stop locked db`() {
-        with(newDB(lockedDBLocation)) {
-            assertFalse(isOpened)
+        val dbSummary = newDB(location = lockedDBLocation, dbName = LOCKED_DB_NAME, isOpened = false)
+        val uuid = dbSummary.uuid
 
-            val resultOfStart = dbResource.startOrStop(uuid, "start").execute()
-            assertFalse(resultOfStart.body()!!.isOpened)
-            assertFalse(webApp.allServices.containsKey(uuid))
+        assertFalse(dbSummary.isOpened)
+        val resultOfStart = dbResource.startOrStop(uuid, "start").execute()
+        assertFalse(resultOfStart.body()!!.isOpened)
+        assertFalse(webApp.allServices.containsKey(uuid))
 
-            val resultOfStop = dbResource.startOrStop(uuid, "stop").execute()
-            assertFalse(resultOfStop.body()!!.isOpened)
-            assertFalse(webApp.allServices.containsKey(uuid))
-        }
+        val resultOfStop = dbResource.startOrStop(uuid, "stop").execute()
+        assertFalse(resultOfStop.body()!!.isOpened)
+        assertFalse(webApp.allServices.containsKey(uuid))
     }
 
     @Test
     fun `should be able to trying to start and stop db`() {
         val location = newLocation()
-        val dbSummary = newDB(location)
+        val dbSummary = newDB(location = location, dbName = "new-db", isOpened = false)
         assertFalse(dbSummary.isOpened)
 
         val uuid = dbSummary.uuid
@@ -105,8 +104,7 @@ class DatabasesTest : TestSupport() {
 
     @Test
     fun `can not add new entity type in initialised state`() {
-        val location = newLocation()
-        val newDB = newDB(location, true)
+        val newDB = newDB(newLocation(), "initialised-db", true)
         val uuid = newDB.uuid
         val response = dbResource.addDbType(uuid, EntityType(id = null, name = "NewType")).execute()
         assertEquals(response.code(), 500)

@@ -11,6 +11,7 @@ import java.io.File
 class EntitiesApiTest : TestSupport() {
 
     private val location = newLocation()
+    private val dbName = "teamsysdata"
 
     private lateinit var entity: Entity
     private lateinit var linkedEntity1: Entity
@@ -40,7 +41,7 @@ class EntitiesApiTest : TestSupport() {
 
     @Before
     fun setup() {
-        val params = EnvironmentParameters(location = location, key = key)
+        val params = EnvironmentParameters(location = location, key = dbName)
         val environment = EnvironmentFactory.createEnvironment(params) {
             getOrCreateEntityType(Users.CLASS)
             getOrCreateEntityType(Groups.CLASS)
@@ -67,7 +68,7 @@ class EntitiesApiTest : TestSupport() {
             }
         }
         EnvironmentFactory.closeEnvironment(environment)
-        dbSummary = newDB(location = location, isOpened = true)
+        dbSummary = newDB(location = location, dbName= dbName, isOpened = true)
     }
 
     @After

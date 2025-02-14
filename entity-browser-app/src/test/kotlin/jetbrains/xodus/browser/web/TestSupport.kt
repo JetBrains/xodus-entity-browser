@@ -27,7 +27,6 @@ open class TestSupport {
         }
     }
 
-    protected val key = "teamsysdata"
     lateinit var webApp: PersistentWebApplication
 
     private lateinit var server: JettyApplicationEngine
@@ -84,11 +83,11 @@ open class TestSupport {
         }
     }
 
-    fun newDB(location: String, isOpened: Boolean = false): DBSummary {
+    fun newDB(location: String, dbName: String, isOpened: Boolean = false): DBSummary {
         return dbsResource.new(
             DBSummary(
                 location = location,
-                key = key,
+                key = dbName,
                 isOpened = isOpened,
                 isReadonly = false,
                 isWatchReadonly = false

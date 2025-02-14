@@ -11,12 +11,25 @@ import java.io.File
 class EncryptedDatabasesTest : TestSupport() {
 
     private val location = newLocation()
+    private val dbName = "encrypted-db"
     private val encKey = "15e9d57c49098fb3a34763acb81c34c735f4f231f1fa7fa9b74be385269c9b81"
     private val encInit = -5842344510678812273L
 
+    private fun newEncDBParams(): EnvironmentParameters {
+        return EnvironmentParameters(
+            location = location,
+            key = dbName,
+            isEncrypted = true,
+            isReadonly = false,
+            encryptionKey = encKey,
+            encryptionIV = encInit.toString()
+        )
+    }
+
     @Before
     fun setup() {
-        val environment = EnvironmentFactory.createEnvironment(newEncDBParams()) {
+        val encParams = newEncDBParams()
+        val environment = EnvironmentFactory.createEnvironment(encParams) {
             getOrCreateEntityType("Type1")
         }
         environment.transactional { txn: StoreTransaction ->
@@ -36,11 +49,13 @@ class EncryptedDatabasesTest : TestSupport() {
 
     @Test
     fun `should be able to add new encrypted db`() {
-        val newDbSummary = dbsResource.new(newEncDBParams().asSummary()).execute().body()!!
+        val encParams = newEncDBParams()
+        val dbSummary = encParams.asSummary(isOpened = true)
+        val newDbSummary = dbsResource.new(dbSummary).execute().body()!!
         assertTrue(newDbSummary.isOpened)
         assertTrue(newDbSummary.isEncrypted)
         assertEquals(location, newDbSummary.location)
-        assertEquals(key, newDbSummary.key)
+        assertEquals(dbName, newDbSummary.key)
         assertNull(newDbSummary.encryptionKey)
         assertNull(newDbSummary.encryptionIV)
     }
@@ -48,21 +63,26 @@ class EncryptedDatabasesTest : TestSupport() {
     @Test
     fun `should not be able to add new encrypted db with incorrect params`() {
         val wrongEncParams = newEncDBParams().apply {
-            encryptionKey = "95e9d57c49098fb3a34763acb81c34c735f4f231f1fa7fa9b74be385269c9b81"
+            encryptionKey = "0000057c49098fb3a34763acb81c34c735f4f231f1fa7fa9b74be38526900000"
+            encryptionIV = (-5000044510678810000L).toString()
         }
-        val response = dbsResource.new(wrongEncParams.asSummary()).execute()
+        val wrongDbSummary = wrongEncParams.asSummary(isOpened = true)
+        val response = dbsResource.new(wrongDbSummary).execute()
         assertEquals(400, response.code())
         assertTrue(webApp.allServices.isEmpty())
     }
 
-    private fun newEncDBParams(): EnvironmentParameters {
-        return EnvironmentParameters(
-                location = location,
-                key = key,
-                isEncrypted = true,
-                isReadonly = false,
-                encryptionKey = encKey,
-                encryptionIV = encInit.toString()
+    private fun EnvironmentParameters.asSummary(isOpened: Boolean): DBSummary {
+        return DBSummary(
+            uuid = this.key,
+            key = this.key,
+            location = this.location,
+            isOpened = isOpened,
+            isReadonly = this.isReadonly,
+            isWatchReadonly = false,
+            isEncrypted = this.isEncrypted,
+            encryptionIV = this.encryptionIV,
+            encryptionKey = this.encryptionKey
         )
     }
 }

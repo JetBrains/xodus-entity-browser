@@ -15,6 +15,13 @@ abstract class AbstractStoreService: StoreService {
 
     protected abstract val store: PersistentEntityStore
 
+    override fun validate() {
+        // try to read to ensure availability
+        transactional { txn ->
+            txn.entityTypes
+        }
+    }
+
     override fun addType(type: String): Int {
         throw UnsupportedOperationException("Adding a new type is not allowed for a database with an already initialized model")
     }

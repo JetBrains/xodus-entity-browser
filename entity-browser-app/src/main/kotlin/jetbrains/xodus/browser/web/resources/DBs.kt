@@ -28,7 +28,7 @@ class DBs(webApp: WebApplication) : ResourceSupport(webApp), AppRoute {
                 }
                 val summary = webApp.databaseService.add(newSummary)
                 if (newSummary.isOpened) {
-                    webApp.tryStartServices(db = summary, silent = false)
+                    webApp.tryStartServices(db = newSummary, silent = false)
                 }
                 call.respond(
                     webApp.databaseService.find(summary.uuid)?.secureCopy() ?: throw NotFoundException()

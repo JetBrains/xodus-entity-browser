@@ -44,20 +44,6 @@ fun PersistentEntityStore.asSummary(forcedReadonly: Boolean): DBSummary {
     )
 }
 
-fun EnvironmentParameters.asSummary(): DBSummary {
-    return DBSummary(
-        uuid = this.key,
-        key = this.key,
-        location = this.location,
-        isOpened = true,
-        isReadonly = this.isReadonly,
-        isWatchReadonly = false,
-        isEncrypted = this.isEncrypted,
-        encryptionIV = this.encryptionIV,
-        encryptionKey = this.encryptionKey
-    )
-}
-
 fun DBSummary.asParameters(): EnvironmentParameters {
     return EnvironmentParameters(
         key = this.key ?: "db",

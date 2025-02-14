@@ -2,6 +2,7 @@ package jetbrains.xodus.browser.web
 
 import jetbrains.xodus.browser.web.db.DatabaseService
 import jetbrains.xodus.browser.web.db.EnvironmentStoreService
+import jetbrains.xodus.browser.web.db.StoreService
 import java.util.concurrent.ConcurrentHashMap
 
 open class PersistentWebApplication(override val databaseService: DatabaseService) : WebApplication {
@@ -19,7 +20,16 @@ open class PersistentWebApplication(override val databaseService: DatabaseServic
         if (allServices.containsKey(db.uuid)) {
             return true
         }
-        val service = try {
+        val service = tryToCreateStoreService(db, silent)?.validate(silent)
+        service?.also {
+            allServices[db.uuid] = Services(it)
+            databaseService.markStarted(db.uuid, true)
+        }
+        return service != null
+    }
+
+    private fun tryToCreateStoreService(db: DBSummary, silent: Boolean): StoreService? {
+        return try {
             EnvironmentStoreService(db)
         } catch (e: DatabaseException) {
             if (silent) {
@@ -30,11 +40,21 @@ open class PersistentWebApplication(override val databaseService: DatabaseServic
         } catch (_: Exception) {
             null
         }
-        service?.let {
-            allServices[db.uuid] = Services(it)
-            databaseService.markStarted(db.uuid, true)
+    }
+
+    private fun StoreService.validate(silent: Boolean): StoreService? {
+        return try {
+            validate()
+            this
+        } catch (e: DatabaseException) {
+            if (silent) {
+                null
+            } else {
+                throw e
+            }
+        } catch (_: Exception) {
+            null
         }
-        return service != null
     }
 
     override fun stop(db: DBSummary) {

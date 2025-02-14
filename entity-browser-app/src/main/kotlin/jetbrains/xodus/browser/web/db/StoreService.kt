@@ -9,6 +9,8 @@ interface StoreService {
 
     val isReadonly: Boolean
 
+    fun validate()
+
     fun stop()
 
     fun addType(type: String): Int
