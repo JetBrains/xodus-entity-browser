@@ -1,7 +1,7 @@
 package jetbrains.xodus.browser.web
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import retrofit2.Call
 import retrofit2.http.Body
@@ -12,6 +12,7 @@ class RestApiTest : TestSupport() {
     // See DBSummary
     class MalformedDBSummary(
         var location: String,
+        var key: String,
         @JsonProperty("opened")
         var isOpened: Boolean,
         var unknownProperty: String
@@ -29,6 +30,7 @@ class RestApiTest : TestSupport() {
         val api = retrofit.create(DBsApiTest::class.java)
         val db = MalformedDBSummary(
             location = newLocation(),
+            key = "malformed-summary",
             isOpened = true,
             unknownProperty = "unknown"
         )
@@ -41,5 +43,6 @@ class RestApiTest : TestSupport() {
         assertEquals(200, response.code())
         assertEquals(db.location, body.location)
         assertEquals(db.isOpened, body.isOpened)
+        assertEquals(db.key, body.key)
     }
 }

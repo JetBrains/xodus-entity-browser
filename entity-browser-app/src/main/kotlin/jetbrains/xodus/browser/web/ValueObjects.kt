@@ -83,7 +83,7 @@ data class DBSummary(
     var uuid: String = UUID.randomUUID().toString(),
 
     var location: String,
-    var key: String? = null,
+    var key: String,
     var type: String = DatabaseType.PLOCAL.name,
 
     @JsonProperty("opened")

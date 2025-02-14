@@ -52,10 +52,13 @@ object EnvironmentFactory {
         val dbConnectionConfig = connectionConfig(parameters)
         val dbConfig: YTDBDatabaseConfig = oDatabaseConfig(dbConnectionConfig, parameters)
         val db = initYouTrackDb(dbConnectionConfig)
-        val dbProvider: YTDBDatabaseProvider = databaseProvider(dbConfig, db, parameters)
+        val dbProvider = YTDBDatabaseProviderImpl(dbConfig, db)
         initializeSchema?.invoke(dbProvider)
         val schemaBuddy = YTDBSchemaBuddyImpl(dbProvider, autoInitialize = true)
         val store = YTDBPersistentEntityStore(dbProvider, dbConfig.databaseName, schemaBuddy = schemaBuddy)
+        if (parameters.isReadonly) {
+            dbProvider.readOnly = true
+        }
         return Environment(dbConfig, dbConnectionConfig, dbProvider, db, store)
     }
 
