@@ -35,7 +35,7 @@ angular.module('xodus').controller('DBDialogController', [
                 key: ""
             }
         ];
-        dbDialogCtrl.selectedkeyOption = dbDialogCtrl.keyOptions[0];
+        dbDialogCtrl.selectedkeyOption = dbDialogCtrl.keyOptions[3];
         dbDialogCtrl.cancel = function () {
             $modalInstance.dismiss('cancel');
         };
