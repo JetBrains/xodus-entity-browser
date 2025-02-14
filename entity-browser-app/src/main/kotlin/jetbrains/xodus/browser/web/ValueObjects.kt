@@ -90,8 +90,6 @@ data class DBSummary(
     var isOpened: Boolean = false,
     @JsonProperty("readonly")
     var isReadonly: Boolean = true,
-    @JsonProperty("watchReadonly")
-    var isWatchReadonly: Boolean = true,
 
     @JsonProperty("encrypted")
     var isEncrypted: Boolean = false,

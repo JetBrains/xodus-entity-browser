@@ -79,7 +79,6 @@ class EncryptedDatabasesTest : TestSupport() {
             location = this.location,
             isOpened = isOpened,
             isReadonly = this.isReadonly,
-            isWatchReadonly = false,
             isEncrypted = this.isEncrypted,
             encryptionIV = this.encryptionIV,
             encryptionKey = this.encryptionKey

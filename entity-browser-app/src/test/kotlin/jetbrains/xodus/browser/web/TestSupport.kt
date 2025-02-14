@@ -89,8 +89,7 @@ open class TestSupport {
                 location = location,
                 key = dbName,
                 isOpened = isOpened,
-                isReadonly = false,
-                isWatchReadonly = false
+                isReadonly = false
             )
         ).execute().body()!!
     }

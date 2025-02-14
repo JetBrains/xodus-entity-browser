@@ -59,8 +59,7 @@ angular.module('xodus').controller('DBDialogController', [
             key: angular.isDefined(dbDialogCtrl.key) ? dbDialogCtrl.key : null,
             opened: true,
             encrypted: false,
-            readonly: true,
-            watchReadonly: true
+            readonly: true
         };
 
         dbDialogCtrl.saveDB = function () {
