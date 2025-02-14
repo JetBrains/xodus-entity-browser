@@ -6,7 +6,6 @@ angular.module('xodus').controller('DBDialogController', [
     function ($scope, $http, $modalInstance, databaseService) {
         var dbDialogCtrl = this;
 
-        dbDialogCtrl.isChaCha = true;
         dbDialogCtrl.error = null;
 
         var hubKey = 'jetPassServerDb';
@@ -37,10 +36,6 @@ angular.module('xodus').controller('DBDialogController', [
             }
         ];
         dbDialogCtrl.selectedkeyOption = dbDialogCtrl.keyOptions[0];
-
-        dbDialogCtrl.toggleProvider = function () {
-            dbDialogCtrl.isChaCha = !dbDialogCtrl.isChaCha;
-        };
         dbDialogCtrl.cancel = function () {
             $modalInstance.dismiss('cancel');
         };
