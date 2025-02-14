@@ -110,4 +110,27 @@ class DatabasesTest : TestSupport() {
         assertEquals(response.code(), 500)
     }
 
+    @Test
+    fun `should return all registered types`() {
+        val location = newLocation()
+        val dbName = "types-test-db"
+        val dbSummary = newDB(location, dbName, false)
+        val uuid = dbSummary.uuid
+
+        val expectedTypes = listOf("Type1", "Type2", "Type3")
+        val environment = EnvironmentFactory.createEnvironment(dbSummary.asParameters()) {
+            expectedTypes.forEach { getOrCreateEntityType(it) }
+        }
+        EnvironmentFactory.closeEnvironment(environment)
+
+        // Start the database to access its types
+        dbResource.startOrStop(uuid, "start").execute()
+
+        val response = dbResource.allDbTypes(uuid).execute()
+        assertEquals(200, response.code())
+
+        val types = response.body()!!
+        assertEquals(expectedTypes.sorted(), types.map { it.name }.sorted())
+    }
+
 }

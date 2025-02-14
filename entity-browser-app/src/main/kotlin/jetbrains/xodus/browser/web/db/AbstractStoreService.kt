@@ -7,7 +7,6 @@ import jetbrains.xodus.browser.web.search.smartSearch
 import mu.KLogging
 import java.io.IOException
 import java.io.InputStream
-import java.lang.IllegalStateException
 
 abstract class AbstractStoreService: StoreService {
 
@@ -30,14 +29,7 @@ abstract class AbstractStoreService: StoreService {
         return readonly { txn ->
             txn.entityTypes
                 .sorted()
-                .mapNotNull { typeName ->
-                    try {
-                        EntityType(store.getEntityTypeId(typeName), typeName)
-                    } catch (_: IllegalStateException) {
-                        // internal class, remove check after fix txn.entityTypes XD-1198
-                        null
-                    }
-                }
+                .map { typeName -> EntityType(store.getEntityTypeId(typeName), typeName) }
                 .toTypedArray()
         }
     }

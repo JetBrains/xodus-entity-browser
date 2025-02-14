@@ -16,7 +16,7 @@ interface DBsApi {
 interface DBApi {
 
     @GET("api/dbs/{uuid}/types")
-    fun allDbTypes(@Path("uuid") uuid: String): Call<List<String>>
+    fun allDbTypes(@Path("uuid") uuid: String): Call<List<EntityType>>
 
     @POST("api/dbs/{uuid}/types")
     fun addDbType(@Path("uuid") uuid: String, @Body type: EntityType): Call<List<EntityType>>
