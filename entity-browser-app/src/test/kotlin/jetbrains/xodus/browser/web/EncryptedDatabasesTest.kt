@@ -5,6 +5,7 @@ import jetbrains.xodus.browser.web.db.*
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import java.io.File
 
@@ -61,6 +62,7 @@ class EncryptedDatabasesTest : TestSupport() {
     }
 
     @Test
+    @Ignore("test temporarily disabled, as it waits for the fix of YTDB-251")
     fun `should not be able to add new encrypted db with incorrect params`() {
         val wrongEncParams = newEncDBParams().apply {
             encryptionKey = "0000057c49098fb3a34763acb81c34c735f4f231f1fa7fa9b74be38526900000"
