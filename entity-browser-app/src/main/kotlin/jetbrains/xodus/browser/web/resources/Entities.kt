@@ -41,14 +41,17 @@ class Entities(webApp: WebApplication) : AppRoute, ResourceSupport(webApp) {
                 if (offset < 0 || pageSize < 0) {
                     call.respond(HttpStatusCode.BadRequest)
                 } else {
-                    call.respond(
-                            call.storeService.searchType(
-                                    id,
-                                    q,
-                                    offset,
-                                    if (pageSize == 0) 50 else Math.min(pageSize, 1000)
-                            )
-                    )
+                    try {
+                        val response = call.storeService.searchType(
+                            typeId = id,
+                            q = q,
+                            offset = offset,
+                            pageSize = if (pageSize == 0) 50 else pageSize.coerceAtMost(1000)
+                        )
+                        call.respond(response)
+                    } catch (e: Exception) {
+                        call.respond(HttpStatusCode.InternalServerError, e.message ?: "error occurred")
+                    }
                 }
             }
 

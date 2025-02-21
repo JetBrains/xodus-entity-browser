@@ -4,6 +4,7 @@ package jetbrains.xodus.browser.web.search
 import jetbrains.exodus.bindings.ComparableSet
 import jetbrains.exodus.entitystore.EntityIterable
 import jetbrains.exodus.entitystore.StoreTransaction
+import jetbrains.exodus.entitystore.youtrackdb.YTDBComparableSet
 import jetbrains.exodus.entitystore.youtrackdb.iterate.YTDBEntityIterableBase
 import mu.KLogging
 import java.util.concurrent.ConcurrentHashMap
@@ -93,18 +94,20 @@ object UIPropertyTypes : KLogging() {
     val tree = arrayOf(
             TypeTreeNode(STRING),
             TypeTreeNode(BOOLEAN),
-            TypeTreeNode(DOUBLE,
-                    TypeTreeNode(FLOAT)
-            ),
+            TypeTreeNode(CMP_SET),
+            TypeTreeNode(DOUBLE, TypeTreeNode(FLOAT)),
             rangeTree)
 
     class UIPropertyType<T : Comparable<*>>(val clazz: String, val function: (String) -> T) {
 
         fun toString(value: T?): String? {
-            if (value == null) {
-                return null
+            return when (value) {
+                null -> null
+                is YTDBComparableSet<*> -> {
+                    value.joinToString(separator = ",", prefix = "ComparableSet[", postfix = "]") { it.toString() }
+                }
+                else -> value.toString()
             }
-            return value.toString()
         }
 
         fun toValue(value: String?): T? {

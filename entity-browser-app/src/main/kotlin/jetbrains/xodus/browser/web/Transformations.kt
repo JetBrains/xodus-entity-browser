@@ -1,7 +1,9 @@
 package jetbrains.xodus.browser.web
 
+import jetbrains.exodus.bindings.ComparableSet
 import jetbrains.exodus.bindings.ComparableValueType
 import jetbrains.exodus.entitystore.Entity
+import jetbrains.exodus.entitystore.youtrackdb.YTDBComparableSet
 import jetbrains.xodus.browser.web.search.UIPropertyTypes
 
 fun Entity.asView(): EntityView {
@@ -65,7 +67,7 @@ private fun Entity.blobView(name: String): EntityBlob {
 private fun Entity.propertyView(name: String): EntityProperty {
     val value = this.getProperty(name)
     val clazz: Class<*> = if (value != null) {
-        ComparableValueType.getPredefinedType(value.javaClass).clazz
+        ComparableValueType.getPredefinedType(getValueJavaClass(value)).clazz
     } else {
         String::class.java
     }
@@ -88,7 +90,11 @@ fun EntityProperty.string2value(): Comparable<*>? {
     try {
         val clazz = type.clazz
         val type = UIPropertyTypes.uiTypeOf<Comparable<*>>(clazz)
-        return type.toValue(this.value)
+        val typedValue = type.toValue(this.value)
+        return when (typedValue) {
+            is ComparableSet<*> -> YTDBComparableSet(typedValue.toMutableSet())
+            else -> typedValue
+        }
     } catch (e: RuntimeException) {
         throw InvalidFieldException(e, name, value!!)
     }
@@ -99,13 +105,22 @@ fun <T : Comparable<*>> value2string(value: T?): String? {
         return null
     }
     try {
-        val clazz = value.javaClass
+        val clazz = getValueJavaClass(value)
         val type = UIPropertyTypes.uiTypeOf<T>(clazz)
         return type.toString(value)
     } catch (e: RuntimeException) {
         throw IllegalStateException(e)
     }
 
+}
+
+@Suppress("UNCHECKED_CAST")
+private fun <T : Comparable<*>> getValueJavaClass(value: T): Class<T> {
+    val clazz = when (value) {
+        is YTDBComparableSet<*> -> ComparableSet::class.java
+        else -> value.javaClass
+    }
+    return (clazz) as Class<T>
 }
 
 val Entity.label: String
