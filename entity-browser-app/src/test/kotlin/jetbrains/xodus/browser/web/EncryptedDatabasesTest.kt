@@ -1,6 +1,15 @@
 package jetbrains.xodus.browser.web
 
+import com.jetbrains.youtrack.db.api.DatabaseSession
+import com.jetbrains.youtrack.db.api.DatabaseType
 import jetbrains.exodus.entitystore.StoreTransaction
+import jetbrains.exodus.entitystore.youtrackdb.YTDBDatabaseConfig
+import jetbrains.exodus.entitystore.youtrackdb.YTDBDatabaseConnectionConfig
+import jetbrains.exodus.entitystore.youtrackdb.YTDBDatabaseProviderImpl
+import jetbrains.exodus.entitystore.youtrackdb.YTDBPersistentEntityStore
+import jetbrains.exodus.entitystore.youtrackdb.createVertexClassWithClassId
+import jetbrains.exodus.entitystore.youtrackdb.initYouTrackDb
+import jetbrains.exodus.entitystore.youtrackdb.withSession
 import jetbrains.xodus.browser.web.db.*
 import org.junit.After
 import org.junit.Assert.*
@@ -27,8 +36,8 @@ class EncryptedDatabasesTest : TestSupport() {
         )
     }
 
-    @Before
-    fun setup() {
+    @Test
+    fun `should be able to add new encrypted db`() {
         val encParams = newEncDBParams()
         val environment = EnvironmentFactory.createEnvironment(encParams) {
             getOrCreateEntityType("Type1")
@@ -41,16 +50,7 @@ class EncryptedDatabasesTest : TestSupport() {
             }
         }
         EnvironmentFactory.closeEnvironment(environment)
-    }
 
-    @After
-    fun cleanup() {
-        File(location).delete()
-    }
-
-    @Test
-    fun `should be able to add new encrypted db`() {
-        val encParams = newEncDBParams()
         val dbSummary = encParams.asSummary(isOpened = true)
         val newDbSummary = dbsResource.new(dbSummary).execute().body()!!
         assertTrue(newDbSummary.isOpened)
@@ -59,6 +59,7 @@ class EncryptedDatabasesTest : TestSupport() {
         assertEquals(dbName, newDbSummary.key)
         assertNull(newDbSummary.encryptionKey)
         assertNull(newDbSummary.encryptionIV)
+        File(location).delete()
     }
 
     @Test
@@ -72,6 +73,68 @@ class EncryptedDatabasesTest : TestSupport() {
         val response = dbsResource.new(wrongDbSummary).execute()
         assertEquals(400, response.code())
         assertTrue(webApp.allServices.isEmpty())
+    }
+
+    @Test
+    fun `one db - two different cipher keys`() {
+        val location = newLocation()
+        createDbAndPopulate(
+            location = location,
+            encryptionKey = "546e6f624b737371796f41586e7269304c744f42663252613630586631374a67",
+            encryptionIV = 0L
+        )
+        try {
+            createDbAndPopulate(
+                location = location,
+                encryptionKey = null,
+                encryptionIV = null
+            )
+        } catch (e: Exception) {
+            logger.error("error", e)
+        }
+        File(location).delete()
+    }
+
+    private fun createDbAndPopulate(location: String, encryptionKey: String?, encryptionIV: Long?) {
+        val dbConnectionConfig = YTDBDatabaseConnectionConfig
+            .builder()
+            .withPassword("admin")
+            .withUserName("admin")
+            .withDatabaseType(DatabaseType.PLOCAL)
+            .withDatabaseRoot(location)
+            .build()
+
+        val dbConfig = YTDBDatabaseConfig
+            .builder()
+            .withConnectionConfig(dbConnectionConfig)
+            .withDatabaseName("encrypted-db")
+            .withDatabaseType(DatabaseType.PLOCAL)
+            .withCloseDatabaseInDbProvider(true)
+            .apply {
+                if (encryptionKey != null && encryptionIV != null) {
+                    withStringHexAndIV(encryptionKey, encryptionIV)
+                }
+            }
+            .build()
+
+        val db = initYouTrackDb(dbConnectionConfig)
+        val dbProvider = YTDBDatabaseProviderImpl(dbConfig, db)
+        dbProvider.withSession { session: DatabaseSession ->
+            val existingClass = session.getClass("Type1")
+            if (existingClass == null) {
+                session.createVertexClassWithClassId("Type1")
+            }
+        }
+        val store = YTDBPersistentEntityStore(dbProvider, "encrypted-db")
+        store.computeInTransaction { txn: StoreTransaction ->
+            repeat(100) {
+                txn.newEntity("Type1").also { entity ->
+                    entity.setProperty("type", "Band")
+                }
+            }
+        }
+        store.close()
+        dbProvider.close()
     }
 
     private fun EnvironmentParameters.asSummary(isOpened: Boolean): DBSummary {
