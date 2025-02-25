@@ -20,7 +20,7 @@ open class PersistentWebApplication(override val databaseService: DatabaseServic
         if (allServices.containsKey(db.uuid)) {
             return true
         }
-        val service = tryToCreateStoreService(db, silent)?.validate(silent)
+        val service = tryToCreateStoreService(db, silent)
         service?.also {
             allServices[db.uuid] = Services(it)
             databaseService.markStarted(db.uuid, true)
@@ -31,21 +31,6 @@ open class PersistentWebApplication(override val databaseService: DatabaseServic
     private fun tryToCreateStoreService(db: DBSummary, silent: Boolean): StoreService? {
         return try {
             EnvironmentStoreService(db)
-        } catch (e: DatabaseException) {
-            if (silent) {
-                null
-            } else {
-                throw e
-            }
-        } catch (_: Exception) {
-            null
-        }
-    }
-
-    private fun StoreService.validate(silent: Boolean): StoreService? {
-        return try {
-            validate()
-            this
         } catch (e: DatabaseException) {
             if (silent) {
                 null

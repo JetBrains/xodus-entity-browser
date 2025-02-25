@@ -44,9 +44,9 @@ fun PersistentEntityStore.asSummary(forcedReadonly: Boolean): DBSummary {
     )
 }
 
-fun DBSummary.asParameters(): EnvironmentParameters {
-    return EnvironmentParameters(
-        key = this.key ?: "db",
+fun DBSummary.asParameters(): YTDBEnvironmentParameters {
+    return YTDBEnvironmentParameters(
+        key = this.key,
         location = this.location,
         isReadonly = this.isReadonly,
         isEncrypted = this.isEncrypted,

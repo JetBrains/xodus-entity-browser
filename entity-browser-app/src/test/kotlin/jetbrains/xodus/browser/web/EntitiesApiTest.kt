@@ -41,8 +41,8 @@ class EntitiesApiTest : TestSupport() {
 
     @Before
     fun setup() {
-        val params = EnvironmentParameters(location = location, key = dbName)
-        val environment = EnvironmentFactory.createEnvironment(params) {
+        val params = YTDBEnvironmentParameters(location = location, key = dbName)
+        val environment = YTDBEnvironmentFactory.createEnvironment(params) {
             getOrCreateEntityType(Users.CLASS)
             getOrCreateEntityType(Groups.CLASS)
             addAssociation(Users.CLASS, Groups.CLASS, Users.Links.GROUPS, Groups.Links.FOLKS)
@@ -67,7 +67,7 @@ class EntitiesApiTest : TestSupport() {
                 it.addLink(Groups.Links.FOLKS, linkedEntity2)
             }
         }
-        EnvironmentFactory.closeEnvironment(environment)
+        YTDBEnvironmentFactory.closeEnvironment(environment)
         dbSummary = newDB(location = location, dbName= dbName, isOpened = true)
     }
 

@@ -19,13 +19,13 @@ class DatabasesTest : TestSupport() {
 
     @Before
     fun setUpLocked() {
-        val parameters = EnvironmentParameters(key = LOCKED_DB_NAME, location = lockedDBLocation)
-        lockedEnvironment = EnvironmentFactory.createEnvironment(parameters)
+        val parameters = YTDBEnvironmentParameters(key = LOCKED_DB_NAME, location = lockedDBLocation)
+        lockedEnvironment = YTDBEnvironmentFactory.createEnvironment(parameters)
     }
 
     @After
     fun tearDownLocked() {
-        EnvironmentFactory.closeEnvironment(lockedEnvironment)
+        YTDBEnvironmentFactory.closeEnvironment(lockedEnvironment)
         File(lockedDBLocation).delete()
     }
 
@@ -96,10 +96,10 @@ class DatabasesTest : TestSupport() {
         val resultOfStop = dbResource.startOrStop(uuid, "stop").execute()
         assertFalse(resultOfStop.body()!!.isOpened)
         assertFalse(webApp.allServices.containsKey(uuid))
-        val environment = EnvironmentFactory.createEnvironment(dbSummary.asParameters()) {
+        val environment = YTDBEnvironmentFactory.createEnvironment(dbSummary.asParameters()) {
             getOrCreateEntityType("BlaBlaBla")
         }
-        EnvironmentFactory.closeEnvironment(environment)
+        YTDBEnvironmentFactory.closeEnvironment(environment)
     }
 
     @Test
@@ -118,10 +118,10 @@ class DatabasesTest : TestSupport() {
         val uuid = dbSummary.uuid
 
         val expectedTypes = listOf("Type1", "Type2", "Type3")
-        val environment = EnvironmentFactory.createEnvironment(dbSummary.asParameters()) {
+        val environment = YTDBEnvironmentFactory.createEnvironment(dbSummary.asParameters()) {
             expectedTypes.forEach { getOrCreateEntityType(it) }
         }
-        EnvironmentFactory.closeEnvironment(environment)
+        YTDBEnvironmentFactory.closeEnvironment(environment)
 
         // Start the database to access its types
         dbResource.startOrStop(uuid, "start").execute()
