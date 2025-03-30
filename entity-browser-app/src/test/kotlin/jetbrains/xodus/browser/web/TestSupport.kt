@@ -66,11 +66,12 @@ open class TestSupport {
         store = PersistentEntityStores.newInstance(Environments.newInstance(lockedDBLocation), key)
         webApp = PersistentWebApplication(PersistentDatabaseService())
 
-        server = embeddedServer(Jetty, port = port) {
+        val embeddedServer = embeddedServer(Jetty, port = port) {
             webApp.start()
             HttpServer(webApp, context).setup(this)
-        }.engine
-        server.start(wait = false)
+        }
+        server = embeddedServer.engine
+        embeddedServer.start(wait = false)
 
         var setuped = false
         var times = 0
