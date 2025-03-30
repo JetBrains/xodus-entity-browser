@@ -11,6 +11,12 @@ node {
     version = new File("$projectDir/.nvmrc").text.trim()
 }
 
+tasks.withType(NpmTask).configureEach {
+    environment = [
+            'PUPPETEER_SKIP_DOWNLOAD': 'true'
+    ]
+}
+
 tasks.register('cleanFrontend', Delete) {
     delete 'dist'
 }
