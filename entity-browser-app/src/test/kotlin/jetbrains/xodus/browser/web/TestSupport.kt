@@ -69,7 +69,7 @@ open class TestSupport {
         server = embeddedServer(Jetty, port = port) {
             webApp.start()
             HttpServer(webApp, context).setup(this)
-        }
+        }.engine
         server.start(wait = false)
 
         var setuped = false
