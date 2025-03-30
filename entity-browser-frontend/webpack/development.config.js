@@ -3,6 +3,7 @@ var path = require('path');
 var url = require('url');
 var glob = require('glob');
 var parseArgs = require('minimist');
+const { merge } = require('webpack-merge');
 var argv = parseArgs(process.argv.slice(2), {
   default: {
     port: '19090',
@@ -47,7 +48,7 @@ var getServerContext = function() {
 
 webpackShare.setupFixForBuildNodeSass();
 
-var webpackConfig = require('webpack-merge')(
+var webpackConfig = merge(
   {
     entry: require('mout/object/merge')(webpackShare.entryPoints, {
       vendor: ['node-noop']
@@ -67,21 +68,21 @@ var webpackConfig = require('webpack-merge')(
       port: argv.port,
       host: argv.host,
 
-      stats: {
-        timings: true,
-
-        colors: false,
-        chunks: false,
-        hash: false,
-        assets: false,
-        children: false,
-        version: false
+      devMiddleware: {
+        stats: {
+          timings: true,
+          colors: false,
+          chunks: false,
+          hash: false,
+          assets: false,
+          children: false,
+          version: false
+        }
       },
 
-      /**
-       * @see https://github.com/webpack/docs/wiki/webpack-dev-server#content-base
-       */
-      contentBase: 'app/',
+      static: {
+        directory: path.join(__dirname, '../app/')
+      },
 
       historyApiFallback: {
           index: url.resolve(getServerContext(), 'index.html')
