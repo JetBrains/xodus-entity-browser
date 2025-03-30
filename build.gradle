@@ -2,6 +2,7 @@ buildscript {
     ext.xodusVersion = '3.0.134'
     ext.kotlinVersion = '2.1.0'
     ext.ktorVersion = '3.0.3'
+    ext.jacksonVersion = '2.16.2'
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
@@ -40,6 +41,19 @@ allprojects {
         // necessary for dokka 1.4.30
         maven { url "https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven" }
         maven { url 'https://packages.jetbrains.team/maven/p/xodus/orientdb-daily' }
+    }
+
+    configurations.all {
+        resolutionStrategy {
+            force "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+            force "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
+            force "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+            force "com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:$jacksonVersion"
+            force "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$jacksonVersion"
+            force "com.fasterxml.jackson.module:jackson-module-jaxb-annotations:$jacksonVersion"
+            force "com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion"
+            force 'org.slf4j:slf4j-api:1.7.25'
+        }
     }
 
     idea {
