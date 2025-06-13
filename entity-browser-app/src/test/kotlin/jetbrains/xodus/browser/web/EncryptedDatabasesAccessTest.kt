@@ -67,7 +67,7 @@ class EncryptedDatabasesAccessTest : TestSupport() {
             .withPassword("admin")
             .withUserName("admin")
             .withDatabaseName("encrypted-db")
-            .withDatabaseType(DatabaseType.PLOCAL)
+            .withDatabaseType(DatabaseType.DISK)
             .withDatabasePath(location)
             .withCloseDatabaseInDbProvider(true)
             .apply {
@@ -79,7 +79,7 @@ class EncryptedDatabasesAccessTest : TestSupport() {
 
         val dbProvider = YTDBDatabaseProviderFactory.createProvider(params)
         dbProvider.withSession { session: DatabaseSession ->
-            val existingClass = session.getClass("Type1")
+            val existingClass = session.schema.getClass("Type1")
             if (existingClass == null) {
                 session.createVertexClassWithClassId("Type1")
             }

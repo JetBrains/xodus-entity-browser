@@ -84,7 +84,7 @@ data class DBSummary(
 
     var location: String,
     var key: String,
-    var type: String = DatabaseType.PLOCAL.name,
+    var type: String = DatabaseType.DISK.name,
 
     @JsonProperty("opened")
     var isOpened: Boolean = false,

@@ -7,7 +7,7 @@ data class YTDBEnvironmentParameters(
     var location: String,
     var user: String = "admin",
     var password: String = "admin",
-    var type: DatabaseType = DatabaseType.PLOCAL,
+    var type: DatabaseType = DatabaseType.DISK,
     var isReadonly: Boolean = false,
     var isEncrypted: Boolean = false,
     var encryptionKey: String? = null,
