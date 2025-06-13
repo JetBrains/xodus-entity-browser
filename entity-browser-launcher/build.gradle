@@ -4,6 +4,7 @@ dependencies {
 
 tasks.register('zipLauncher', Zip) {
     dependsOn(':entity-browser-app:shadowJar')
+    zip64 = true
 
     def archiveName = "xodus-entity-browser-${project.version}"
 
