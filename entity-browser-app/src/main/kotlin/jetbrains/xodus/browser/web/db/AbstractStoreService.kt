@@ -141,9 +141,14 @@ abstract class AbstractStoreService: StoreService {
             }
 
             override val affectedEntities: EntityIterable
-                get() = transactional {
+                get() {
                     val type = store.getEntityType(typeId)
-                    smartSearch(term, type, typeId, it)
+                    return smartSearch(
+                        term,
+                        type,
+                        typeId,
+                        store.currentTransaction ?: throw IllegalStateException("No transaction found")
+                    )
                 }
 
             override fun toString(): String {
