@@ -55,6 +55,7 @@ shadowJar {
     dependsOn = ['buildFrontend']
     archiveBaseName.set("xodus-entity-browser")
     archiveVersion.set(null)
+    zip64 = true
     getDestinationDirectory().set(globalArtifactsBuildDir)
     manifest {
         attributes 'Main-Class': 'jetbrains.xodus.browser.web.MainKt'
