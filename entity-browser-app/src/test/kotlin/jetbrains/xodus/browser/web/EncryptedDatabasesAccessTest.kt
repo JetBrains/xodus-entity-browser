@@ -64,8 +64,7 @@ class EncryptedDatabasesAccessTest : TestSupport() {
     private fun createDbAndPopulate(location: String, encryptionKey: String?, encryptionIV: Long?) {
         val params = YTDBDatabaseParams
             .builder()
-            .withPassword("admin")
-            .withUserName("admin")
+            .withAppUser("admin","admin")
             .withDatabaseName("encrypted-db")
             .withDatabaseType(DatabaseType.DISK)
             .withDatabasePath(location)

@@ -13,8 +13,7 @@ object YTDBEnvironmentFactory {
     private fun createDatabaseParameters(parameters: YTDBEnvironmentParameters): YTDBDatabaseParams {
         return YTDBDatabaseParams
             .builder()
-            .withPassword("admin")
-            .withUserName("admin")
+            .withAppUser("admin","admin")
             .withDatabaseName(parameters.key)
             .withDatabaseType(parameters.type)
             .withDatabasePath(parameters.location)
