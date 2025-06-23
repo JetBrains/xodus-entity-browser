@@ -1,6 +1,7 @@
 package jetbrains.xodus.browser.web
 
 import jetbrains.exodus.entitystore.Entity
+import jetbrains.exodus.entitystore.youtrackdb.YTDBComparableSet
 import jetbrains.xodus.browser.web.db.*
 import org.junit.After
 import org.junit.Assert
@@ -54,12 +55,14 @@ class EntitiesApiTest : TestSupport() {
             linkedEntity1 = txn.newEntity(Users.CLASS).also {
                 it.setProperty("name", "John McClane")
                 it.setProperty("age", 35L)
+                it.setProperty("badges", YTDBComparableSet(hashSetOf("one", "two", "three")))
             }
 
             linkedEntity2 = txn.newEntity(Users.CLASS).also {
                 it.setProperty("name", "John Silver")
                 it.setProperty("age", 45L)
                 it.setLink(Users.Links.BOSS, linkedEntity1)
+                it.setProperty("badges", YTDBComparableSet(hashSetOf("three", "four")))
             }
 
             entity = txn.newEntity(Groups.CLASS).also {
@@ -90,7 +93,7 @@ class EntitiesApiTest : TestSupport() {
             assertEquals("User", type)
             assertEquals(0, typeId)
             assertEquals("User[0-0]", label)
-            assertEquals(2, properties.size)
+            assertEquals(3, properties.size)
             with(properties.first { it.value == "35" }) {
                 assertEquals("age", name)
                 assertEquals("Long", type.displayName)
@@ -113,15 +116,28 @@ class EntitiesApiTest : TestSupport() {
                 assertEquals(Users.CLASS, type)
                 assertEquals(0, typeId)
                 Assert.assertTrue(userLabelSet.add(label))
-                assertEquals(2, properties.size)
+                assertEquals(3, properties.size)
             }
             with(items[1]) {
                 assertEquals(Users.CLASS, type)
                 assertEquals(0, typeId)
                 Assert.assertTrue(userLabelSet.add(label))
-                assertEquals(2, properties.size)
+                assertEquals(3, properties.size)
             }
         }
+    }
+
+    @Test
+    fun `search by simple query`() {
+        val pager = entitiesResource.search(dbSummary.uuid, 0, "name='John McClane'").execute().body()!!
+        assertEquals(1, pager.items.size)
+    }
+
+    @Test
+    fun `search by set query`() {
+        val pager = entitiesResource.search(dbSummary.uuid, 0, "badges=ComparableSet[three,four]").execute().body()!!
+        assertEquals(1, pager.items.size)
+        assertEquals("John Silver", pager.items.first().properties.firstOrNull { it.name == "name" }?.value)
     }
 
     @Test

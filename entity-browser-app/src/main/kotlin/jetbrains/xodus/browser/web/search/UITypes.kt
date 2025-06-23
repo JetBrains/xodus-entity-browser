@@ -1,7 +1,6 @@
 package jetbrains.xodus.browser.web.search
 
 
-import jetbrains.exodus.bindings.ComparableSet
 import jetbrains.exodus.entitystore.EntityIterable
 import jetbrains.exodus.entitystore.StoreTransaction
 import jetbrains.exodus.entitystore.youtrackdb.YTDBComparableSet
@@ -79,9 +78,9 @@ object UIPropertyTypes : KLogging() {
         val matchResult = Regex("ComparableSet\\[(.*)\\]").matchEntire(it)
         if (matchResult != null) {
             val (commaSeparatedValues) = matchResult.destructured
-            ComparableSet(commaSeparatedValues.split(","))
+            YTDBComparableSet(commaSeparatedValues.split(",").toMutableSet())
         } else {
-            ComparableSet<String>()
+            throw IllegalArgumentException()
         }
     }
 

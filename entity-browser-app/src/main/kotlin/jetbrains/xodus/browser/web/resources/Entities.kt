@@ -50,6 +50,7 @@ class Entities(webApp: WebApplication) : AppRoute, ResourceSupport(webApp) {
                         )
                         call.respond(response)
                     } catch (e: Exception) {
+                        logger.error("Error during search request execution", e)
                         call.respond(HttpStatusCode.InternalServerError, e.message ?: "error occurred")
                     }
                 }

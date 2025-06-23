@@ -1,6 +1,5 @@
 package jetbrains.xodus.browser.web
 
-import jetbrains.exodus.bindings.ComparableSet
 import jetbrains.exodus.bindings.ComparableValueType
 import jetbrains.exodus.entitystore.Entity
 import jetbrains.exodus.entitystore.youtrackdb.YTDBComparableSet
@@ -67,7 +66,11 @@ private fun Entity.blobView(name: String): EntityBlob {
 private fun Entity.propertyView(name: String): EntityProperty {
     val value = this.getProperty(name)
     val clazz: Class<*> = if (value != null) {
-        ComparableValueType.getPredefinedType(getValueJavaClass(value)).clazz
+        if (value !is YTDBComparableSet<*>){
+            ComparableValueType.getPredefinedType(getValueJavaClass(value)).clazz
+        } else {
+            YTDBComparableSet::class.java
+        }
     } else {
         String::class.java
     }
@@ -92,7 +95,8 @@ fun EntityProperty.string2value(): Comparable<*>? {
         val type = UIPropertyTypes.uiTypeOf<Comparable<*>>(clazz)
         val typedValue = type.toValue(this.value)
         return when (typedValue) {
-            is ComparableSet<*> -> YTDBComparableSet(typedValue.toMutableSet())
+            is YTDBComparableSet<*> -> typedValue
+            is Set<*> -> YTDBComparableSet(typedValue.toMutableSet())
             else -> typedValue
         }
     } catch (e: RuntimeException) {
@@ -116,11 +120,7 @@ fun <T : Comparable<*>> value2string(value: T?): String? {
 
 @Suppress("UNCHECKED_CAST")
 private fun <T : Comparable<*>> getValueJavaClass(value: T): Class<T> {
-    val clazz = when (value) {
-        is YTDBComparableSet<*> -> ComparableSet::class.java
-        else -> value.javaClass
-    }
-    return (clazz) as Class<T>
+    return value.javaClass as Class<T>
 }
 
 val Entity.label: String

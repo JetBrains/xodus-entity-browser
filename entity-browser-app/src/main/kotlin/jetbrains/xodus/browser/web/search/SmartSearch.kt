@@ -1,5 +1,6 @@
 package jetbrains.xodus.browser.web.search
 
+import com.jetbrains.youtrack.db.api.exception.BaseException
 import jetbrains.exodus.entitystore.EntityId
 import jetbrains.exodus.entitystore.EntityIterable
 import jetbrains.exodus.entitystore.PersistentEntityId
@@ -34,6 +35,8 @@ private fun searchByTerms(term: String, type: String, typeId: Int, t: StoreTrans
     } catch (ex: TokenMgrError) {
         throw SearchQueryException(ex)
     } catch (ex: SearchQueryException) {
+        throw ex
+    } catch (ex: BaseException) {
         throw ex
     } catch (_: RuntimeException) {
         YTDBEntityIterableBase.EMPTY
