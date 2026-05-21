@@ -32,8 +32,7 @@ open class ResourceSupport(
         }
 
     fun ApplicationCall.assertEditable() {
-        val uuid = parameters["uuid"] ?: throw NotFoundException("database service not found")
-        if (webApp.servicesOf(uuid).storeService.isReadonly) {
+        if (storeService.isReadonly || db.isReadonly) {
             throw BadRequestException("store is readonly")
         }
     }
