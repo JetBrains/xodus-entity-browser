@@ -8,7 +8,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "test": "karma start",
-    "start": "webpack serve --config=webpack/development.config.js --mode development --progress --inline",
+    "start": "webpack serve --config=webpack/development.config.js --mode development --progress",
     "lint": "eslint '**/*.js' --quiet=true",
     "build": "npm run parallel -- 'npm run build:browser' ",
     "prebuild": "npm install && npm run lint && npm run clean",
@@ -38,9 +38,9 @@
     "connect-livereload": "0.4.1",
     "connect-modrewrite": "0.5.11",
     "console-polyfill": "0.1.2",
-    "copy-webpack-plugin": "4.0.1",
+    "copy-webpack-plugin": "11.0.0",
     "css-element-queries": "0.3.2",
-    "css-loader": "^0.9.0",
+    "css-loader": "6.8.1",
     "es5-shim": "3.4.0",
     "eslint": "7.6.0",
     "eslint-plugin-angular": "3.1.1",
@@ -52,7 +52,7 @@
     "file-saver": "2.0.5",
     "glob": "5.0.15",
     "html-loader": "0.5.5",
-    "html-webpack-plugin": "5.3.1",
+    "html-webpack-plugin": "5.5.3",
     "html2js": "0.0.2",
     "istanbul-instrumenter-loader": "0.2.0",
     "jasmine-core": "2.3.4",
@@ -80,15 +80,15 @@
     "rimraf": "2.5.2",
     "scrollbar-width": "3.1.1",
     "sinon": "1.12.1",
-    "style-loader": "^0.8.2",
+    "style-loader": "3.3.3",
     "ui-select": "0.19.6",
     "url-loader": "0.5.6",
-    "webpack-dev-server": "3.11.2",
-    "webpack-merge": "4.2.1"
+    "webpack-dev-server": "4.15.1"
   },
   "devDependencies": {
-    "webpack": "5.40.0",
-    "webpack-cli": "4.9.0"
+    "webpack": "5.89.0",
+    "webpack-cli": "4.9.0",
+    "webpack-merge": "^5.10.0"
   },
   "engines": {
     "node": ">=0.8.0"
