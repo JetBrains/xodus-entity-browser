@@ -15,4 +15,4 @@ if "%JAVA_HOME%"=="" (
 -Dserver.context=%SERVER_CONTEXT% ^
 -Dexodus.entityStore.refactoring.skipAll=true ^
 -Dexodus.entityStore.cachingDisabled=true ^
--jar xodus-entity-browser.jar
+-jar %~dp0\xodus-entity-browser.jar
