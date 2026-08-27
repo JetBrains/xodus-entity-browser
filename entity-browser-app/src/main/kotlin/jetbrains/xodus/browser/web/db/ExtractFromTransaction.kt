@@ -1,28 +1,26 @@
 package jetbrains.xodus.browser.web.db
 
-import com.jetbrains.youtrack.db.api.DatabaseSession
-import com.jetbrains.youtrack.db.api.record.Direction
-import com.jetbrains.youtrack.db.api.record.Vertex
-import com.jetbrains.youtrack.db.api.schema.PropertyType
-import com.jetbrains.youtrack.db.api.schema.SchemaClass
+import com.jetbrains.youtrackdb.internal.core.metadata.schema.schema.SchemaClass
 import jetbrains.exodus.entitystore.StoreTransaction
-import jetbrains.exodus.entitystore.asOStoreTransaction
+import jetbrains.exodus.entitystore.asYTDBTransaction
 import jetbrains.exodus.entitystore.youtrackdb.YTDBDatabaseProvider
 import jetbrains.exodus.entitystore.youtrackdb.YTDBVertexEntity
 import jetbrains.exodus.entitystore.youtrackdb.createVertexClassWithClassId
-import jetbrains.exodus.entitystore.youtrackdb.withSession
+import jetbrains.exodus.entitystore.youtrackdb.withTx
 
 fun <T> Environment.transactional(call: (StoreTransaction) -> T): T {
-    return store.computeInTransaction { call(it.asOStoreTransaction()) }
+    return store.computeInTransaction { call(it.asYTDBTransaction()) }
 }
 
 fun <T> Environment.readonlyTransactional(call: (StoreTransaction) -> T): T {
-    return store.computeInReadonlyTransaction { call(it.asOStoreTransaction()) }
+    return store.computeInReadonlyTransaction { call(it.asYTDBTransaction()) }
 }
 
 fun YTDBDatabaseProvider.getOrCreateEntityType(type: String): SchemaClass {
-    return withSession { session: DatabaseSession ->
-        session.createVertexClassWithClassId(type)
+    return withSession { session ->
+        session.withTx { tx ->
+            tx.schema.getClass(type) ?: tx.createVertexClassWithClassId(type)
+        }
     }
 }
 
@@ -32,16 +30,15 @@ fun YTDBDatabaseProvider.addAssociation(
     outPropName: String,
     inPropName: String
 ) {
-    withSession { session: DatabaseSession ->
-        val fromClass = session.schema.getClass(fromClassName) ?: throw IllegalStateException("$fromClassName not found")
-        val toClass = session.schema.getClass(toClassName) ?: throw IllegalStateException("$toClassName not found")
-        val inEdgeName = YTDBVertexEntity.edgeClassName(inPropName)
-        val outEdgeName = YTDBVertexEntity.edgeClassName(outPropName)
-        session.schema.getClass(inEdgeName) ?: session.schema.createEdgeClass(inEdgeName)
-        session.schema.getClass(outEdgeName) ?: session.schema.createEdgeClass(outEdgeName)
-        val linkInPropName = Vertex.getEdgeLinkFieldName(Direction.IN, inEdgeName)
-        val linkOutPropName = Vertex.getEdgeLinkFieldName(Direction.OUT, outEdgeName)
-        fromClass.createProperty(linkOutPropName, PropertyType.LINKBAG)
-        toClass.createProperty(linkInPropName, PropertyType.LINKBAG)
+    withSession { session ->
+        session.withTx { tx ->
+            tx.schema.getClass(fromClassName) ?: throw IllegalStateException("$fromClassName not found")
+            tx.schema.getClass(toClassName) ?: throw IllegalStateException("$toClassName not found")
+
+            val inEdgeName = YTDBVertexEntity.edgeClassName(inPropName)
+            val outEdgeName = YTDBVertexEntity.edgeClassName(outPropName)
+            tx.schema.getClass(inEdgeName) ?: tx.schema.createEdgeClass(inEdgeName)
+            tx.schema.getClass(outEdgeName) ?: tx.schema.createEdgeClass(outEdgeName)
+        }
     }
 }

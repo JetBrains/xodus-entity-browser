@@ -1,11 +1,11 @@
 package jetbrains.xodus.browser.web.search
 
-import com.jetbrains.youtrack.db.api.exception.BaseException
+import com.jetbrains.youtrackdb.internal.core.exception.BaseException
 import jetbrains.exodus.entitystore.EntityId
 import jetbrains.exodus.entitystore.EntityIterable
 import jetbrains.exodus.entitystore.PersistentEntityId
 import jetbrains.exodus.entitystore.StoreTransaction
-import jetbrains.exodus.entitystore.youtrackdb.iterate.YTDBEntityIterableBase
+import jetbrains.exodus.entitystore.youtrackdb.iterate.YTDBEntityIterable
 import java.io.ByteArrayInputStream
 
 
@@ -39,7 +39,7 @@ private fun searchByTerms(term: String, type: String, typeId: Int, t: StoreTrans
     } catch (ex: BaseException) {
         throw ex
     } catch (_: RuntimeException) {
-        YTDBEntityIterableBase.EMPTY
+        YTDBEntityIterable.EMPTY
     }
 }
 
@@ -47,7 +47,7 @@ private fun orEmpty(f: () -> EntityIterable): EntityIterable {
     try {
         return f()
     } catch (_: RuntimeException) {
-        return YTDBEntityIterableBase.EMPTY
+        return YTDBEntityIterable.EMPTY
     }
 }
 

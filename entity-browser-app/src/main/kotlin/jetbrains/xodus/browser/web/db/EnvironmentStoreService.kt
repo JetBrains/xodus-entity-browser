@@ -1,11 +1,10 @@
 package jetbrains.xodus.browser.web.db
 
 
-import com.jetbrains.youtrack.db.api.exception.RecordNotFoundException
-import com.jetbrains.youtrack.db.internal.core.exception.StorageException
+import com.jetbrains.youtrackdb.api.exception.RecordNotFoundException
+import com.jetbrains.youtrackdb.internal.core.exception.StorageException
 import jetbrains.exodus.crypto.InvalidCipherParametersException
 import jetbrains.exodus.entitystore.PersistentEntityStore
-import jetbrains.exodus.log.DataCorruptionException
 import jetbrains.xodus.browser.web.DBSummary
 import jetbrains.xodus.browser.web.DatabaseException
 import mu.KLogging
@@ -25,8 +24,6 @@ class EnvironmentStoreService: AbstractStoreService {
             this.isReadonly = environment.store.isReadOnly
         } catch (e: InvalidCipherParametersException) {
             handleInvalidCipherParametersException(e)
-        } catch (e: DataCorruptionException) {
-            handleDataCorruptionException(e)
         } catch (e: StorageException) {
             handleStorageException(e)
         } catch (e: RecordNotFoundException) {
@@ -43,13 +40,6 @@ class EnvironmentStoreService: AbstractStoreService {
             "It seems that store encrypted with another parameters"
         }
         throw DatabaseException("Database is ciphered with different/unknown cipher parameters")
-    }
-
-    private fun handleDataCorruptionException(e: DataCorruptionException): Nothing {
-        logger.error(e) {
-            "Cannot open database because of data corruption"
-        }
-        throw DatabaseException("Database is ciphered with different/unknown cipher parameters or corrupted")
     }
 
     private fun handleStorageException(e: StorageException): Nothing {

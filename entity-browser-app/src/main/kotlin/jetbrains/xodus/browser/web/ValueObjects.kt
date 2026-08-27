@@ -1,7 +1,7 @@
 package jetbrains.xodus.browser.web
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.jetbrains.youtrack.db.api.DatabaseType
+import com.jetbrains.youtrackdb.api.DatabaseType
 import java.util.*
 
 interface Named {

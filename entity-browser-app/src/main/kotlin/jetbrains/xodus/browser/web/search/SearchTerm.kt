@@ -5,7 +5,7 @@ import jetbrains.exodus.entitystore.EntityRemovedInDatabaseException
 import jetbrains.exodus.entitystore.PersistentEntityId
 import jetbrains.exodus.entitystore.StoreTransaction
 import jetbrains.exodus.entitystore.youtrackdb.YTDBPersistentEntityStore
-import jetbrains.exodus.entitystore.youtrackdb.iterate.YTDBEntityIterableBase
+import jetbrains.exodus.entitystore.youtrackdb.iterate.YTDBEntityIterable
 import java.util.regex.Pattern
 
 
@@ -178,7 +178,7 @@ class LinkSearchTerm private constructor(name: String, val oppositeEntityTypeNam
             if (store is YTDBPersistentEntityStore) {
                 val oppositeTypeId = store.getEntityTypeId(oppositeEntityTypeName)
                 if (oppositeTypeId < 0) {
-                    YTDBEntityIterableBase.EMPTY
+                    YTDBEntityIterable.EMPTY
                 } else {
                     val oppositeEntityId = txn.toEntityId("$oppositeTypeId-$oppositeEntityLocalId")
                     val oppositeEntity = try {
@@ -187,7 +187,7 @@ class LinkSearchTerm private constructor(name: String, val oppositeEntityTypeNam
                         null
                     }
                     if (oppositeEntity == null) {
-                       YTDBEntityIterableBase.EMPTY
+                       YTDBEntityIterable.EMPTY
                     } else {
                         txn.findLinks(entityType, oppositeEntity, name)
                     }

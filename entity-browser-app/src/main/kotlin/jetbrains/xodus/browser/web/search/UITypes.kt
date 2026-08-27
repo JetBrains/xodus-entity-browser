@@ -4,7 +4,7 @@ package jetbrains.xodus.browser.web.search
 import jetbrains.exodus.entitystore.EntityIterable
 import jetbrains.exodus.entitystore.StoreTransaction
 import jetbrains.exodus.entitystore.youtrackdb.YTDBComparableSet
-import jetbrains.exodus.entitystore.youtrackdb.iterate.YTDBEntityIterableBase
+import jetbrains.exodus.entitystore.youtrackdb.iterate.YTDBEntityIterable
 import mu.KLogging
 import java.util.concurrent.ConcurrentHashMap
 
@@ -15,7 +15,7 @@ object UIPropertyTypes : KLogging() {
         fun find(tr: StoreTransaction, type: String, property: String, value: String): EntityIterable {
             try {
                 if (!uiType.isValid(value)) {
-                    return YTDBEntityIterableBase.EMPTY
+                    return YTDBEntityIterable.EMPTY
                 }
                 val realValue = uiType.toValue(value)
                 logger.debug { "searching property '$property' by type '${realValue?.javaClass?.name}' and value '$realValue' " }
@@ -28,18 +28,18 @@ object UIPropertyTypes : KLogging() {
                     }
                     result
                 } else {
-                    YTDBEntityIterableBase.EMPTY
+                    YTDBEntityIterable.EMPTY
                 }
             } catch (e: Exception) {
                 //ignore
-                return YTDBEntityIterableBase.EMPTY
+                return YTDBEntityIterable.EMPTY
             }
         }
 
         fun find(tr: StoreTransaction, type: String, property: String, start: String, end: String): EntityIterable {
             try {
                 if (!uiType.isValid(start) || !uiType.isValid(end)) {
-                    return YTDBEntityIterableBase.EMPTY
+                    return YTDBEntityIterable.EMPTY
                 }
                 val realStart = uiType.toValue(start)
                 val realEnd = uiType.toValue(end)
@@ -50,10 +50,10 @@ object UIPropertyTypes : KLogging() {
                     }
                     return result
                 }
-                return YTDBEntityIterableBase.EMPTY
+                return YTDBEntityIterable.EMPTY
             } catch (e: Exception) {
                 //ignore
-                return YTDBEntityIterableBase.EMPTY
+                return YTDBEntityIterable.EMPTY
             }
         }
     }

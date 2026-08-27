@@ -1,15 +1,14 @@
 package jetbrains.xodus.browser.web
 
 import YTDBDatabaseProviderFactory
-import com.jetbrains.youtrack.db.api.DatabaseSession
-import com.jetbrains.youtrack.db.api.DatabaseType
-import com.jetbrains.youtrack.db.api.exception.RecordNotFoundException
-import com.jetbrains.youtrack.db.internal.core.exception.StorageException
+import com.jetbrains.youtrackdb.api.DatabaseType
+import com.jetbrains.youtrackdb.api.exception.RecordNotFoundException
+import com.jetbrains.youtrackdb.internal.core.exception.ConfigurationException
+import com.jetbrains.youtrackdb.internal.core.exception.StorageException
 import jetbrains.exodus.entitystore.StoreTransaction
 import jetbrains.exodus.entitystore.youtrackdb.YTDBDatabaseParams
 import jetbrains.exodus.entitystore.youtrackdb.YTDBPersistentEntityStore
 import jetbrains.exodus.entitystore.youtrackdb.createVertexClassWithClassId
-import jetbrains.exodus.entitystore.youtrackdb.withSession
 import org.junit.Assert
 import org.junit.Test
 import java.io.File
@@ -55,6 +54,9 @@ class EncryptedDatabasesAccessTest : TestSupport() {
             logDbInitializationFailureMessage()
         } catch (_: AssertionError) {
             logDbInitializationFailureMessage()
+        } catch (_: ConfigurationException) {
+            // A wrong or missing key can make encrypted storage metadata look like an invalid format version.
+            logDbInitializationFailureMessage()
         } catch (e: Throwable) {
             logger.error("DB failed with unexpected error", e)
             Assert.fail("Wrong error")
@@ -77,7 +79,7 @@ class EncryptedDatabasesAccessTest : TestSupport() {
             .build()
 
         val dbProvider = YTDBDatabaseProviderFactory.createProvider(params)
-        dbProvider.withSession { session: DatabaseSession ->
+        dbProvider.withSession { session ->
             val existingClass = session.schema.getClass("Type1")
             if (existingClass == null) {
                 session.createVertexClassWithClassId("Type1")

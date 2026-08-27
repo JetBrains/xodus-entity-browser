@@ -19,10 +19,9 @@ dependencies {
 
     frontend project(path: ':entity-browser-frontend', configuration: 'frontend_build')
 
-    implementation "org.jetbrains.xodus:xodus-environment:$xodusVersion"
-    implementation "org.jetbrains.xodus:xodus-entity-store:$xodusVersion"
-    implementation "org.jetbrains.xodus:xodus-openAPI:$xodusVersion"
-    implementation "org.jetbrains.xodus:xodus-crypto:$xodusVersion"
+    implementation "org.jetbrains.xodus:dnq-entity-store:$xodusDnqVersion"
+    implementation "org.jetbrains.xodus:dnq-open-api:$xodusDnqVersion"
+    implementation "org.jetbrains.xodus:dnq-crypto:$xodusDnqVersion"
 
     implementation "io.ktor:ktor-server-core:$ktorVersion"
     implementation "io.ktor:ktor-server-jetty:$ktorVersion"

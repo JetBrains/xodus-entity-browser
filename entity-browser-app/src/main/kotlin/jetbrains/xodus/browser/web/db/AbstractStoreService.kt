@@ -174,10 +174,10 @@ abstract class AbstractStoreService: StoreService {
     }
 
     private fun <T> transactional(call: (StoreTransaction) -> T): T {
-        return store.computeInTransaction { call(it.asOStoreTransaction()) }
+        return store.computeInTransaction { call(it.asYTDBTransaction()) }
     }
 
     private fun <T> readonly(call: (StoreTransaction) -> T): T {
-        return store.computeInReadonlyTransaction { call(it.asOStoreTransaction()) }
+        return store.computeInReadonlyTransaction { call(it.asYTDBTransaction()) }
     }
 }

@@ -1,6 +1,6 @@
 package jetbrains.xodus.browser.web.db
 
-import com.jetbrains.youtrack.db.api.DatabaseType
+import com.jetbrains.youtrackdb.api.DatabaseType
 
 data class YTDBEnvironmentParameters(
     var key: String,
