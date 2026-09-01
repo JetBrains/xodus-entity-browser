@@ -1,5 +1,5 @@
 buildscript {
-    ext.xodusDnqVersion = '3.0.XD-1283'
+    ext.xodusDnqVersion = '3.0.998'
     ext.kotlinVersion = '2.1.0'
     ext.ktorVersion = '2.3.11'
 
@@ -34,7 +34,6 @@ allprojects {
     }
 
     repositories {
-        mavenLocal()
         mavenCentral()
         maven { url 'https://central.sonatype.com/repository/maven-snapshots' } // required for YouTrackDB
         maven { url 'https://packages.jetbrains.team/maven/p/xodus/xodus-daily' }

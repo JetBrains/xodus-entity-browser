@@ -2,6 +2,7 @@ package jetbrains.xodus.browser.web.db
 
 
 import com.jetbrains.youtrackdb.api.exception.RecordNotFoundException
+import com.jetbrains.youtrackdb.internal.core.exception.ConfigurationException
 import com.jetbrains.youtrackdb.internal.core.exception.StorageException
 import jetbrains.exodus.crypto.InvalidCipherParametersException
 import jetbrains.exodus.entitystore.PersistentEntityStore
@@ -26,6 +27,8 @@ class EnvironmentStoreService: AbstractStoreService {
             handleInvalidCipherParametersException(e)
         } catch (e: StorageException) {
             handleStorageException(e)
+        } catch (e: ConfigurationException) {
+            handleConfigurationException(e)
         } catch (e: RecordNotFoundException) {
             handleRecordNotFoundException(e)
         } catch (e: RuntimeException) {
@@ -51,6 +54,11 @@ class EnvironmentStoreService: AbstractStoreService {
             logger.error(e) { "Cannot open database because of storage error" }
             throw DatabaseException("Database can not be opened with presented parameters")
         }
+    }
+
+    private fun handleConfigurationException(e: ConfigurationException): Nothing {
+        logger.error(e) { "Cannot open database because of storage configuration error" }
+        throw DatabaseException("Database can not be opened with presented parameters")
     }
 
     private fun handleRecordNotFoundException(e: RecordNotFoundException): Nothing {
